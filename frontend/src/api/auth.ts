@@ -5,7 +5,7 @@ import User from "../model/User";
  * @return current username
  */
 export function getUsername() {
-    return "vovan"; //TODO: implement
+    return new Promise<string>((res, rej) => rej('Not implemented yet')); //TODO: implement
 }
 
 /**
@@ -13,7 +13,14 @@ export function getUsername() {
  */
 export function login(user: UserLogin) {
     console.log(user);
-    return "vovan"; //TODO: implement
+    return new Promise<string>((res, rej) => res("vovan")); //TODO: implement
+}
+
+/**
+ * @return nothing
+ */
+export function logout() {
+    return new Promise<string>((res, rej) => res('')); //TODO: implement
 }
 
 /**
@@ -21,5 +28,5 @@ export function login(user: UserLogin) {
  */
 export function register(user: User) {
     console.log(user);
-    return "vovan"; //TODO: implement
+    return new Promise<string>((res, rej) => res("vovan")); //TODO: implement
 }

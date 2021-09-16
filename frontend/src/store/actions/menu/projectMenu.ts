@@ -2,14 +2,14 @@ import Action from "../../Action";
 import {ActionType} from "../../ActionType";
 
 
-export function openProjectMenu(projectId: string) : Action<string> {
+export function openProjectMenuAction(projectId: string) : Action<string> {
     return {
         type: ActionType.OpenProjectMenu,
         payload: projectId
     };
 }
 
-export function closeProjectMenu() : Action<null> {
+export function closeProjectMenuAction() : Action<null> {
     return {
         type: ActionType.CloseProjectMenu,
         payload: null

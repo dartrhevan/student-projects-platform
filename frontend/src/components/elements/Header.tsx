@@ -1,12 +1,11 @@
 import React from 'react';
-import {AppBar, Button, IconButton, Link, makeStyles, Toolbar, Typography} from "@material-ui/core";
+import {AppBar, IconButton, Link, makeStyles, Toolbar, Typography} from "@material-ui/core";
 import MenuIcon from '@material-ui/icons/Menu';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
-import getUsername from "../../hooks/getUsername";
 import {shallowEqual, useDispatch, useSelector} from "react-redux";
 import LoginButton from "./LoginButton";
 import {getMainMenuOpen} from "../../hooks/getMenuState";
-import {closeMainMenu, openMainMenu} from "../../store/actions/menu/mainMenu";
+import {closeMainMenuAction, openMainMenuAction} from "../../store/actions/menu/mainMenu";
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -19,8 +18,6 @@ const useStyles = makeStyles(theme => ({
         flexGrow: 2,
     },
     bar: {
-        // colorPrimary: "#cbcbcb",
-        // colorSecondary: "#cbcbcb",
         colorDefault: "#cbcbcb",
         zIndex: theme.zIndex.drawer + 1
     }
@@ -32,10 +29,10 @@ export default function Header() {
 
     const mainMenuOpen = useSelector(getMainMenuOpen, shallowEqual);
 
-    const onMenuButtonClicked = () => dispatch(mainMenuOpen ? closeMainMenu() : openMainMenu());
+    const onMenuButtonClicked = () => dispatch(mainMenuOpen ? closeMainMenuAction() : openMainMenuAction());
 
     return (
-        <AppBar position="static" className={classes.bar} color={"default"}>
+        <AppBar position="fixed" className={classes.bar} color={"default"}>
             <Toolbar>
                 <IconButton className={classes.menuButton} onClick={onMenuButtonClicked}
                             color="inherit" aria-label="menu" edge="start">

@@ -5,6 +5,8 @@ import Aligned from "../components/util/Aligned";
 import {allNotEmpty, getOnFieldChange} from "../utils/utils";
 import {login} from "../api/auth";
 import UserLogin from "../model/UserLogin";
+import {useDispatch} from "react-redux";
+import setLoginAction from "../store/actions/auth/setLoginAction";
 
 const useStyles = makeStyles(theme => ({
     def: {
@@ -18,9 +20,13 @@ const useStyles = makeStyles(theme => ({
 export default function Login() {
     console.log("render Login")
     const classes = useStyles();
+    const dispatch = useDispatch();
     const [password, setPassword] = useState('');
     const [username, setUsername] = useState('');
-    const onLogin = () => login(new UserLogin(username, password));
+    const onLogin = () => login(new UserLogin(username, password)).then(r => {
+        dispatch(setLoginAction(r));
+        window.location.href = '/';
+    }).catch(alert); //TODO: implement correct catch
 
     const allFilled = allNotEmpty(username, password);
 

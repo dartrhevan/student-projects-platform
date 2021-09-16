@@ -1,7 +1,9 @@
 import React from 'react';
-import {useSelector} from "react-redux";
+import {logout} from '../../api/auth';
+import {useDispatch, useSelector} from "react-redux";
 import getUsername from "../../hooks/getUsername";
 import {Button, makeStyles, Typography} from "@material-ui/core";
+import logoutAction from "../../store/actions/auth/logoutAction";
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -14,24 +16,30 @@ const useStyles = makeStyles(theme => ({
         flexGrow: 2,
     },
     login: {
-        flexShrink: 2
+        flexShrink: 2,
+        margin: '0 10px'
     },
     bar: {
-        // colorPrimary: "#cbcbcb",
-        // colorSecondary: "#cbcbcb",
         colorDefault: "#cbcbcb"
     }
 }));
 
 export default function LoginButton() {
     const classes = useStyles();
+    const dispatch = useDispatch();
     const username = useSelector(getUsername);
+    const onLogout = () =>
+        logout().then(() => {
+            dispatch(logoutAction());
+            window.location.href = '/';
+        });
+
     return (
         <>
             {username ?
                 (<>
                     <Typography variant="h6" className={classes.login}> {username}</Typography>
-                    <Button>Log out</Button>
+                    <Button onClick={onLogout}>Log out</Button>
                 </>) :
                 (<>
                     <Button href='/registration'>Sign up</Button>

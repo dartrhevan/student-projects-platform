@@ -8,11 +8,23 @@ import Register from "./pages/Register";
 import Centered from "./components/util/Centered";
 import MainMenu from './components/elements/MainMenu';
 import Projects from "./pages/Projects";
+import {getUsername} from "./api/auth";
+import {useDispatch} from "react-redux";
+import setLoginAction from "./store/actions/auth/setLoginAction";
+import {makeStyles} from "@material-ui/core";
 
+// const useStyles = makeStyles(theme => ({
+//     main: {
+//         width: '100%'
+//     }
+// }));
 
 function App() {
     // const dispatch = useDispatch();
     console.log("render Start")
+    // const classes = useStyles();
+    const dispatch = useDispatch();
+    getUsername().then(r => dispatch(setLoginAction(r))).catch(console.log); // TODO: may be move somewhere
     return (
         <>
             <Header/>
