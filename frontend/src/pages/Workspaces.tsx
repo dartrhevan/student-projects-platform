@@ -4,7 +4,6 @@ import Centered from "../components/util/Centered";
 import DefaultBadge from "../components/elements/DefaultBadge";
 import ProjectMenu from "../components/elements/ProjectMenu";
 import QueryPanel from "../components/elements/QueryPanel";
-import {useParams} from "react-router-dom";
 import PagingPanel from "../components/elements/PagingPanel";
 import BadgePage from "../components/elements/BadgePage";
 
@@ -25,36 +24,25 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-interface ProjectsParams {
-    workspaceId: string,
-    workspaceTitle: string
-}
-
 export default function Projects() {
     const classes = useStyles();
-
-    const {workspaceId, workspaceTitle} = useParams<ProjectsParams>();
 
     console.log("render Projects")
 
     // return (
     //     <>
-    //         <Typography className={classes.title} variant='h3'>Проекты из {workspaceTitle}</Typography>
-    //         <ProjectMenu/>
-    //         <QueryPanel/>
+    //         <Typography className={classes.title} variant='h3'>Просмотр публичных рабочих пространств</Typography>
+    //         {/*<ProjectMenu />*/}
+    //         <QueryPanel />
     //         <Container>
     //             <Centered row={true} additionalClasses={[classes.main]}>
     //                 {['A', 'B', 'C', 'D', 'E', 'F', 'A1', '1B', 'C1', 'D1', 'E1', '1F'].map(s =>
-    //                     <DefaultBadge key={s} id={s} title={s}/>)}
+    //                     <DefaultBadge key={s} id={s} title={s} href={`/projects/${s}/${s}`} />)}
     //             </Centered>
     //         </Container>
     //         <PagingPanel />
     //     </>);
-
-    return (
-        <>
-            <ProjectMenu />
-            <BadgePage title={`Проекты из ${workspaceTitle}`}
-                       badgeData={['A', 'B', 'C', 'D', 'E', 'F', 'A1', '1B', 'C1', 'D1', 'E1', '1F'].map(s => ({id: s}))} />
-        </>);
+    return (<BadgePage title='Просмотр публичных рабочих пространств'
+                       badgeData={['A', 'B', 'C', 'D', 'E', 'F', 'A1', '1B', 'C1', 'D1', 'E1', '1F'].map(s => ({id: s}))}
+                       href={s => `/projects/${s}/${s}`} />);
 }

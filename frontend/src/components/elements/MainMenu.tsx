@@ -11,7 +11,9 @@ import InboxIcon from '@material-ui/icons/MoveToInbox';
 import MailIcon from '@material-ui/icons/Mail';
 import {shallowEqual, useSelector} from "react-redux";
 import {getMainMenuOpen} from "../../hooks/getMenuState";
-import {useMediaQuery} from "@material-ui/core";
+import {Accordion, AccordionSummary, useMediaQuery} from "@material-ui/core";
+import {ArrowDownward} from "@material-ui/icons";
+// import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 const drawerWidth = 240;
 
@@ -87,22 +89,32 @@ export default function MiniDrawer() {
             classes={{
                 paper: clsx(drawerClasses)
             }}>
+
             <List className={classes.list}>
-                {['Projects', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-                    <ListItem button key={text}>
-                        <ListItemIcon>{index % 2 === 0 ? <InboxIcon/> : <MailIcon/>}</ListItemIcon>
-                        <ListItemText primary={text} onClick={() => window.location.href = '/projects'}/>
-                    </ListItem>
-                ))}
+                <ListItem button key={'Workspaces public'}>
+                    <ListItemIcon><InboxIcon/></ListItemIcon>
+                    <ListItemText primary={'Workspaces public'}
+                                  onClick={() => window.location.href = '/workspaces/public'}/>
+                </ListItem>
+
+                <ListItem button key={'Workspaces private'}>
+                    <ListItemIcon><InboxIcon/></ListItemIcon>
+                    <ListItemText primary={'Workspaces private'}
+                                  onClick={() => window.location.href = '/workspaces/private'}/>
+                </ListItem>
             </List>
             <Divider/>
             <List>
-                {['All mail', 'Trash', 'Spam'].map((text, index) => (
-                    <ListItem button key={text}>
-                        <ListItemIcon>{index % 2 === 0 ? <InboxIcon/> : <MailIcon/>}</ListItemIcon>
-                        <ListItemText primary={text}/>
-                    </ListItem>
-                ))}
+                {/*{[''Users, 'Trash', 'Spam'].map((text, index) => (*/}
+                <ListItem button key={'Users'}>
+                    <ListItemIcon><MailIcon/></ListItemIcon>
+                    <ListItemText primary={'Users'} onClick={() => window.location.href = '/users'}/>
+                </ListItem>
+                <ListItem button key={'Notifications'}>
+                    <ListItemIcon><MailIcon/></ListItemIcon>
+                    <ListItemText primary={'Notifications'} onClick={() => window.location.href = '/notifications'}/>
+                </ListItem>
+                {/*))}*/}
             </List>
         </Drawer>);
 }

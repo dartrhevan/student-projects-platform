@@ -11,7 +11,9 @@ import Projects from "./pages/Projects";
 import {getUsername} from "./api/auth";
 import {useDispatch} from "react-redux";
 import setLoginAction from "./store/actions/auth/setLoginAction";
-import {makeStyles} from "@material-ui/core";
+import Users from "./pages/Users";
+import Notifications from "./pages/Notifications";
+import Workspaces from './pages/Workspaces';
 
 // const useStyles = makeStyles(theme => ({
 //     main: {
@@ -34,7 +36,10 @@ function App() {
                     <Switch>
                         <Route component={Login} path='/authentication'/>
                         <Route component={Register} path='/registration'/>
-                        <Route component={Projects} path='/projects'/>
+                        <Route component={Workspaces} path='/workspaces/:type'/>
+                        <Route component={Projects} path='/projects/:workspaceId/:workspaceTitle'/>
+                        <Route component={Users} path='/users'/>
+                        <Route component={Notifications} path='/notifications'/>
                         <Route component={Start} path='/'/>
                     </Switch>
                 </BrowserRouter>

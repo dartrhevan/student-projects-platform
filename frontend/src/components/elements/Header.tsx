@@ -39,7 +39,7 @@ export default function Header() {
                     {mainMenuOpen ? <ArrowBackIcon/> : <MenuIcon/>}
                 </IconButton>
                 <Typography variant="h6" align="center" className={classes.title}>
-                    <Link underline='none' color='inherit' href='/'>Проектный практикум</Link>
+                    <Link underline='none' color='inherit' href='/'>TeamBuilding</Link>
                 </Typography>
                 <LoginButton/>
             </Toolbar>

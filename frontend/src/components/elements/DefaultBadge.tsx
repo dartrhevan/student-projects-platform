@@ -22,9 +22,10 @@ const useStyles = makeStyles(theme => ({
 interface ProjectBadgeProp extends ListItemProps {
     id: string,
     title: string
+    href?: string
 }
 
-export default function ProjectBadge({id, title}: ProjectBadgeProp) {
+export default function DefaultBadge({id, title, href}: ProjectBadgeProp) {
     const classes = useStyles();
     const dispatch = useDispatch();
     const onClick = () => {
@@ -32,7 +33,7 @@ export default function ProjectBadge({id, title}: ProjectBadgeProp) {
     };
     return (
         <Card className={classes.root} onClick={onClick}>
-            <CardActionArea className={classes.area}>
+            <CardActionArea className={classes.area} href={href as string}>
                 <CardContent>
                     <Centered>
                         {title}
