@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {Container, makeStyles, Paper, Typography} from "@material-ui/core";
 import Centered from "../components/util/Centered";
 import DefaultBadge from "../components/elements/DefaultBadge";
@@ -7,6 +7,13 @@ import QueryPanel from "../components/elements/QueryPanel";
 import {useParams} from "react-router-dom";
 import PagingPanel from "../components/elements/PagingPanel";
 import BadgePage from "../components/elements/BadgePage";
+import {shallowEqual, useDispatch, useSelector} from "react-redux";
+import {initPaging} from "../store/actions/paging/setPagingData";
+import {getProjectsForWorkspace} from "../api/projects";
+import ProjectQuery from "../model/dto/ProjectQuery";
+import Pageable from "../model/Pageable";
+import Project from "../model/Project";
+import getPaging from "../hooks/getPaging";
 
 
 const useStyles = makeStyles(theme => ({
@@ -35,26 +42,22 @@ export default function Projects() {
 
     const {workspaceId, workspaceTitle} = useParams<ProjectsParams>();
 
+    const {totalCount, pageSize, pageNumber} =  useSelector(getPaging, shallowEqual);
+    const [data, setData] = useState([] as Project[]);
     console.log("render Projects")
 
-    // return (
-    //     <>
-    //         <Typography className={classes.title} variant='h3'>Проекты из {workspaceTitle}</Typography>
-    //         <ProjectMenu/>
-    //         <QueryPanel/>
-    //         <Container>
-    //             <Centered row={true} additionalClasses={[classes.main]}>
-    //                 {['A', 'B', 'C', 'D', 'E', 'F', 'A1', '1B', 'C1', 'D1', 'E1', '1F'].map(s =>
-    //                     <DefaultBadge key={s} id={s} title={s}/>)}
-    //             </Centered>
-    //         </Container>
-    //         <PagingPanel />
-    //     </>);
+    const dispatch = useDispatch();
 
+    useEffect(() => {
+        getProjectsForWorkspace(new ProjectQuery([], new Pageable(pageNumber, pageSize), workspaceId))
+            .then(r => {
+                setData(r.projects)
+                dispatch(initPaging(pageSize, r.totalCount, pageNumber))
+            });
+    }, [workspaceId, pageNumber, pageSize]);//TODO: call back here
     return (
         <>
-            <ProjectMenu />
-            <BadgePage title={`Проекты из ${workspaceTitle}`}
-                       badgeData={['A', 'B', 'C', 'D', 'E', 'F', 'A1', '1B', 'C1', 'D1', 'E1', '1F'].map(s => ({id: s}))} />
+            <ProjectMenu/>
+            <BadgePage title={`Проекты из ${workspaceTitle}`} badgeData={data} />
         </>);
 }

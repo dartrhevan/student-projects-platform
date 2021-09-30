@@ -1,9 +1,12 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {Container, makeStyles, Paper, Typography} from "@material-ui/core";
 import QueryPanel from "./QueryPanel";
 import Centered from "../util/Centered";
 import DefaultBadge from "./DefaultBadge";
 import PagingPanel from "./PagingPanel";
+import PagingState from "../../store/state/PagingState";
+import {useDispatch} from "react-redux";
+import {initPaging, setPage} from "../../store/actions/paging/setPagingData";
 
 
 const useStyles = makeStyles(theme => ({

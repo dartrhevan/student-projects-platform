@@ -1,7 +1,7 @@
 import Pageable from "../model/Pageable";
 import Workspace from "../model/Workspace";
-import CommonResponse from "../model/CommonResponse";
-import Query from "../model/Query";
+import CommonResponse from "../model/dto/CommonResponse";
+import Query from "../model/dto/Query";
 
 export function getAllPublicWorkspaces(query: Query) {
     //TODO: implement

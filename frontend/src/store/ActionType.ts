@@ -4,5 +4,7 @@ export enum ActionType {
     OpenMainMenu,
     CloseMainMenu,
     OpenProjectMenu,
-    CloseProjectMenu
+    CloseProjectMenu,
+    SetPage,
+    InitPaging
 }
