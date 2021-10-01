@@ -1,10 +1,12 @@
-import React, {ChangeEvent, EventHandler, KeyboardEvent, KeyboardEventHandler, useState} from 'react';
-import {Button, Chip, Input, List, ListItem, makeStyles, Paper, TextField, useMediaQuery} from "@material-ui/core";
-import DatePicker from '@mui/lab/DatePicker';
-import {Add, PlusOne} from "@material-ui/icons";
+import React, {useState} from 'react';
+import {Button, makeStyles, Paper} from "@material-ui/core";
+import {Add} from "@material-ui/icons";
 import AddProject from "./AddProject";
 import TagsPanel from "../util/TagsPanel";
 import clsx from "clsx";
+import isMobile from "../../hooks/isMobile";
+import {useDispatch, useSelector} from "react-redux";
+import {openDialog} from "../../store/actions/dialog/dialog";
 
 const useStyles = makeStyles(theme => ({
     queryPanel: {
@@ -26,20 +28,21 @@ const useStyles = makeStyles(theme => ({
 
 export default function QueryPanel() {
     const classes = useStyles();
-    const matches = useMediaQuery('(max-width: 800px)', {noSsr: true}); //TODO: extract hook
-
-    const [openAddProjDialog, setOpenAddProjDialog] = useState(false);
+    const mobile = isMobile();
+    const dispatch = useDispatch();
+    // const [openAddProjDialog, setOpenAddProjDialog] = useState(false);
     const [fromDate, setFromDate] = useState(null as Date | null);
 
-    return (<Paper className={clsx({[classes.queryPanel]: true, [classes.mobilePanel]: matches})}>
+    return (<Paper className={clsx({[classes.queryPanel]: true, [classes.mobilePanel]: mobile})}>
         {/*<DatePicker*/}
         {/*label="From"*/}
         {/*value={fromDate}*/}
         {/*onChange={(newValue: Date | null) => setFromDate(newValue)}*/}
         {/*renderInput={(params: object) => <TextField {...params} />}/>*/}
 
-        <AddProject open={openAddProjDialog} title='Добавление нового проекта' />
-        <TagsPanel />
-        <Button className={classes.addButton} variant='outlined' onClick={() => setOpenAddProjDialog(true)}> <Add/> Добавить проект</Button>
+        <AddProject onSubmit={(ti, d, t, p) =>
+            console.log(`title: ${ti} description: ${d} tags: ${t} participants: ${p}`)} title='Добавление нового проекта' />
+        <TagsPanel onSetTag={s => {}} />
+        <Button className={classes.addButton} variant='outlined' onClick={() => dispatch(openDialog())}> <Add/> Добавить проект</Button>
     </Paper>)
 }

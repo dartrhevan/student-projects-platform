@@ -1,5 +1,5 @@
 import React from 'react';
-import {Container, makeStyles, Paper, Typography} from "@material-ui/core";
+import {Container, makeStyles, Typography} from "@material-ui/core";
 import QueryPanel from "./QueryPanel";
 import Centered from "../util/Centered";
 import DefaultBadge from "./DefaultBadge";
@@ -13,7 +13,6 @@ const useStyles = makeStyles(theme => ({
         alignItems: "start",
     },
     query: {
-        // margin: '2% 0 0 0'
         padding: '10px'
     },
     title: {

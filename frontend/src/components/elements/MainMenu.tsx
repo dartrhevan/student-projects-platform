@@ -13,6 +13,7 @@ import {shallowEqual, useSelector} from "react-redux";
 import {getMainMenuOpen} from "../../hooks/getMenuState";
 import {Accordion, AccordionSummary, useMediaQuery} from "@material-ui/core";
 import {ArrowDownward} from "@material-ui/icons";
+import isMobile from "../../hooks/isMobile";
 // import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 const drawerWidth = 240;
@@ -75,12 +76,12 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export default function MiniDrawer() {
     const classes = useStyles();
-    const matches = useMediaQuery('(max-width: 800px)', {noSsr: true}); //TODO: extract hook
+    const mobile = isMobile();
     const open = useSelector(getMainMenuOpen, shallowEqual);
     const drawerClasses = {
         [classes.drawerOpen]: open,
-        [classes.drawerHidden]: !open && matches,
-        [classes.drawerClose]: !(open || matches),
+        [classes.drawerHidden]: !open && mobile,
+        [classes.drawerClose]: !(open || mobile),
     };
     return (
         <Drawer

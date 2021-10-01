@@ -18,8 +18,11 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
+interface ITagsPanelProps {
+    onSetTag: (t: string[]) => void
+}
 
-export default function TagsPanel() {
+export default function TagsPanel({onSetTag}: ITagsPanelProps) {
     const classes = useStyles();
     const [tags, setTags] = useState([] as string[]);
     const [tag, setTag] = React.useState('');
@@ -29,8 +32,11 @@ export default function TagsPanel() {
 
     const addTag = (e: KeyboardEvent<HTMLDivElement>) => {
         if (e.key === 'Enter' && tag !== '') {
-            if (!tags.includes(tag))
-                setTags([...tags, tag]);
+            if (!tags.includes(tag)) {
+                const newTags = [...tags, tag];
+                onSetTag(newTags)
+                setTags(newTags);
+            }
             setTag('');
         }
     };
