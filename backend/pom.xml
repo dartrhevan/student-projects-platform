@@ -63,10 +63,7 @@
 	<build>
 		<resources>
 			<resource>
-				<directory>${basedir}/src/main/resources</directory>
-			</resource>
-			<resource>
-				<directory>${basedir}/frontend/build</directory>
+				<directory>../frontend/build</directory>
 			</resource>
 		</resources>
 		<plugins>
@@ -109,10 +106,10 @@
 									<goal>copy-resources</goal>
 								</goals>
 								<configuration>
-									<outputDirectory>${basedir}/target/classes/static</outputDirectory>
+									<outputDirectory>target/classes/static</outputDirectory>
 									<resources>
 										<resource>
-											<directory>${basedir}/frontend/build</directory>
+											<directory>${basedir}/../frontend/build</directory>
 										</resource>
 									</resources>
 								</configuration>
@@ -124,7 +121,7 @@
 						<artifactId>frontend-maven-plugin</artifactId>
 						<version>${frontend.version}</version>
 						<configuration>
-							<workingDirectory>frontend</workingDirectory>
+							<workingDirectory>../frontend</workingDirectory>
 							<nodeVersion>${node.version}</nodeVersion>
 							<npmVersion>${npm.version}</npmVersion>
 							<installDirectory>target</installDirectory>
@@ -172,7 +169,7 @@
 								<configuration>
 									<target>
 										<copy todir="${project.build.directory}/classes/public">
-											<fileset dir="${project.basedir}/frontend/build" />
+											<fileset dir="${project.basedir}/../frontend/build" />
 										</copy>
 									</target>
 								</configuration>
