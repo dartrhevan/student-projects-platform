@@ -1,59 +1,45 @@
 import React, {ChangeEvent, EventHandler, KeyboardEvent, KeyboardEventHandler, useState} from 'react';
-import {Button, Chip, Input, List, ListItem, makeStyles, Paper, TextField} from "@material-ui/core";
+import {Button, Chip, Input, List, ListItem, makeStyles, Paper, TextField, useMediaQuery} from "@material-ui/core";
 import DatePicker from '@mui/lab/DatePicker';
 import {Add, PlusOne} from "@material-ui/icons";
+import AddProject from "./AddProject";
+import TagsPanel from "../util/TagsPanel";
+import clsx from "clsx";
 
 const useStyles = makeStyles(theme => ({
     queryPanel: {
         padding: '10px 15px',
         width: '100%',
         maxWidth: '80vw',
-        display: 'flex'
-    },
-    chips: {
-        flexGrow: 1,
         display: 'flex',
-        alignItems: "center",
-        flexWrap: 'wrap'
+        alignItems: 'baseline'
     },
-    chip: {
-        margin: '5px 10px'
+    mobilePanel: {
+        flexDirection: 'column'
+    },
+    addButton: {
+        maxHeight: '70%',
+        width: '200px',
+        flexShrink: 0
     }
 }));
 
 export default function QueryPanel() {
     const classes = useStyles();
-    const [tags, setTags] = useState([] as string[]);
-    const [tag, setTag] = React.useState('');
+    const matches = useMediaQuery('(max-width: 800px)', {noSsr: true}); //TODO: extract hook
 
-    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => setTag(event.target.value);
-
-
-    const addTag = (e: KeyboardEvent<HTMLDivElement>) => {
-        if (e.key === 'Enter' && tag !== '') {
-            if (!tags.includes(tag))
-                setTags([...tags, tag]);
-            setTag('');
-        }
-    };
-
-    const handleDelete = (toDelete: string) => setTags(tags.filter(t => t !== toDelete));
-
+    const [openAddProjDialog, setOpenAddProjDialog] = useState(false);
     const [fromDate, setFromDate] = useState(null as Date | null);
 
-    return (<Paper className={classes.queryPanel}>
+    return (<Paper className={clsx({[classes.queryPanel]: true, [classes.mobilePanel]: matches})}>
         {/*<DatePicker*/}
         {/*label="From"*/}
         {/*value={fromDate}*/}
         {/*onChange={(newValue: Date | null) => setFromDate(newValue)}*/}
         {/*renderInput={(params: object) => <TextField {...params} />}/>*/}
 
-        <TextField label='Type tag' value={tag} onChange={handleChange} onKeyPress={addTag}/>
-
-        <div className={classes.chips}>
-            {tags.map(t => (<Chip label={t} key={t} variant="outlined" className={classes.chip}
-                                  onDelete={() => handleDelete(t)}/>))}
-        </div>
-        <Button variant='outlined'> <Add/> Добавить проект</Button>
+        <AddProject open={openAddProjDialog} title='Добавление нового проекта' />
+        <TagsPanel />
+        <Button className={classes.addButton} variant='outlined' onClick={() => setOpenAddProjDialog(true)}> <Add/> Добавить проект</Button>
     </Paper>)
 }

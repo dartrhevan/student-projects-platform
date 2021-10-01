@@ -14,6 +14,7 @@ import ProjectQuery from "../model/dto/ProjectQuery";
 import Pageable from "../model/Pageable";
 import Project from "../model/Project";
 import getPaging from "../hooks/getPaging";
+import AddProject from "../components/elements/AddProject";
 
 
 const useStyles = makeStyles(theme => ({
@@ -41,7 +42,6 @@ export default function Projects() {
     const classes = useStyles();
 
     const {workspaceId, workspaceTitle} = useParams<ProjectsParams>();
-
     const {totalCount, pageSize, pageNumber} =  useSelector(getPaging, shallowEqual);
     const [data, setData] = useState([] as Project[]);
     console.log("render Projects")

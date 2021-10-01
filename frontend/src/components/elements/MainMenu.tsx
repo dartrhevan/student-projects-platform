@@ -75,7 +75,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export default function MiniDrawer() {
     const classes = useStyles();
-    const matches = useMediaQuery('(max-width: 800px)', {noSsr: true});
+    const matches = useMediaQuery('(max-width: 800px)', {noSsr: true}); //TODO: extract hook
     const open = useSelector(getMainMenuOpen, shallowEqual);
     const drawerClasses = {
         [classes.drawerOpen]: open,
