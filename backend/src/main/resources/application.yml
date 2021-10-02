@@ -1,6 +1,6 @@
 spring:
   mvc:
-    static-path-pattern: /
+    static-path-pattern: /**
   web:
     resources:
-      static-locations: classpath:./static
+      static-locations: classpath:./static #frontend/build

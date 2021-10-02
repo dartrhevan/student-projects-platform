@@ -1,2 +1,0 @@
-release: echo 'release'
-web: java -jar target/projapp-0.0.1-SNAPSHOT.jar
