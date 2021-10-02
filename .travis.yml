@@ -7,7 +7,4 @@ deploy:
   provider: heroku
   api_key: $HEROKU_API_KEY
   app: $HEROKU_APP_NAME  
-  branch: develop
-branches:
-  only:
-  - develop
+  on: develop
