@@ -1,7 +1,8 @@
 import React, {useEffect, useRef, useState} from 'react';
+import ClearIcon from '@mui/icons-material/Clear';
 import {
     Button,
-    Dialog,
+    Dialog, ListItemIcon,
     ListItemText,
     ListSubheader,
     makeStyles,
@@ -108,7 +109,7 @@ export default function AddProject({onSubmit, title}: DialogProps) {
                         {participants.map(p => (
                             <ListItemButton>
                                 {/*<ListItemIcon>*/}
-                                {/*    <SendIcon />*/}
+                                {/*    <ClearIcon />*/}
                                 {/*</ListItemIcon>*/}
                                 <ListItemText primary={p}/>
                             </ListItemButton>))}
