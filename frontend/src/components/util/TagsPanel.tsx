@@ -1,5 +1,6 @@
 import React, {ChangeEvent, EventHandler, KeyboardEvent, KeyboardEventHandler, useState} from 'react';
 import {Chip, makeStyles, TextField} from "@material-ui/core";
+import clsx from 'clsx';
 
 const useStyles = makeStyles(theme => ({
     chips: {
@@ -19,10 +20,12 @@ const useStyles = makeStyles(theme => ({
 }));
 
 interface ITagsPanelProps {
-    onSetTag: (t: string[]) => void
+    onSetTag: (t: string[]) => void,
+    label?: string,
+    tagInputClasses?: string[]
 }
 
-export default function TagsPanel({onSetTag}: ITagsPanelProps) {
+export default function TagsPanel({onSetTag, label = 'tag', tagInputClasses = []}: ITagsPanelProps) {
     const classes = useStyles();
     const [tags, setTags] = useState([] as string[]);
     const [tag, setTag] = React.useState('');
@@ -43,7 +46,8 @@ export default function TagsPanel({onSetTag}: ITagsPanelProps) {
 
     const handleDelete = (toDelete: string) => setTags(tags.filter(t => t !== toDelete));
     return (<>
-        <TextField className={classes.input} label='Type tag' value={tag} onChange={handleChange} onKeyPress={addTag}/>
+        <TextField className={clsx(classes.input, ...tagInputClasses)} label={`Type ${label}`}
+                   value={tag} onChange={handleChange} onKeyPress={addTag}/>
 
         <div className={classes.chips}>
             {tags.map(t => (<Chip label={t} key={t} variant="outlined" className={classes.chip}
