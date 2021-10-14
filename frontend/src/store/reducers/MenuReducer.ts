@@ -8,10 +8,10 @@ export default function (state: MenuState = initState, action: Action<string | u
             return {...state, mainMenuOpen: true};
         case ActionType.CloseMainMenu:
             return {...state, mainMenuOpen: false};
-        case ActionType.OpenProjectMenu:
-            return {...state, projectId: action.payload};
-        case ActionType.CloseProjectMenu:
-            return {...state, projectId: undefined};
+        // case ActionType.OpenProjectMenu:
+        //     return {...state, projectId: action.payload};
+        // case ActionType.CloseProjectMenu:
+        //     return {...state, projectId: undefined};
         default:
             return state;
     }

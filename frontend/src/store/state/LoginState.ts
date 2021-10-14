@@ -1,5 +1,5 @@
 import {StorageKeys} from "../../utils/StorageKeys";
-import {getUsername} from "../../api/auth";
+import {getCurrentUser} from "../../api/auth";
 
 export default class LoginState {
     constructor(public currentUsername: string | null) {

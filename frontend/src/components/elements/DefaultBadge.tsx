@@ -3,7 +3,6 @@ import {Card, CardActionArea, CardContent, makeStyles} from "@material-ui/core";
 import ListItemProps from "../../props.common/ListItemProps";
 import Centered from "../util/Centered";
 import {useDispatch} from "react-redux";
-import {openProjectMenuAction} from "../../store/actions/menu/projectMenu"
 
 const useStyles = makeStyles(theme => ({
     root: {

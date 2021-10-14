@@ -1,8 +1,7 @@
-import React, {useEffect, useRef, useState} from 'react';
-import ClearIcon from '@mui/icons-material/Clear';
+import React, {useState} from 'react';
 import {
     Button,
-    Dialog, ListItemIcon,
+    Dialog,
     ListItemText,
     ListSubheader,
     makeStyles,
@@ -12,7 +11,7 @@ import {
 } from "@material-ui/core";
 import TagsPanel from "../util/TagsPanel";
 import clsx from "clsx";
-import {closeDialog, openDialog} from "../../store/actions/dialog/dialog";
+import {closeDialog} from "../../store/actions/dialog/dialog";
 import {useDispatch, useSelector} from "react-redux";
 import isOpenDialog from "../../hooks/isOpenDialog";
 import List from "@material-ui/core/List";

@@ -4,7 +4,7 @@ import User from "../model/User";
 /**
  * @return current username
  */
-export function getUsername() {
+export function getCurrentUser() {
     return new Promise<string>((res, rej) => rej('Not implemented yet')); //TODO: implement
 }
 

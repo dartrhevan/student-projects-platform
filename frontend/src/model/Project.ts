@@ -15,6 +15,7 @@ export default class Project {
 
 export class DetailedProject {
     constructor(public id: string, public workSpaceId: string, public title: string,
-                public description: string, public participantLogins: string[], public tags: Tag[], public role = ProjectRole.STRANGER) {
+                public description: string, public participantLogins: string[], public tags: Tag[],
+                public role = ProjectRole.STRANGER) {
     }
 }

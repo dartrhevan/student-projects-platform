@@ -8,7 +8,7 @@ import Register from "./pages/Register";
 import Centered from "./components/util/Centered";
 import MainMenu from './components/elements/MainMenu';
 import Projects from "./pages/Projects";
-import {getUsername} from "./api/auth";
+import {getCurrentUser} from "./api/auth";
 import {useDispatch} from "react-redux";
 import setLoginAction from "./store/actions/auth/setLoginAction";
 import Users from "./pages/Users";
@@ -22,7 +22,7 @@ function App() {
     console.log("render Start")
     // const classes = useStyles();
     const dispatch = useDispatch();
-    getUsername().then(r => dispatch(setLoginAction(r))).catch(console.log); // TODO: may be move somewhere
+    getCurrentUser().then(r => dispatch(setLoginAction(r))).catch(console.log); // TODO: may be move somewhere
     return (
         <>
             <Header/>

@@ -1,6 +1,4 @@
 import React, {useEffect, useState} from 'react';
-import makeStyles from "@material-ui/core";
-import ProjectMenu from "../components/elements/ProjectMenu";
 import {useParams} from "react-router-dom";
 import BadgePage from "../components/elements/BadgePage";
 import {shallowEqual, useDispatch, useSelector} from "react-redux";
@@ -18,7 +16,6 @@ interface ProjectsParams {
 }
 
 export default function Projects() {
-
     const {workspaceId, workspaceTitle} = useParams<ProjectsParams>();
     const {totalCount, pageSize, pageNumber} =  useSelector(getPaging, shallowEqual);
     const [data, setData] = useState([] as Project[]);
@@ -30,11 +27,10 @@ export default function Projects() {
         getProjectsForWorkspace(new ProjectQuery([], new Pageable(pageNumber, pageSize), workspaceId))
             .then(r => {
                 setData(r.projects)
-                dispatch(initPaging(pageSize, r.totalCount, pageNumber))
+                dispatch(initPaging(r.totalCount, pageSize, pageNumber))
             });
     }, [workspaceId, pageNumber, pageSize]);//TODO: call back here
-    return (<>
-            {/*<ProjectMenu/>*/}
-            <BadgePage title={`Проекты из ${workspaceTitle}`} badgeData={data} href={i => `/project?projectId=${i}&workspaceId=${workspaceId}`}/>
-        </>);
+
+    return (<BadgePage title={`Проекты из ${workspaceTitle}`} badgeData={data}
+                       href={i => `/project?projectId=${i}&workspaceId=${workspaceId}`}/>);
 }
