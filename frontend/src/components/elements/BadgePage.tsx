@@ -39,7 +39,6 @@ export default function BadgePage<T extends  IBadge>({badgeData, onBadgeClick, t
     return (
         <>
             <Typography className={classes.title} variant='h3'>{title}</Typography>
-            {/*<ProjectMenu />*/}
             <QueryPanel />
             <Container>
                 <Centered row={true} additionalClasses={[classes.main]}>

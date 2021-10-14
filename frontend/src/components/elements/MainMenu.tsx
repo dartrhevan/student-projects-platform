@@ -8,13 +8,12 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import InboxIcon from '@material-ui/icons/MoveToInbox';
-import MailIcon from '@material-ui/icons/Mail';
+import Apps from '@material-ui/icons/Apps';
 import {shallowEqual, useSelector} from "react-redux";
 import {getMainMenuOpen} from "../../hooks/getMenuState";
 import {Accordion, AccordionSummary, useMediaQuery} from "@material-ui/core";
-import {ArrowDownward} from "@material-ui/icons";
+import {ArrowDownward, Person} from "@material-ui/icons";
 import isMobile from "../../hooks/isMobile";
-// import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 const drawerWidth = 240;
 
@@ -93,29 +92,27 @@ export default function MiniDrawer() {
 
             <List className={classes.list}>
                 <ListItem button key={'Workspaces public'}>
-                    <ListItemIcon><InboxIcon/></ListItemIcon>
+                    <ListItemIcon><Apps/></ListItemIcon>
                     <ListItemText primary={'Workspaces public'}
                                   onClick={() => window.location.href = '/workspaces/public'}/>
                 </ListItem>
 
                 <ListItem button key={'Workspaces private'}>
-                    <ListItemIcon><InboxIcon/></ListItemIcon>
+                    <ListItemIcon><Apps/></ListItemIcon>
                     <ListItemText primary={'Workspaces private'}
                                   onClick={() => window.location.href = '/workspaces/private'}/>
                 </ListItem>
             </List>
             <Divider/>
             <List>
-                {/*{[''Users, 'Trash', 'Spam'].map((text, index) => (*/}
                 <ListItem button key={'Users'}>
-                    <ListItemIcon><MailIcon/></ListItemIcon>
+                    <ListItemIcon><Person/></ListItemIcon>
                     <ListItemText primary={'Users'} onClick={() => window.location.href = '/users'}/>
                 </ListItem>
                 <ListItem button key={'Notifications'}>
-                    <ListItemIcon><MailIcon/></ListItemIcon>
+                    <ListItemIcon><InboxIcon/></ListItemIcon>
                     <ListItemText primary={'Notifications'} onClick={() => window.location.href = '/notifications'}/>
                 </ListItem>
-                {/*))}*/}
             </List>
         </Drawer>);
 }

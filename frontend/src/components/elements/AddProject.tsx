@@ -17,6 +17,7 @@ import {useDispatch, useSelector} from "react-redux";
 import isOpenDialog from "../../hooks/isOpenDialog";
 import List from "@material-ui/core/List";
 import {ListItemButton} from "@mui/material";
+import Tag from "../../model/Tag";
 
 const useStyles = makeStyles(theme => ({
     main: {
@@ -50,7 +51,7 @@ interface DialogProps {
     // open: boolean
     title: string
 
-    onSubmit: ((title:string, description: string, t: string[], p: string[]) => void)
+    onSubmit: ((title:string, description: string, t: Tag[], p: string[]) => void)
 }
 
 export default function AddProject({onSubmit, title}: DialogProps) {
@@ -65,7 +66,7 @@ export default function AddProject({onSubmit, title}: DialogProps) {
     const [participants, setParticipants] = useState(['Vladimir', 'Rail', 'Nikita', 'Nikolay', 'Renat'] as string[]);
     const [newParticipant, setNewParticipant] = useState('');
     // const tagsRef = React.useRef<TagsPanel>(null);
-    const [tags, setTags] = useState([] as string[]);
+    const [tags, setTags] = useState([] as Tag[]);
     const [ptTitle, setTitle] = useState('');
     const [description, setDescription] = useState('');
 

@@ -1,5 +1,9 @@
-import React, {ChangeEvent, EventHandler, KeyboardEvent, KeyboardEventHandler, useState} from 'react';
-import {Chip, makeStyles, TextField} from "@material-ui/core";
+import React, {KeyboardEvent, useEffect, useState} from 'react';
+import {makeStyles, TextField} from "@material-ui/core";
+import clsx from 'clsx';
+import {Chip} from "@mui/material";
+import Tag from "../../model/Tag";
+import {getTagsReference} from "../../api/tags";
 
 const useStyles = makeStyles(theme => ({
     chips: {
@@ -7,10 +11,10 @@ const useStyles = makeStyles(theme => ({
         display: 'flex',
         alignItems: "center",
         flexWrap: 'wrap',
-        margin: "10px"
+        margin: "10px",
     },
     chip: {
-        margin: '5px 10px'
+        margin: '5px 10px',
     },
     input: {
         margin: "10px",
@@ -19,21 +23,42 @@ const useStyles = makeStyles(theme => ({
 }));
 
 interface ITagsPanelProps {
-    onSetTag: (t: string[]) => void
+    onSetTag: (t: Tag[]) => void,
+    label?: string,
+    tagInputClasses?: string[]
+    editable?: boolean
+    values?: Tag[]
 }
 
-export default function TagsPanel({onSetTag}: ITagsPanelProps) {
+// const stub = () => {
+// };
+
+export default function TagsPanel({onSetTag, label = 'tag', tagInputClasses = [], editable = true, values = []}: ITagsPanelProps) {
     const classes = useStyles();
-    const [tags, setTags] = useState([] as string[]);
+    const [tagsReference, setTagsReference] = useState(values);
+    const [tags, setTags] = useState(values);
     const [tag, setTag] = React.useState('');
 
+    // useEffect(() => {
+    //     setTags(values);
+    // }, [values]);
+
+    const v = values.map(t => t.text)[0]; //TODO: rewrite
+    useEffect(() => {
+        setTags(values);
+        getTagsReference().then(r => setTagsReference(r.payload));
+    }, [v]);
+
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => setTag(event.target.value);
-
-
+    console.log(values);
     const addTag = (e: KeyboardEvent<HTMLDivElement>) => {
         if (e.key === 'Enter' && tag !== '') {
-            if (!tags.includes(tag)) {
-                const newTags = [...tags, tag];
+            if (!tags?.find(t => t.text === tag)) {
+                let newTag = tagsReference?.find(t => t.text === tag);
+                if (newTag === undefined) {
+                    newTag = new Tag(tag);
+                }
+                const newTags = [...tags, newTag];
                 onSetTag(newTags)
                 setTags(newTags);
             }
@@ -41,13 +66,17 @@ export default function TagsPanel({onSetTag}: ITagsPanelProps) {
         }
     };
 
-    const handleDelete = (toDelete: string) => setTags(tags.filter(t => t !== toDelete));
-    return (<>
-        <TextField className={classes.input} label='Type tag' value={tag} onChange={handleChange} onKeyPress={addTag}/>
+    const handleDelete = (toDelete: string) => setTags(tags?.filter(t => t.text !== toDelete));
 
-        <div className={classes.chips}>
-            {tags.map(t => (<Chip label={t} key={t} variant="outlined" className={classes.chip}
-                                  onDelete={() => handleDelete(t)}/>))}
-        </div>
-    </>)
+    return (
+        <>
+            {editable ? (<TextField className={clsx(classes.input, ...tagInputClasses)} label={`Type ${label}`}
+                                    value={tag} onChange={handleChange} onKeyPress={addTag}/>) : (<></>)}
+
+            <div className={classes.chips}>
+                {tags.map(t => (<Chip label={t.text} key={t.text} variant="outlined" className={classes.chip}
+                                      sx={{backgroundColor: t.backgroundColor, color: t.fontColor}}
+                                      onDelete={editable ? () => handleDelete(t.text) : undefined}/>))}
+            </div>
+        </>)
 }
