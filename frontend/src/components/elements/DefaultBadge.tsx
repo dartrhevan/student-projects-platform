@@ -28,11 +28,11 @@ interface ProjectBadgeProp extends ListItemProps {
 export default function DefaultBadge({id, title, href}: ProjectBadgeProp) {
     const classes = useStyles();
     const dispatch = useDispatch();
-    const onClick = () => {
-        dispatch(openProjectMenuAction(id)); //TODO: change
-    };
+    // const onClick = () => {
+    //     dispatch(openProjectMenuAction(id)); //TODO: change
+    // };
     return (
-        <Card className={classes.root} onClick={onClick}>
+        <Card className={classes.root}>
             <CardActionArea className={classes.area} href={href as string}>
                 <CardContent>
                     <Centered>

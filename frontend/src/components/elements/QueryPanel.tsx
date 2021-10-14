@@ -7,6 +7,7 @@ import clsx from "clsx";
 import isMobile from "../../hooks/isMobile";
 import {useDispatch, useSelector} from "react-redux";
 import {openDialog} from "../../store/actions/dialog/dialog";
+import Typography from "@material-ui/core/Typography";
 
 const useStyles = makeStyles(theme => ({
     queryPanel: {
@@ -23,6 +24,9 @@ const useStyles = makeStyles(theme => ({
         maxHeight: '70%',
         width: '200px',
         flexShrink: 0
+    },
+    typ: {
+        margin: '10px'
     }
 }));
 
@@ -40,6 +44,7 @@ export default function QueryPanel() {
         {/*onChange={(newValue: Date | null) => setFromDate(newValue)}*/}
         {/*renderInput={(params: object) => <TextField {...params} />}/>*/}
 
+        <Typography className={classes.typ}>Enter tags to search:</Typography>
         <AddProject onSubmit={(ti, d, t, p) =>
             console.log(`title: ${ti} description: ${d} tags: ${t} participants: ${p}`)} title='Добавление нового проекта' />
         <TagsPanel onSetTag={s => {}} />

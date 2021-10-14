@@ -27,6 +27,7 @@ import {ListItemButton} from "@mui/material";
 import ListItemText from "@material-ui/core/ListItemText";
 import ListSubheader from "@material-ui/core/ListSubheader";
 import Card from "@material-ui/core/Card";
+import Autocomplete from "@mui/material/Autocomplete";
 
 const useStyles = makeStyles(theme => ({
     def: {
@@ -86,25 +87,43 @@ export default function Register() {
                     <Typography className={classes.def} align='center'>Add your skills</Typography>
                     <TagsPanel label='skill' tagInputClasses={[classes.tagInput]} onSetTag={console.log}/>
                 </div>
-                <List subheader={
-                    <ListSubheader component="div" id="nested-list-subheader">
-                        Choose your project roles
-                    </ListSubheader>
-                } className={clsx(classes.def, classes.skills)}>
-                    {roles.map(value =>
-                        (<ListItem key={value}>
-                                <ListItemButton role={undefined} dense>
-                                    <ListItemIcon>
-                                        <Checkbox
-                                            edge="start"
-                                            tabIndex={-1}
-                                            disableRipple />
-                                    </ListItemIcon>
-                                    <ListItemText id={value} primary={value}/>
-                                </ListItemButton>
-                            </ListItem>
-                        ))}
-                </List>
+                {/*<List subheader={*/}
+                {/*    <ListSubheader component="div" id="nested-list-subheader">*/}
+                {/*        Choose your project roles*/}
+                {/*    </ListSubheader>*/}
+                {/*} className={clsx(classes.def, classes.skills)}>*/}
+                {/*    {roles.map(value =>*/}
+                {/*        (<ListItem key={value}>*/}
+                {/*                <ListItemButton role={undefined} dense>*/}
+                {/*                    <ListItemIcon>*/}
+                {/*                        <Checkbox*/}
+                {/*                            edge="start"*/}
+                {/*                            tabIndex={-1}*/}
+                {/*                            disableRipple />*/}
+                {/*                    </ListItemIcon>*/}
+                {/*                    <ListItemText id={value} primary={value}/>*/}
+                {/*                </ListItemButton>*/}
+                {/*            </ListItem>*/}
+                {/*        ))}*/}
+                {/*</List>*/}
+                <Autocomplete
+                    multiple
+                    freeSolo
+                    onChange={(a, b: string[]) => {console.log(b)}}
+                    id="tags-standard"
+                    options={roles}
+                    // getOptionLabel={(option) => option.title}
+                    // defaultValue={[top100Films[13]]}
+                    fullWidth={true}
+                    renderInput={(params) => (
+                        <TextField
+                            {...params}
+                            variant="standard"
+                            label="Enter your roles"
+                            placeholder="Your roles"
+                        />
+                    )}
+                />
                 <TextField label="Password" className={classes.def} onChange={getOnFieldChange(setPassword)}
                            type="password" fullWidth={true}/>
                 <CssBaseline/>

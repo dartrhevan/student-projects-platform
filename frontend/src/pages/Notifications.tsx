@@ -4,6 +4,7 @@ import {Action, Query, QueryResult} from 'material-table';
 
 import Table from "../components/util/Table";
 import {Check, Clear} from "@material-ui/icons";
+import {Circle} from "@mui/icons-material";
 
 interface Row {
     new: boolean,
@@ -25,7 +26,8 @@ const tableColumns = [
     {
         title: 'Новые',
         field: "new",
-        filtering: false
+        filtering: false,
+        render: (row: Row) => row.new ? <Circle fontSize='small' alignmentBaseline="middle" sx={{margin: '0 20px', height: '15px', width: '15px'}} color='error' /> : <></>
     },
     {
         title: 'Дата',
@@ -59,7 +61,7 @@ export default function Notifications() {
         },
     ];
     const data = (query: Query<Row>) => new Promise<QueryResult<Row>>((res, rej) =>
-        res({data: [{new: true, date: '10/10//2021', text: 'Java'}], page: 0, totalCount: 1}));
+        res({data: [{new: true, date: '10/10//2021', text: 'Java'}, {new: false, date: '10/02/2021', text: 'Lay'}], page: 0, totalCount: 1}));
 
     return (<Table title='Уведомления' filtering={false} data={data} tableColumns={tableColumns} tableActions={tableActions}/>);
 }

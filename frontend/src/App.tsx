@@ -14,12 +14,8 @@ import setLoginAction from "./store/actions/auth/setLoginAction";
 import Users from "./pages/Users";
 import Notifications from "./pages/Notifications";
 import Workspaces from './pages/Workspaces';
-
-// const useStyles = makeStyles(theme => ({
-//     main: {
-//         width: '100%'
-//     }
-// }));
+import ProjectDetailedPage from "./pages/ProjectDetailedPage";
+import ProjectPlan from "./pages/ProjectPlan";
 
 function App() {
     // const dispatch = useDispatch();
@@ -40,6 +36,8 @@ function App() {
                         <Route component={Projects} path='/projects/:workspaceId/:workspaceTitle'/>
                         <Route component={Users} path='/users'/>
                         <Route component={Notifications} path='/notifications'/>
+                        <Route component={ProjectDetailedPage} path='/project'/>
+                        <Route component={ProjectPlan} path='/project_plan'/>
                         <Route component={Start} path='/'/>
                     </Switch>
                 </BrowserRouter>
