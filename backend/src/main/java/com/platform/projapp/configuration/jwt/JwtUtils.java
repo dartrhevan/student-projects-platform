@@ -1,9 +1,11 @@
 package com.platform.projapp.configuration.jwt;
 
-import com.platform.projapp.mock.UserMock;
+import com.platform.projapp.model.User;
+import com.platform.projapp.service.UserService;
 import io.jsonwebtoken.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -24,9 +26,24 @@ public class JwtUtils {
     @Value("${projapp.jwt.expiration}")
     private int jwtExpirationMs;
 
+    @Autowired
+    private UserService userService;
+
     public String generateJwtToken(Authentication authentication) {
 
-        UserDetails userPrincipal = (UserMock) authentication.getPrincipal();
+        UserDetails userPrincipal = (User) authentication.getPrincipal();
+
+        return Jwts.builder()
+                .setSubject((userPrincipal.getUsername()))
+                .setIssuedAt(new Date())
+                .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
+                .signWith(SignatureAlgorithm.HS512, jwtSecret)
+                .compact();
+    }
+
+    public String generateJwtTokenFromUsername(String username) {
+
+        UserDetails userPrincipal = userService.findByUserName(username);
 
         return Jwts.builder()
                 .setSubject((userPrincipal.getUsername()))
