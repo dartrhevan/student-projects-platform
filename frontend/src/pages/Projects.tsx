@@ -8,6 +8,7 @@ import ProjectQuery from "../model/dto/ProjectQuery";
 import Pageable from "../model/Pageable";
 import Project from "../model/Project";
 import getPaging from "../hooks/getPaging";
+import CheckBoxInfo from "../model/CheckBoxInfo";
 
 
 interface ProjectsParams {
@@ -17,7 +18,7 @@ interface ProjectsParams {
 
 export default function Projects() {
     const {workspaceId, workspaceTitle} = useParams<ProjectsParams>();
-    const {totalCount, pageSize, pageNumber} =  useSelector(getPaging, shallowEqual);
+    const {totalCount, pageSize, pageNumber} = useSelector(getPaging, shallowEqual);
     const [data, setData] = useState([] as Project[]);
     console.log("render Projects")
 
@@ -31,6 +32,11 @@ export default function Projects() {
             });
     }, [workspaceId, pageNumber, pageSize]);//TODO: call back here
 
-    return (<BadgePage title={`Проекты из ${workspaceTitle}`} badgeData={data}
+    function a(b: boolean) {
+        console.log(b);
+    }
+
+    return (<BadgePage checkBoxes={[new CheckBoxInfo('Показать только активные',a)]}
+                       title={`Проекты из "${workspaceTitle}"`} badgeData={data} squared={false}
                        href={i => `/project?projectId=${i}&workspaceId=${workspaceId}`}/>);
 }

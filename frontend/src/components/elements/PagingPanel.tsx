@@ -31,6 +31,7 @@ export default function PagingPanel() {
         page={pageNumber}
         onPageChange={handleChangePage}
         rowsPerPage={pageSize}
-        onChangeRowsPerPage={handleChangeRowsPerPage}
+        labelRowsPerPage='Кол-во отображаемых объектов'
+        onRowsPerPageChange={handleChangeRowsPerPage}
         count={totalCount}/>);
 }

@@ -1,5 +1,5 @@
-import UserLogin from "../model/UserLogin";
-import User from "../model/User";
+import UserProfile from "../model/UserProfile";
+import GenericResponse from "../model/dto/GenericResponse";
 
 /**
  * @return current username
@@ -9,10 +9,18 @@ export function getCurrentUser() {
 }
 
 /**
+ * @return current user profile
+ */
+export function getCurrentUserProfile() {
+    return new Promise<GenericResponse<UserProfile>>((res, rej) => res(new GenericResponse(new UserProfile(
+        'XXX', '', 'QWERTY', ['backend'], [])))); //TODO: implement
+}
+
+/**
  * @return current username
  */
-export function login(user: UserLogin) {
-    console.log(user);
+export function login(login: string, password: string) {
+    // console.log(user);
     return new Promise<string>((res, rej) => res("vovan")); //TODO: implement
 }
 
@@ -26,7 +34,15 @@ export function logout() {
 /**
  * @return current username
  */
-export function register(user: User) {
+export function register(user: UserProfile, password: string) {
+    console.log(user);
+    return new Promise<string>((res, rej) => res("vovan")); //TODO: implement
+}
+
+/**
+ * @return current username
+ */
+export function update(userId: string, user: UserProfile, password?: string, newPassword?: string) {
     console.log(user);
     return new Promise<string>((res, rej) => res("vovan")); //TODO: implement
 }

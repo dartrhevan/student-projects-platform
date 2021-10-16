@@ -72,7 +72,7 @@ export default function ProjectDetailedPage() {
                 <Typography variant='h4'>Проекта {project?.title}</Typography>
                 <TagsPanel onSetTag={() => {}} editable={false} values={project?.tags}/>
                 <Divider flexItem/>
-                <Typography className={classes.descr}>{project?.description}</Typography>
+                <Typography className={classes.descr}>{project?.fullDescription}</Typography>
                 <Divider flexItem/>
                 <List>
                     <List

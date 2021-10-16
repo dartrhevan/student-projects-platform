@@ -2,7 +2,6 @@ import React from 'react';
 import './App.css';
 import Header from "./components/elements/Header";
 import {BrowserRouter, Route, Switch} from 'react-router-dom';
-import Start from "./pages/Start";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Centered from "./components/util/Centered";
@@ -16,6 +15,7 @@ import Notifications from "./pages/Notifications";
 import Workspaces from './pages/Workspaces';
 import ProjectDetailedPage from "./pages/ProjectDetailedPage";
 import ProjectPlan from "./pages/ProjectPlan";
+import UserProfilePage from "./pages/UserProfilePage";
 
 function App() {
     // const dispatch = useDispatch();
@@ -32,13 +32,13 @@ function App() {
                     <Switch>
                         <Route component={Login} path='/authentication'/>
                         <Route component={Register} path='/registration'/>
-                        <Route component={Workspaces} path='/workspaces/:type'/>
                         <Route component={Projects} path='/projects/:workspaceId/:workspaceTitle'/>
                         <Route component={Users} path='/users'/>
                         <Route component={Notifications} path='/notifications'/>
                         <Route component={ProjectDetailedPage} path='/project'/>
                         <Route component={ProjectPlan} path='/project_plan'/>
-                        <Route component={Start} path='/'/>
+                        <Route component={UserProfilePage} path='/profile'/>
+                        <Route component={Workspaces} path='/'/>
                     </Switch>
                 </BrowserRouter>
             </Centered>

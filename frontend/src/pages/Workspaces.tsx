@@ -1,6 +1,7 @@
 import React from 'react';
 import {makeStyles} from "@material-ui/core";
 import BadgePage from "../components/elements/BadgePage";
+import CheckBoxInfo from "../model/CheckBoxInfo";
 
 
 const useStyles = makeStyles(theme => ({
@@ -24,7 +25,8 @@ export default function Projects() {
 
     console.log("render Projects")
 
-    return (<BadgePage title='Просмотр публичных рабочих пространств'
-                       badgeData={['A', 'B', 'C', 'D', 'E', 'F', 'A1', '1B', 'C1', 'D1', 'E1', '1F'].map(s => ({id: s}))}
-                       href={s => `/projects/${s}/${s}`} />);
+    return (<BadgePage
+        title='Просмотр публичных рабочих пространств'
+        badgeData={['A', 'B', 'C', 'D', 'E', 'F', 'A1', '1B', 'C1', 'D1', 'E1', '1F'].map(s => ({id: s, title: s}))}
+        href={s => `/projects/${s}/${s}`}/>);
 }

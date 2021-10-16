@@ -39,11 +39,11 @@ export default function LoginButton() {
             {username ?
                 (<>
                     <Typography variant="h6" className={classes.login}> {username}</Typography>
-                    <Button onClick={onLogout}>Log out</Button>
+                    <Button onClick={onLogout}>Выйти</Button>
                 </>) :
                 (<>
-                    <Button href='/registration'>Sign up</Button>
-                    <Button color="inherit" href='/authentication'>Login</Button>
+                    <Button href='/registration'>Регистрация</Button>
+                    <Button color="inherit" href='/authentication'>Войти</Button>
                 </>)}
         </>
     );

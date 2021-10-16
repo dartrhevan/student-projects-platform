@@ -88,7 +88,7 @@ export default function AddProject({onSubmit, title}: DialogProps) {
         <Dialog open={open} onClose={onCloseDialog}>
             <div className={classes.main}>
                 <Typography className={classes.but} variant='h6'>{title}</Typography>
-                <TextField className={classes.but} variant='outlined' label='Enter title' onChange={handleTitleChange}/>
+                <TextField className={classes.but} variant='outlined' label='Название' onChange={handleTitleChange}/>
                 <TextField className={classes.but} minRows={3} variant='outlined' label='Enter description'
                            multiline={true} onChange={handleDescriptionChange}/>
 

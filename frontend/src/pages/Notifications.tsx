@@ -5,6 +5,7 @@ import {Action, Query, QueryResult} from 'material-table';
 import Table from "../components/util/Table";
 import {Check, Clear} from "@material-ui/icons";
 import {Circle} from "@mui/icons-material";
+import Dot from "../components/util/Dot";
 
 interface Row {
     new: boolean,
@@ -27,7 +28,7 @@ const tableColumns = [
         title: 'Новые',
         field: "new",
         filtering: false,
-        render: (row: Row) => row.new ? <Circle fontSize='small' alignmentBaseline="middle" sx={{margin: '0 20px', height: '15px', width: '15px'}} color='error' /> : <></>
+        render: (row: Row) => row.new ? <Dot /> : <></>
     },
     {
         title: 'Дата',
