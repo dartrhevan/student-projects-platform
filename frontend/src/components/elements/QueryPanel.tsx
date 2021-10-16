@@ -18,7 +18,8 @@ const useStyles = makeStyles(theme => ({
         alignItems: 'baseline'
     },
     mobilePanel: {
-        flexDirection: 'column'
+        flexDirection: 'column',
+        alignItems: 'center'
     },
     addButton: {
         maxHeight: '70%',

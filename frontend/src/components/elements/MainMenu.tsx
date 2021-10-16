@@ -14,6 +14,7 @@ import {ArrowDownward, Person} from "@material-ui/icons";
 import isMobile from "../../hooks/isMobile";
 import FormatAlignJustifyIcon from '@mui/icons-material/FormatAlignJustify';
 import EmailIcon from '@mui/icons-material/Email';
+import getUsername from "../../hooks/getUsername";
 
 const drawerWidth = 240;
 
@@ -82,6 +83,9 @@ export default function MiniDrawer() {
         [classes.drawerHidden]: !open && mobile,
         [classes.drawerClose]: !(open || mobile),
     };
+
+    const login = useSelector(getUsername);
+
     return (
         <Drawer
             variant="permanent"
@@ -91,37 +95,21 @@ export default function MiniDrawer() {
             }}>
 
             <List className={classes.list}>
-                <ListItem button key={'Мои проекты'}>
+                <ListItem button key={'Мои проекты'} onClick={() => window.location.href = '/workspaces/public'}>
                     <ListItemIcon><Apps/></ListItemIcon>
-                    <ListItemText primary={'Мои проекты'}
-                                  onClick={() => window.location.href = '/workspaces/public'}/>
+                    <ListItemText primary={'Мои проекты'}/>
                 </ListItem>
-
-
-                <ListItem button key={'Моё портфолио'}>
+                <ListItem button key={'Моё портфолио'} onClick={() => window.location.href = `/portfolio/${login}`}>
                     <ListItemIcon><FormatAlignJustifyIcon/></ListItemIcon>
-                    <ListItemText primary={'Моё портфолио'}
-                                  onClick={() => window.location.href = '/workspaces/public'}/>
+                    <ListItemText primary={'Моё портфолио'}/>
                 </ListItem>
-                {/*<ListItem button key={'Workspaces private'}>*/}
-                {/*    <ListItemIcon><Apps/></ListItemIcon>*/}
-                {/*    <ListItemText primary={'Workspaces private'}*/}
-                {/*                  onClick={() => window.location.href = '/workspaces/private'}/>*/}
-                {/*</ListItem>*/}
-            {/*</List>*/}
-            {/*<Divider/>*/}
-            {/*<List>*/}
-                <ListItem button key={'Мой профиль'}>
+                <ListItem button key={'Мой профиль'} onClick={() => window.location.href = '/profile'}>
                     <ListItemIcon><Person/></ListItemIcon>
-                    <ListItemText primary={'Мой профиль'} onClick={() => window.location.href = '/profile'}/>
+                    <ListItemText primary={'Мой профиль'}/>
                 </ListItem>
-                {/*<ListItem button key={'Users'}>*/}
-                {/*    <ListItemIcon><Person/></ListItemIcon>*/}
-                {/*    <ListItemText primary={'Users'} onClick={() => window.location.href = '/users'}/>*/}
-                {/*</ListItem>*/}
-                <ListItem button key={'Уведомления'}>
+                <ListItem button key={'Уведомления'} onClick={() => window.location.href = '/notifications'}>
                     <ListItemIcon><EmailIcon/></ListItemIcon>
-                    <ListItemText primary={'Уведомления'} onClick={() => window.location.href = '/notifications'}/>
+                    <ListItemText primary={'Уведомления'}/>
                 </ListItem>
             </List>
         </Drawer>);

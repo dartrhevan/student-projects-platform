@@ -19,24 +19,26 @@ interface ProjectsParams {
 export default function Projects() {
     const {workspaceId, workspaceTitle} = useParams<ProjectsParams>();
     const {totalCount, pageSize, pageNumber} = useSelector(getPaging, shallowEqual);
+    const [activeOnly, setActiveOnly] = useState(false);
+
     const [data, setData] = useState([] as Project[]);
     console.log("render Projects")
 
     const dispatch = useDispatch();
 
     useEffect(() => {
-        getProjectsForWorkspace(new ProjectQuery([], new Pageable(pageNumber, pageSize), workspaceId))
+        getProjectsForWorkspace(new ProjectQuery([], new Pageable(pageNumber, pageSize), workspaceId, activeOnly))
             .then(r => {
                 setData(r.projects)
                 dispatch(initPaging(r.totalCount, pageSize, pageNumber))
             });
     }, [workspaceId, pageNumber, pageSize]);//TODO: call back here
 
-    function a(b: boolean) {
-        console.log(b);
-    }
+    // function a(b: boolean) {
+    //     console.log(b);
+    // }
 
-    return (<BadgePage checkBoxes={[new CheckBoxInfo('Показать только активные',a)]}
+    return (<BadgePage checkBoxes={[new CheckBoxInfo('Показать только активные', setActiveOnly)]}
                        title={`Проекты из "${workspaceTitle}"`} badgeData={data} squared={false}
                        href={i => `/project?projectId=${i}&workspaceId=${workspaceId}`}/>);
 }

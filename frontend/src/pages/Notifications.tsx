@@ -1,10 +1,8 @@
 import React from 'react';
-import {makeStyles, Typography} from "@material-ui/core";
 import {Action, Query, QueryResult} from 'material-table';
 
 import Table from "../components/util/Table";
 import {Check, Clear} from "@material-ui/icons";
-import {Circle} from "@mui/icons-material";
 import Dot from "../components/util/Dot";
 
 interface Row {
@@ -12,16 +10,6 @@ interface Row {
     date: string,
     text: string
 }
-
-const useStyles = makeStyles(theme => ({
-    main: {
-        // margin: "50px 0"
-    },
-    title: {
-        margin: '45px 0 10px 0'
-    }
-}));
-
 
 const tableColumns = [
     {
@@ -45,7 +33,6 @@ const tableColumns = [
 ];
 
 export default function Notifications() {
-    const classes = useStyles();
     const tableActions: Action<Row>[] = [
         {
             icon: () => <Check />,

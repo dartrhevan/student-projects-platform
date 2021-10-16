@@ -16,6 +16,7 @@ import Workspaces from './pages/Workspaces';
 import ProjectDetailedPage from "./pages/ProjectDetailedPage";
 import ProjectPlan from "./pages/ProjectPlan";
 import UserProfilePage from "./pages/UserProfilePage";
+import Portfolio from "./pages/Portfolio";
 
 function App() {
     // const dispatch = useDispatch();
@@ -38,6 +39,7 @@ function App() {
                         <Route component={ProjectDetailedPage} path='/project'/>
                         <Route component={ProjectPlan} path='/project_plan'/>
                         <Route component={UserProfilePage} path='/profile'/>
+                        <Route component={Portfolio} path='/portfolio/:login'/>
                         <Route component={Workspaces} path='/'/>
                     </Switch>
                 </BrowserRouter>

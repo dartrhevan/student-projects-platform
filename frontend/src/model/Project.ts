@@ -9,9 +9,9 @@ export enum ProjectRole {
 }
 
 export enum ProjectStatus {
-    NEW,
-    IN_PROGRESS,
-    ENDED
+    NEW = 'Новый',
+    IN_PROGRESS = "В разработке",
+    ENDED = "Завершён"
 }
 
 export default class Project implements IBadge {
