@@ -10,9 +10,9 @@ import java.util.List;
  */
 
 public class ErrorUtils {
-    public static List<ErrorInfo> getErrorInfoFromBindingResult(BindingResult bindingResult){
+    public static List<ErrorInfo> getErrorInfoFromBindingResult(BindingResult bindingResult) {
         List<ErrorInfo> errors = new ArrayList<>();
-        if (bindingResult.hasErrors()){
+        if (bindingResult.hasErrors()) {
             errors = bindingResult.getFieldErrors().stream()
                     .map(fieldError -> ErrorInfo.of(
                             fieldError.getField() + "Error",

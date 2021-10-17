@@ -1,12 +1,12 @@
 package com.platform.projapp.configuration.jwt;
 
 import com.platform.projapp.model.User;
+import com.platform.projapp.property.AppProperties;
 import com.platform.projapp.service.UserService;
 import io.jsonwebtoken.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -20,14 +20,14 @@ import java.util.Date;
 public class JwtUtils {
     private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
 
-    @Value("${projapp.jwt.secret}")
-    private String jwtSecret;
+    private final AppProperties appProperties;
 
-    @Value("${projapp.jwt.expiration}")
-    private int jwtExpirationMs;
+    private final UserService userService;
 
-    @Autowired
-    private UserService userService;
+    public JwtUtils(AppProperties appProperties, @Lazy UserService userService) {
+        this.appProperties = appProperties;
+        this.userService = userService;
+    }
 
     public String generateJwtToken(Authentication authentication) {
 
@@ -36,8 +36,8 @@ public class JwtUtils {
         return Jwts.builder()
                 .setSubject((userPrincipal.getUsername()))
                 .setIssuedAt(new Date())
-                .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
-                .signWith(SignatureAlgorithm.HS512, jwtSecret)
+                .setExpiration(new Date((new Date()).getTime() + appProperties.getJwt().getExpirationMs()))
+                .signWith(SignatureAlgorithm.HS512, appProperties.getJwt().getSecret())
                 .compact();
     }
 
@@ -48,18 +48,24 @@ public class JwtUtils {
         return Jwts.builder()
                 .setSubject((userPrincipal.getUsername()))
                 .setIssuedAt(new Date())
-                .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
-                .signWith(SignatureAlgorithm.HS512, jwtSecret)
+                .setExpiration(new Date((new Date()).getTime() + appProperties.getJwt().getExpirationMs()))
+                .signWith(SignatureAlgorithm.HS512, appProperties.getJwt().getSecret())
                 .compact();
     }
 
     public String getUserNameFromJwtToken(String token) {
-        return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody().getSubject();
+        return Jwts.parser()
+                .setSigningKey(appProperties.getJwt().getSecret())
+                .parseClaimsJws(token)
+                .getBody()
+                .getSubject();
     }
 
     public boolean validateJwtToken(String authToken) {
         try {
-            Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(authToken);
+            Jwts.parser()
+                    .setSigningKey(appProperties.getJwt().getSecret())
+                    .parseClaimsJws(authToken);
             return true;
         } catch (MalformedJwtException e) {
             logger.error("Invalid JWT token: {}", e.getMessage());

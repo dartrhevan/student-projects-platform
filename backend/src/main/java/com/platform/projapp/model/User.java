@@ -1,7 +1,10 @@
 package com.platform.projapp.model;
 
 import com.platform.projapp.enumarate.AccessRole;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -17,14 +20,14 @@ import java.util.Set;
 @ToString
 @NoArgsConstructor
 @Entity
-@Table(name="usr")
+@Table(name = "usr")
 public class User implements UserDetails {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @Column(unique = true)
     private Long id;
-
+    @Column(unique = true)
     private String login;
-    private String email;
     private String password;
     private String name;
     private String surname;
@@ -33,13 +36,12 @@ public class User implements UserDetails {
     private Integer reputation;
 
     @ElementCollection(targetClass = AccessRole.class, fetch = FetchType.EAGER)
-    @CollectionTable(name = "user_role",joinColumns = @JoinColumn(name="user_id"))
+    @CollectionTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"))
     @Enumerated(EnumType.STRING)
     private Set<AccessRole> accessRoles;
 
-    public User(String login, String email, String password, String name, String surname, String middleName, Set<AccessRole> accessRoles) {
+    public User(String login, String password, String name, String surname, String middleName, Set<AccessRole> accessRoles) {
         this.login = login;
-        this.email = email;
         this.password = password;
         this.name = name;
         this.surname = surname;

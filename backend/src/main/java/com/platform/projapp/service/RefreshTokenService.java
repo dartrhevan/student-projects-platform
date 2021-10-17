@@ -2,10 +2,9 @@ package com.platform.projapp.service;
 
 import com.platform.projapp.model.RefreshToken;
 import com.platform.projapp.model.User;
+import com.platform.projapp.property.AppProperties;
 import com.platform.projapp.repository.RefreshTokenRepository;
-import com.platform.projapp.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -15,15 +14,13 @@ import java.util.UUID;
  * @author Yarullin Renat
  */
 @Service
+@RequiredArgsConstructor
 public class RefreshTokenService {
-    @Value("${projapp.jwt.expirationRefresh}")
-    private Long refreshTokenExpiration;
 
-    @Autowired
-    private RefreshTokenRepository tokenRepository;
+    private final AppProperties appProperties;
 
-    @Autowired
-    private UserRepository userRepository;
+    private final RefreshTokenRepository tokenRepository;
+
 
     public RefreshToken findByToken(String token) {
         return tokenRepository.findByToken(token);
@@ -34,13 +31,13 @@ public class RefreshTokenService {
     }
 
     public RefreshToken createRefreshToken(User user) {
-        RefreshToken tokenByUser;
-        if ((tokenByUser = tokenRepository.findByUser(user)) != null) {
-            tokenRepository.delete(tokenByUser);
-        }
-        RefreshToken refreshToken = new RefreshToken(UUID.randomUUID().toString(),
-                Instant.now().plusMillis(refreshTokenExpiration),
-                user);
+        RefreshToken refreshToken;
+        String token = UUID.randomUUID().toString();
+        Instant expiryDate = Instant.now().plusMillis(appProperties.getJwt().getRefreshExpirationMs());
+        if ((refreshToken = findByUser(user)) != null) {
+            refreshToken.setToken(token);
+            refreshToken.setExpiryDate(expiryDate);
+        } else refreshToken = new RefreshToken(token, expiryDate, user);
         tokenRepository.save(refreshToken);
         return refreshToken;
     }

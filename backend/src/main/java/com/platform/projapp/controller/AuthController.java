@@ -16,7 +16,7 @@ import com.platform.projapp.model.User;
 import com.platform.projapp.repository.UserRepository;
 import com.platform.projapp.service.RefreshTokenService;
 import com.platform.projapp.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -39,16 +39,17 @@ import java.util.Optional;
  */
 @RestController
 @RequestMapping("/api/auth")
+@RequiredArgsConstructor
 public class AuthController {
-    @Autowired
+    final
     UserRepository userRepository;
-    @Autowired
+    final
     UserService userService;
-    @Autowired
+    final
     RefreshTokenService tokenService;
-    @Autowired
+    final
     JwtUtils jwtUtils;
-    @Autowired
+    final
     AuthenticationManager authenticationManager;
 
     @PostMapping("/signin")
@@ -80,17 +81,14 @@ public class AuthController {
         GeneralResponse<MessageResponseBody> response = new GeneralResponse<>();
 
         List<ErrorInfo> errors = new ArrayList<>();
-        if (userRepository.existsByEmail(registerRequest.getEmail())) {
-            errors.add(ErrorConstants.EMAIL_IS_BUSY);
-        }
         if (userRepository.existsByLogin(registerRequest.getLogin())) {
-            response = response.withErrors(List.of());
             errors.add(ErrorConstants.LOGIN_IS_BUSY);
         }
-        userService.addUser(registerRequest);
         errors.addAll(ErrorUtils.getErrorInfoFromBindingResult(bindingResult));
-        if (!errors.isEmpty()) response.withErrors(errors);
-        response = response.withPayload(new MessageResponseBody("Пользователь зарегистрирован успешно"));
+        if (errors.isEmpty()) {
+            userService.addUser(registerRequest);
+            response = response.withPayload(new MessageResponseBody("Пользователь зарегистрирован успешно"));
+        } else response.withErrors(errors);
         return ResponseEntity.ok().body(response);
     }
 

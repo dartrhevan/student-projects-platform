@@ -1,6 +1,9 @@
 package com.platform.projapp.model;
 
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.time.Instant;
@@ -11,14 +14,15 @@ import java.time.Instant;
 
 @Getter
 @Setter
-@ToString
+@ToString(exclude = {"user"})
 @NoArgsConstructor
 @Entity
 public class RefreshToken {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @Column(unique = true)
     private Long id;
-
+    @Column(unique = true)
     private String token;
     private Instant expiryDate;
 
