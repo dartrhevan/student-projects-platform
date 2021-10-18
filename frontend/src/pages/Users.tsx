@@ -1,14 +1,16 @@
 import React from 'react';
 import {makeStyles, Typography} from "@material-ui/core";
 import {Action, Query, QueryResult} from 'material-table';
-import { Person, PersonAdd,} from "@material-ui/icons";
+import {Person, PersonAdd,} from "@material-ui/icons";
 import Table from "../components/util/Table";
 
 interface Row {
     name: string,
     surname: string,
     roles: string,
-    skills: string
+    skills: string,
+    username: string,
+    reputation: string
 }
 
 const useStyles = makeStyles(theme => ({
@@ -43,19 +45,33 @@ const tableColumns = [
         title: 'Навыки',
         field: "skills",
         sorting: true,
+    },
+    {
+        title: 'Репутация',
+        field: "reputation",
+        sorting: true,
     }
 ];
 
 export default function Users() {
     const classes = useStyles();
     const data = (query: Query<Row>) => new Promise<QueryResult<Row>>((res, rej) =>
-        res({data: [{name: 'Vova', surname: 'Satunkin', roles: 'backend', skills: 'Java'}], page: 0, totalCount: 1}));
+        res({
+            data: [{
+                name: 'Vova',
+                surname: 'Satunkin',
+                roles: 'backend',
+                skills: 'Java',
+                reputation: '5',
+                username: 'me'
+            }], page: 0, totalCount: 1
+        }));
     const tableActions: Action<Row>[] = [
         {
             icon: () => <Person/>,
-            onClick: (event: React.EventHandler<any>, objectData: Row | Row[]) => {
-            },
-            tooltip: 'Просмотр профиля',
+            onClick: (event: React.EventHandler<any>, objectData: Row | Row[]) =>
+                window.location.href = `/portfolio/${(objectData as Row).username}`,
+            tooltip: 'Просмотр портфолио',
         },
         {
             icon: () => <PersonAdd/>,

@@ -41,16 +41,11 @@ import java.util.Optional;
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class AuthController {
-    final
-    UserRepository userRepository;
-    final
-    UserService userService;
-    final
-    RefreshTokenService tokenService;
-    final
-    JwtUtils jwtUtils;
-    final
-    AuthenticationManager authenticationManager;
+    private final UserRepository userRepository;
+    private final UserService userService;
+    private final RefreshTokenService tokenService;
+    private final JwtUtils jwtUtils;
+    private final AuthenticationManager authenticationManager;
 
     @PostMapping("/signin")
     public ResponseEntity<?> authUser(@RequestBody AuthRequest authRequest) {

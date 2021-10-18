@@ -1,0 +1,10 @@
+version: '2'
+services:
+  db:
+    image: postgres:12.3
+    environment:
+      - POSTGRES_USER=project_platform
+      - POSTGRES_PASSWORD=12345
+      - POSTGRES_HOST_AUTH_METHOD=trust
+    ports:
+      - 5432:5432

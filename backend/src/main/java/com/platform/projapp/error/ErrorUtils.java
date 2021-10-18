@@ -8,7 +8,6 @@ import java.util.List;
 /**
  * @author Yarullin Renat
  */
-
 public class ErrorUtils {
     public static List<ErrorInfo> getErrorInfoFromBindingResult(BindingResult bindingResult) {
         List<ErrorInfo> errors = new ArrayList<>();

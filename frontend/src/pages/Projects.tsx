@@ -1,6 +1,4 @@
 import React, {useEffect, useState} from 'react';
-import makeStyles from "@material-ui/core";
-import ProjectMenu from "../components/elements/ProjectMenu";
 import {useParams} from "react-router-dom";
 import BadgePage from "../components/elements/BadgePage";
 import {shallowEqual, useDispatch, useSelector} from "react-redux";
@@ -10,6 +8,7 @@ import ProjectQuery from "../model/dto/ProjectQuery";
 import Pageable from "../model/Pageable";
 import Project from "../model/Project";
 import getPaging from "../hooks/getPaging";
+import CheckBoxInfo from "../model/CheckBoxInfo";
 
 
 interface ProjectsParams {
@@ -18,23 +17,28 @@ interface ProjectsParams {
 }
 
 export default function Projects() {
-
     const {workspaceId, workspaceTitle} = useParams<ProjectsParams>();
-    const {totalCount, pageSize, pageNumber} =  useSelector(getPaging, shallowEqual);
+    const {totalCount, pageSize, pageNumber} = useSelector(getPaging, shallowEqual);
+    const [activeOnly, setActiveOnly] = useState(false);
+
     const [data, setData] = useState([] as Project[]);
     console.log("render Projects")
 
     const dispatch = useDispatch();
 
     useEffect(() => {
-        getProjectsForWorkspace(new ProjectQuery([], new Pageable(pageNumber, pageSize), workspaceId))
+        getProjectsForWorkspace(new ProjectQuery([], new Pageable(pageNumber, pageSize), workspaceId, activeOnly))
             .then(r => {
                 setData(r.projects)
-                dispatch(initPaging(pageSize, r.totalCount, pageNumber))
+                dispatch(initPaging(r.totalCount, pageSize, pageNumber))
             });
     }, [workspaceId, pageNumber, pageSize]);//TODO: call back here
-    return (<>
-            {/*<ProjectMenu/>*/}
-            <BadgePage title={`Проекты из ${workspaceTitle}`} badgeData={data} href={i => `/project?projectId=${i}&workspaceId=${workspaceId}`}/>
-        </>);
+
+    // function a(b: boolean) {
+    //     console.log(b);
+    // }
+
+    return (<BadgePage checkBoxes={[new CheckBoxInfo('Показать только активные', setActiveOnly)]}
+                       title={`Проекты из "${workspaceTitle}"`} badgeData={data} squared={false}
+                       href={i => `/project?projectId=${i}&workspaceId=${workspaceId}`}/>);
 }

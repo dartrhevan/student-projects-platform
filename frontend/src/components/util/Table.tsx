@@ -25,11 +25,12 @@ interface ITableProps<T extends object> {
     title: string
     data: (query: Query<T>) => Promise<QueryResult<T>>
     tableColumns: Column<T>[]
-    tableActions: Action<T>[]
+    tableActions?: Action<T>[]
     filtering?: boolean
+    paging?: boolean
 }
 
-export default function Table<T extends object>({title, data, tableColumns, tableActions, filtering = true}: ITableProps<T>) {
+export default function Table<T extends object>({title, data, tableColumns, tableActions, paging = true, filtering = true}: ITableProps<T>) {
     const classes = useStyles();
     const icons: Icons = {
         FirstPage: forwardRef((props, ref) => <FirstPage ref={ref}/>),
@@ -47,7 +48,7 @@ export default function Table<T extends object>({title, data, tableColumns, tabl
     };
     return (
         <>
-            <Typography className={classes.title} variant='h3'>Уведомления</Typography>
+            <Typography className={classes.title} variant='h3'>{title}</Typography>
 
             <MaterialTable
                 title={<Typography
@@ -60,6 +61,7 @@ export default function Table<T extends object>({title, data, tableColumns, tabl
                 actions={tableActions}
                 icons={icons}
                 options={{
+                    paging: paging,
                     pageSize: 10,
                     pageSizeOptions: [10, 20, 30],
                     debounceInterval: 500,

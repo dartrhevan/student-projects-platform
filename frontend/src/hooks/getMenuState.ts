@@ -9,4 +9,4 @@ interface IMenuState {
 
 export const getMainMenuOpen = createSelector((state: IMenuState) => state.menu, menu => menu.mainMenuOpen);
 
-export const getOpenedProjectId = createSelector((state: IMenuState) => state.menu, menu => menu.projectId);
+// export const getOpenedProjectId = createSelector((state: IMenuState) => state.menu, menu => menu.projectId);

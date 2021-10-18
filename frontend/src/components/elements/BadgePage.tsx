@@ -4,6 +4,9 @@ import QueryPanel from "./QueryPanel";
 import Centered from "../util/Centered";
 import DefaultBadge from "./DefaultBadge";
 import PagingPanel from "./PagingPanel";
+import {IBadge} from "../../props.common/ListItemProps";
+import CheckBoxGroup from "../util/CheckBoxGroup";
+import CheckBoxInfo from "../../model/CheckBoxInfo";
 
 const useStyles = makeStyles(theme => ({
     main: {
@@ -20,31 +23,32 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-interface IBadge {
-    id: string
-}
-
 interface BadgePageProps<T extends IBadge> {
     badgeData: T[]
     onBadgeClick?: ((badge: T) => void)
     href?: ((id: string) => string)
     title: string
+    squared?: boolean
+    checkBoxes?: CheckBoxInfo[]
 }
 
-export default function BadgePage<T extends  IBadge>({badgeData, onBadgeClick, title, href}: BadgePageProps<T>) {
+export default function BadgePage<T extends IBadge>({checkBoxes, badgeData, title, href, squared = true}: BadgePageProps<T>) {
     const classes = useStyles();
 
     console.log("render Projects")
-
     return (
         <>
             <Typography className={classes.title} variant='h3'>{title}</Typography>
-            <QueryPanel />
+            <QueryPanel/>
+            {checkBoxes ? <CheckBoxGroup checkBoxes={checkBoxes}/> : <></>}
             <Container>
                 <Centered row={true} additionalClasses={[classes.main]}>
-                    {badgeData.map(s => <DefaultBadge key={s.id} id={s.id} title={s.id} href={href ? href(s.id) : undefined} />)}
+                    {badgeData.map(s => <DefaultBadge key={s.id} description={s.description} squared={squared}
+                                                      tags={s.tags} id={s.id} title={s.title}
+                                                      label={s.label}
+                                                      href={href ? href(s.id) : undefined}/>)}
                 </Centered>
             </Container>
-            <PagingPanel />
+            <PagingPanel/>
         </>);
 }

@@ -1,10 +1,9 @@
 import React from 'react';
-import {makeStyles, Typography} from "@material-ui/core";
 import {Action, Query, QueryResult} from 'material-table';
 
 import Table from "../components/util/Table";
 import {Check, Clear} from "@material-ui/icons";
-import {Circle} from "@mui/icons-material";
+import Dot from "../components/util/Dot";
 
 interface Row {
     new: boolean,
@@ -12,22 +11,12 @@ interface Row {
     text: string
 }
 
-const useStyles = makeStyles(theme => ({
-    main: {
-        // margin: "50px 0"
-    },
-    title: {
-        margin: '45px 0 10px 0'
-    }
-}));
-
-
 const tableColumns = [
     {
         title: 'Новые',
         field: "new",
         filtering: false,
-        render: (row: Row) => row.new ? <Circle fontSize='small' alignmentBaseline="middle" sx={{margin: '0 20px', height: '15px', width: '15px'}} color='error' /> : <></>
+        render: (row: Row) => row.new ? <Dot /> : <></>
     },
     {
         title: 'Дата',
@@ -44,7 +33,6 @@ const tableColumns = [
 ];
 
 export default function Notifications() {
-    const classes = useStyles();
     const tableActions: Action<Row>[] = [
         {
             icon: () => <Check />,

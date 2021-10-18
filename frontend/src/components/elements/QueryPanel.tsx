@@ -18,7 +18,8 @@ const useStyles = makeStyles(theme => ({
         alignItems: 'baseline'
     },
     mobilePanel: {
-        flexDirection: 'column'
+        flexDirection: 'column',
+        alignItems: 'center'
     },
     addButton: {
         maxHeight: '70%',
@@ -34,7 +35,6 @@ export default function QueryPanel() {
     const classes = useStyles();
     const mobile = isMobile();
     const dispatch = useDispatch();
-    // const [openAddProjDialog, setOpenAddProjDialog] = useState(false);
     const [fromDate, setFromDate] = useState(null as Date | null);
 
     return (<Paper className={clsx({[classes.queryPanel]: true, [classes.mobilePanel]: mobile})}>
@@ -44,7 +44,7 @@ export default function QueryPanel() {
         {/*onChange={(newValue: Date | null) => setFromDate(newValue)}*/}
         {/*renderInput={(params: object) => <TextField {...params} />}/>*/}
 
-        <Typography className={classes.typ}>Enter tags to search:</Typography>
+        <Typography className={classes.typ}>Введите тэги для поиска:</Typography>
         <AddProject onSubmit={(ti, d, t, p) =>
             console.log(`title: ${ti} description: ${d} tags: ${t} participants: ${p}`)} title='Добавление нового проекта' />
         <TagsPanel onSetTag={s => {}} />

@@ -3,4 +3,4 @@ export default class PagingState {
     }
 }
 
-export const initState = new PagingState(0, 0, 0);
+export const initState = new PagingState(0, 10, 0);
