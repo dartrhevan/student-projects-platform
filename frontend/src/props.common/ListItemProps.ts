@@ -9,4 +9,5 @@ export interface IBadge {
     title: string
     description?: string
     tags?: Tag[]
+    label?: string
 }

@@ -36,7 +36,6 @@ export default function BadgePage<T extends IBadge>({checkBoxes, badgeData, titl
     const classes = useStyles();
 
     console.log("render Projects")
-//[{title: 'LALA', onChange: b => {}}]
     return (
         <>
             <Typography className={classes.title} variant='h3'>{title}</Typography>
@@ -46,6 +45,7 @@ export default function BadgePage<T extends IBadge>({checkBoxes, badgeData, titl
                 <Centered row={true} additionalClasses={[classes.main]}>
                     {badgeData.map(s => <DefaultBadge key={s.id} description={s.description} squared={squared}
                                                       tags={s.tags} id={s.id} title={s.title}
+                                                      label={s.label}
                                                       href={href ? href(s.id) : undefined}/>)}
                 </Centered>
             </Container>

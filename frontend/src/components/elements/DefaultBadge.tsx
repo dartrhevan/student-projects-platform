@@ -22,17 +22,26 @@ const useStyles = makeStyles(theme => ({
         height: '150px',
     },
     rectangle: {
-        width: '250px',
+        width: '300px',
         height: '200px',
+    },
+    description: {
+        flexGrow: 1
+    },
+    card: {
+        display: 'flex',
+        height: '80%',
+        flexGrow: 1,
+        flexDirection: 'column'
     }
 }));
 
 interface ProjectBadgeProp extends ListItemProps, IBadge {
     href?: string,
-    squared?: boolean
+    squared?: boolean,
 }
 
-export default function DefaultBadge({id, title, href, description, tags, squared = true}: ProjectBadgeProp) {
+export default function DefaultBadge({id, title, href, description, tags, label, squared = true}: ProjectBadgeProp) {
     const classes = useStyles();
     const dispatch = useDispatch();
     // const onClick = () => {
@@ -41,14 +50,15 @@ export default function DefaultBadge({id, title, href, description, tags, square
     return (
         <Card className={clsx({[classes.root]: true, [classes.squared]: squared, [classes.rectangle]: !squared})}>
             <CardActionArea className={classes.area} href={href as string}>
-                <CardContent>
-                    <Centered>
+                <CardContent className={classes.card}>
+                    <Centered className={classes.description}>
                         <Typography variant='h6'>{title}</Typography>
                         <br/>
-                        <Typography variant='subtitle2'>{description}</Typography>
+                        <Typography className={classes.description} variant='subtitle2'>{description}</Typography>
                         <br/>
                     </Centered>
                     {tags?.map(t => <Dot key={t.text} color={t.backgroundColor}/>)}
+                    <Typography variant='subtitle2' align='right'>{label}</Typography>
                 </CardContent>
             </CardActionArea>
         </Card>);

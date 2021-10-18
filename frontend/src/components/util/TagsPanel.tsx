@@ -13,9 +13,6 @@ const useStyles = makeStyles(theme => ({
         flexWrap: 'wrap',
         margin: "10px",
     },
-    chip: {
-        margin: '5px 10px',
-    },
     input: {
         margin: "10px",
         flexShrink: 0
@@ -74,8 +71,8 @@ export default function TagsPanel({onSetTag, label = 'tag', tagInputClasses = []
                                     value={tag} onChange={handleChange} onKeyPress={addTag}/>) : (<></>)}
 
             <div className={classes.chips}>
-                {tags.map(t => (<Chip label={t.text} key={t.text} variant="outlined" className={classes.chip}
-                                      sx={{backgroundColor: t.backgroundColor, color: t.fontColor}}
+                {tags.map(t => (<Chip label={t.text} key={t.text} variant="outlined"
+                                      sx={{backgroundColor: t.backgroundColor, color: t.fontColor, margin: '5px 10px'}}
                                       onDelete={editable ? () => handleDelete(t.text) : undefined}/>))}
             </div>
         </>)
