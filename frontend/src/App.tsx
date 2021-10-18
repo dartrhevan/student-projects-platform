@@ -23,7 +23,7 @@ function App() {
     console.log("render Start")
     // const classes = useStyles();
     const dispatch = useDispatch();
-    getCurrentUser().then(r => dispatch(setLoginAction(r))).catch(console.log); // TODO: may be move somewhere
+    // getCurrentUser().then(r => dispatch(setLoginAction(r))).catch(console.log); // TODO: may be move somewhere
     return (
         <>
             <Header/>

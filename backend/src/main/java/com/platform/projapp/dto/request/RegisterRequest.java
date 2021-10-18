@@ -11,11 +11,8 @@ import javax.validation.constraints.Size;
  * @author Yarullin Renat
  */
 @Data
-
 @AllArgsConstructor
-
 @NoArgsConstructor
-
 public class RegisterRequest {
     @NotBlank(message = "Поле login обязательно для заполнения")
     @Size(min = 4, message = "Поле login должно содержать не менее {min}")

@@ -1,5 +1,6 @@
 import UserProfile from "../model/UserProfile";
 import GenericResponse from "../model/dto/GenericResponse";
+import {Login, LoginState} from "../store/state/LoginState";
 
 /**
  * @return current username
@@ -21,7 +22,23 @@ export function getCurrentUserProfile() {
  */
 export function login(login: string, password: string) {
     // console.log(user);
-    return new Promise<string>((res, rej) => res("vovan")); //TODO: implement
+    return fetch('/api/auth/signin', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({login, password})
+    }).then(r => {
+        if (r.ok) {
+            return r.json();
+        } else {
+            // const obj = (r.json() as any);
+            throw "Error auth";
+        }
+    }).then((r: GenericResponse<Login>) => {
+        return r.success ? (alert(r.message), null) : r.payload;
+    }).catch(r => (alert(r), null));
+    // return new Promise<GenericResponse<LoginState>>((res, rej) => res("vovan")); //TODO: implement
 }
 
 /**

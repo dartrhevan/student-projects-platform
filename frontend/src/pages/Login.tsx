@@ -6,6 +6,7 @@ import {allNotEmpty, getOnFieldChange} from "../utils/utils";
 import {login} from "../api/auth";
 import {useDispatch} from "react-redux";
 import setLoginAction from "../store/actions/auth/setLoginAction";
+import {LoginState} from "../store/state/LoginState";
 
 const useStyles = makeStyles(theme => ({
     def: {
@@ -23,8 +24,10 @@ export default function Login() {
     const [password, setPassword] = useState('');
     const [username, setUsername] = useState('');
     const onLogin = () => login(username, password).then(r => {
-        dispatch(setLoginAction(r));
-        window.location.href = '/';
+        if (r !== null) {
+            dispatch(setLoginAction(r as LoginState));
+            window.location.href = '/';
+        }
     }).catch(alert); //TODO: implement correct catch
 
     const allFilled = allNotEmpty(username, password);
