@@ -1,5 +1,5 @@
 import React from 'react';
-import {logout} from '../../api/auth';
+// import {logout} from '../../api/auth';
 import {useDispatch, useSelector} from "react-redux";
 import getUsername from "../../hooks/getUsername";
 import {Button, makeStyles, Typography} from "@material-ui/core";
@@ -29,10 +29,10 @@ export default function LoginButton() {
     const dispatch = useDispatch();
     const username = useSelector(getUsername);
     const onLogout = () =>
-        logout().then(() => {
+        // logout().then(() => {
             dispatch(logoutAction());
             window.location.href = '/';
-        });
+        // });
 
     return (
         <>
