@@ -1,9 +1,15 @@
 import {StorageKeys} from "../../utils/StorageKeys";
-import {getUsername} from "../../api/auth";
+import {UserLogin} from "../../model/UserProfile";
 
-export default class LoginState {
-    constructor(public currentUsername: string | null) {
+export class Login {
+    constructor(public user: UserLogin, public accessToken: string, public refreshToken: string) {
     }
 }
 
-export const initState = new LoginState(sessionStorage.getItem(StorageKeys.Login));
+export type LoginState = Login | null;
+
+export const initState = sessionStorage.getItem(StorageKeys.Login) !== null ?
+    JSON.parse(<string>sessionStorage.getItem(StorageKeys.Login)) : null;
+/*new Login((sessionStorage.getItem(StorageKeys.Login) !== null) ?
+        JSON.parse(<string>sessionStorage.getItem(StorageKeys.Login)) : null,
+    sessionStorage.getItem(StorageKeys.AccessToken), sessionStorage.getItem(StorageKeys.RefreshToken));*/

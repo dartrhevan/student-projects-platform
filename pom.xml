@@ -34,8 +34,9 @@
                 <version>3.8.1</version>
                 <configuration>
                     <compilerVersion>1.3</compilerVersion>
-                    <target>${java.version}</target>
+                    <target>14</target>
                     <release>${java.version}</release>
+                    <source>14</source>
                 </configuration>
             </plugin>
         </plugins>

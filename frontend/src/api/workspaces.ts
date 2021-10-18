@@ -2,6 +2,7 @@ import Pageable from "../model/Pageable";
 import Workspace from "../model/Workspace";
 import CommonResponse from "../model/dto/CommonResponse";
 import Query from "../model/dto/Query";
+import {Role} from "../model/Role";
 
 export function getAllPublicWorkspaces(query: Query) {
     //TODO: implement
@@ -24,3 +25,8 @@ export function addNewWorkspace(workspace: Workspace) {
 }
 
 //TODO: change all!!!
+
+export function invitePerson(userId: string, role: Role) {
+    //TODO: implement
+    return new Promise<CommonResponse>((res, rej) => res(new CommonResponse()));
+}

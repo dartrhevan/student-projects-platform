@@ -1,8 +1,7 @@
-import React, {useEffect, useRef, useState} from 'react';
-import ClearIcon from '@mui/icons-material/Clear';
+import React, {useState} from 'react';
 import {
     Button,
-    Dialog, ListItemIcon,
+    Dialog,
     ListItemText,
     ListSubheader,
     makeStyles,
@@ -12,11 +11,12 @@ import {
 } from "@material-ui/core";
 import TagsPanel from "../util/TagsPanel";
 import clsx from "clsx";
-import {closeDialog, openDialog} from "../../store/actions/dialog/dialog";
+import {closeDialog} from "../../store/actions/dialog/dialog";
 import {useDispatch, useSelector} from "react-redux";
 import isOpenDialog from "../../hooks/isOpenDialog";
 import List from "@material-ui/core/List";
 import {ListItemButton} from "@mui/material";
+import Tag from "../../model/Tag";
 
 const useStyles = makeStyles(theme => ({
     main: {
@@ -50,7 +50,7 @@ interface DialogProps {
     // open: boolean
     title: string
 
-    onSubmit: ((title:string, description: string, t: string[], p: string[]) => void)
+    onSubmit: ((title:string, description: string, t: Tag[], p: string[]) => void)
 }
 
 export default function AddProject({onSubmit, title}: DialogProps) {
@@ -65,7 +65,7 @@ export default function AddProject({onSubmit, title}: DialogProps) {
     const [participants, setParticipants] = useState(['Vladimir', 'Rail', 'Nikita', 'Nikolay', 'Renat'] as string[]);
     const [newParticipant, setNewParticipant] = useState('');
     // const tagsRef = React.useRef<TagsPanel>(null);
-    const [tags, setTags] = useState([] as string[]);
+    const [tags, setTags] = useState([] as Tag[]);
     const [ptTitle, setTitle] = useState('');
     const [description, setDescription] = useState('');
 
@@ -88,7 +88,7 @@ export default function AddProject({onSubmit, title}: DialogProps) {
         <Dialog open={open} onClose={onCloseDialog}>
             <div className={classes.main}>
                 <Typography className={classes.but} variant='h6'>{title}</Typography>
-                <TextField className={classes.but} variant='outlined' label='Enter title' onChange={handleTitleChange}/>
+                <TextField className={classes.but} variant='outlined' label='Название' onChange={handleTitleChange}/>
                 <TextField className={classes.but} minRows={3} variant='outlined' label='Enter description'
                            multiline={true} onChange={handleDescriptionChange}/>
 

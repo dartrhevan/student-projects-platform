@@ -9,7 +9,14 @@ export function setPage(page: number) : Action<number> {
     };
 }
 
-export function initPaging(pageSize: number, totalCount: number, pageNumber: number = 0) : Action<PagingState> {
+export function setPageSize(pageSize: number) : Action<number> {
+    return {
+        type: ActionType.SetPageSize,
+        payload: pageSize
+    };
+}
+
+export function initPaging(totalCount: number, pageSize: number, pageNumber: number = 0) : Action<PagingState> {
     return {
         type: ActionType.InitPaging,
         payload: new PagingState(totalCount, pageSize, pageNumber)

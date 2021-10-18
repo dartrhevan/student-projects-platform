@@ -3,18 +3,18 @@ import clsx from 'clsx';
 import {createStyles, makeStyles, Theme} from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 import List from '@material-ui/core/List';
-import Divider from '@material-ui/core/Divider';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import InboxIcon from '@material-ui/icons/MoveToInbox';
-import MailIcon from '@material-ui/icons/Mail';
+import Apps from '@material-ui/icons/Apps';
 import {shallowEqual, useSelector} from "react-redux";
 import {getMainMenuOpen} from "../../hooks/getMenuState";
-import {Accordion, AccordionSummary, useMediaQuery} from "@material-ui/core";
-import {ArrowDownward} from "@material-ui/icons";
+import {ArrowDownward, Person} from "@material-ui/icons";
 import isMobile from "../../hooks/isMobile";
-// import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import FormatAlignJustifyIcon from '@mui/icons-material/FormatAlignJustify';
+import EmailIcon from '@mui/icons-material/Email';
+import getUsername from "../../hooks/getUsername";
 
 const drawerWidth = 240;
 
@@ -83,6 +83,9 @@ export default function MiniDrawer() {
         [classes.drawerHidden]: !open && mobile,
         [classes.drawerClose]: !(open || mobile),
     };
+
+    const login = useSelector(getUsername);
+
     return (
         <Drawer
             variant="permanent"
@@ -92,30 +95,22 @@ export default function MiniDrawer() {
             }}>
 
             <List className={classes.list}>
-                <ListItem button key={'Workspaces public'}>
-                    <ListItemIcon><InboxIcon/></ListItemIcon>
-                    <ListItemText primary={'Workspaces public'}
-                                  onClick={() => window.location.href = '/workspaces/public'}/>
+                <ListItem button key={'Мои проекты'} onClick={() => window.location.href = '/workspaces/public'}>
+                    <ListItemIcon><Apps/></ListItemIcon>
+                    <ListItemText primary={'Мои проекты'}/>
                 </ListItem>
-
-                <ListItem button key={'Workspaces private'}>
-                    <ListItemIcon><InboxIcon/></ListItemIcon>
-                    <ListItemText primary={'Workspaces private'}
-                                  onClick={() => window.location.href = '/workspaces/private'}/>
+                <ListItem button key={'Моё портфолио'} onClick={() => window.location.href = `/portfolio/${login}`}>
+                    <ListItemIcon><FormatAlignJustifyIcon/></ListItemIcon>
+                    <ListItemText primary={'Моё портфолио'}/>
                 </ListItem>
-            </List>
-            <Divider/>
-            <List>
-                {/*{[''Users, 'Trash', 'Spam'].map((text, index) => (*/}
-                <ListItem button key={'Users'}>
-                    <ListItemIcon><MailIcon/></ListItemIcon>
-                    <ListItemText primary={'Users'} onClick={() => window.location.href = '/users'}/>
+                <ListItem button key={'Мой профиль'} onClick={() => window.location.href = '/profile'}>
+                    <ListItemIcon><Person/></ListItemIcon>
+                    <ListItemText primary={'Мой профиль'}/>
                 </ListItem>
-                <ListItem button key={'Notifications'}>
-                    <ListItemIcon><MailIcon/></ListItemIcon>
-                    <ListItemText primary={'Notifications'} onClick={() => window.location.href = '/notifications'}/>
+                <ListItem button key={'Уведомления'} onClick={() => window.location.href = '/notifications'}>
+                    <ListItemIcon><EmailIcon/></ListItemIcon>
+                    <ListItemText primary={'Уведомления'}/>
                 </ListItem>
-                {/*))}*/}
             </List>
         </Drawer>);
 }
