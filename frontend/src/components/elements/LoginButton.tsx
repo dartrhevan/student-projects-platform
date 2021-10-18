@@ -30,9 +30,11 @@ export default function LoginButton() {
     const username = useSelector(getUsername);
     const onLogout = () =>
         // logout().then(() => {
-            dispatch(logoutAction());
-            window.location.href = '/';
-        // });
+    {
+        dispatch(logoutAction());
+        window.location.href = '/';
+    };
+    // });
 
     return (
         <>
