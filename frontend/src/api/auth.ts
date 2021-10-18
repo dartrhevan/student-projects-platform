@@ -53,7 +53,27 @@ export function logout() {
  */
 export function register(user: UserProfile, password: string) {
     console.log(user);
-    return new Promise<string>((res, rej) => res("vovan")); //TODO: implement
+    return fetch('/api/auth/signup', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            login: user.username,
+            name: user.name,
+            surname: user.surname,
+            password
+        })
+    }).then(r => {
+        if (r.ok) {
+            return r.json();
+        } else {
+            // const obj = (r.json() as any);
+            throw "Error auth";
+        }
+    }).then((r: GenericResponse<Login>) => {
+        return r.success ? (alert(r.message), null) : r.payload;
+    }).catch(r => (alert(r), null));//new Promise<string>((res, rej) => res("vovan")); //TODO: implement
 }
 
 /**

@@ -38,7 +38,9 @@ export default function LoginButton() {
         <>
             {username ?
                 (<>
-                    <Typography variant="h6" className={classes.login}> {username.user.username}</Typography>
+                    <Typography variant="h6" className={classes.login}>
+                        {username.user.name + ' ' + username.user.surname}
+                    </Typography>
                     <Button onClick={onLogout}>Выйти</Button>
                 </>) :
                 (<>
