@@ -7,3 +7,18 @@ spring:
   web:
     resources:
       static-locations: classpath:./static #frontend/build
+  datasource:
+    url: ------------
+    username: ----------
+    password: -------
+  jpa:
+    generate-ddl: true
+    show-sql: true
+    hibernate:
+      ddl-auto: create
+
+app:
+  jwt:
+    secret: ProjAppRenSecretCode
+    expirationMs: 30000
+    refreshExpirationMs: 60000
