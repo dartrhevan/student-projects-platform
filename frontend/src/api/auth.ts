@@ -44,7 +44,11 @@ export function login(login: string, password: string) {
 /**
  * @return nothing
  */
-export function logout() {
+// export function logout() {
+//     return new Promise<string>((res, rej) => res('')); //TODO: implement
+// }
+
+export function refreshToken() {
     return new Promise<string>((res, rej) => res('')); //TODO: implement
 }
 
