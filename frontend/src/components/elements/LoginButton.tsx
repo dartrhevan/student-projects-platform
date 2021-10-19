@@ -21,6 +21,9 @@ const useStyles = makeStyles(theme => ({
     },
     bar: {
         colorDefault: "#cbcbcb"
+    },
+    button: {
+        wordBreak: 'break-word'
     }
 }));
 
@@ -41,13 +44,13 @@ export default function LoginButton() {
             {username ?
                 (<>
                     <Typography variant="h6" className={classes.login}>
-                        {username.user.name + ' ' + username.user.surname}
+                        {username?.user?.name + ' ' + username?.user?.surname}
                     </Typography>
                     <Button onClick={onLogout}>Выйти</Button>
                 </>) :
                 (<>
-                    <Button href='/registration'>Регистрация</Button>
-                    <Button color="inherit" href='/authentication'>Войти</Button>
+                    <Button className={classes.button} href='/registration'>Регистрация</Button>
+                    <Button className={classes.button} color="inherit" href='/authentication'>Войти</Button>
                 </>)}
         </>
     );

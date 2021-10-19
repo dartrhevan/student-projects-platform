@@ -6,7 +6,7 @@ export class UserLogin {
 
 export default class UserProfile extends UserLogin {
     constructor(public name: string, public surname: string, public username: string,
-                public roles: string[], public skills: Tag[]) {
+                public comment: string, public roles: string[], public skills: Tag[]) {
         super(name, surname, username);
     }
 }

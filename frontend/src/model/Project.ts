@@ -14,9 +14,15 @@ export enum ProjectStatus {
     ENDED = "Завершён"
 }
 
+const labelColors = new Map<ProjectStatus, string>();
+labelColors.set(ProjectStatus.ENDED, 'red');
+labelColors.set(ProjectStatus.IN_PROGRESS, '#e7540c');
+labelColors.set(ProjectStatus.NEW, 'green');
+
 export default class Project implements IBadge {
     constructor(public id: string, public workSpaceId: string, public title: string, public description: string,
-                public tags: Tag[], status = ProjectStatus.NEW, public label: string = status) {
+                public tags: Tag[], status = ProjectStatus.NEW,
+                public label: string = status, public labelColor = labelColors.get(status) as string) {
     }
 }
 

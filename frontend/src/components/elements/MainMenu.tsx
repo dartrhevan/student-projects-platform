@@ -6,11 +6,10 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import InboxIcon from '@material-ui/icons/MoveToInbox';
 import Apps from '@material-ui/icons/Apps';
 import {shallowEqual, useSelector} from "react-redux";
 import {getMainMenuOpen} from "../../hooks/getMenuState";
-import {ArrowDownward, Person} from "@material-ui/icons";
+import {Person} from "@material-ui/icons";
 import isMobile from "../../hooks/isMobile";
 import FormatAlignJustifyIcon from '@mui/icons-material/FormatAlignJustify';
 import EmailIcon from '@mui/icons-material/Email';
@@ -95,7 +94,7 @@ export default function MiniDrawer() {
             }}>
 
             <List className={classes.list}>
-                <ListItem button key={'Мои проекты'} onClick={() => window.location.href = '/workspaces/public'}>
+                <ListItem button key={'Мои проекты'} onClick={() => window.location.href = '/projects'}>
                     <ListItemIcon><Apps/></ListItemIcon>
                     <ListItemText primary={'Мои проекты'}/>
                 </ListItem>

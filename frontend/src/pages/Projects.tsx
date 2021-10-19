@@ -16,6 +16,10 @@ interface ProjectsParams {
     workspaceTitle: string
 }
 
+interface ProjectProps {
+    user?: boolean
+}
+
 export default function Projects() {
     const {workspaceId, workspaceTitle} = useParams<ProjectsParams>();
     const {totalCount, pageSize, pageNumber} = useSelector(getPaging, shallowEqual);
