@@ -85,7 +85,7 @@ export default function UserProfileComponent({user, title}: UserProfileProps) {
     const onRegister = () => register(new UserProfile(name as string, surname as string,
         username as string, comment, roles, []), password as string)
         .then(r => {//TODO: extract common part from login
-            //dispatch(setLoginAction(r));
+            dispatch(setLoginAction(r));
             window.location.href = '/';
         }).catch(alert); //TODO: implement correct catch;
 

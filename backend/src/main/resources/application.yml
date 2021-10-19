@@ -13,12 +13,12 @@ spring:
     password: ${DB_PASS:12345}
   jpa:
     generate-ddl: true
-    show-sql: true
+    show-sql: false
     hibernate:
       ddl-auto: update
 
 app:
   jwt:
-    secret: ProjAppRenSecretCode
+    secret: ${JWT_SECRET:ProjAppRenSecretCode}
     expirationMs: 30000
     refreshExpirationMs: 60000

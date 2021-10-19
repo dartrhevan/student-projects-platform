@@ -4,6 +4,7 @@ import {Action, Query, QueryResult} from 'material-table';
 import Table from "../components/util/Table";
 import {Check, Clear} from "@material-ui/icons";
 import Dot from "../components/util/Dot";
+import Checkbox from '@mui/material/Checkbox';
 
 interface Row {
     new: boolean,
@@ -16,7 +17,8 @@ const tableColumns = [
         title: 'Новые',
         field: "new",
         filtering: false,
-        render: (row: Row) => row.new ? <Dot /> : <></>
+        render: (row: Row) =>
+            <Checkbox sx={{height: '40px', width: '40px'}} icon={<></>} checked={row.new} checkedIcon={<Dot />}/>
     },
     {
         title: 'Дата',
