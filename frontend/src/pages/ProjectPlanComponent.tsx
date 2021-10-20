@@ -1,14 +1,22 @@
 import React, {useEffect, useState} from 'react';
 import {useParams} from "react-router-dom";
 import {shallowEqual, useDispatch, useSelector} from "react-redux";
-import AdapterDateFns from '@mui/lab/AdapterDateFns';
+import ArrowForwardIosSharpIcon from '@mui/icons-material/ArrowForwardIosSharp';
 import {makeStyles, Typography} from "@material-ui/core";
 import Sprint, {ProjectPlan} from "../model/Sprint";
-import {getProjectPlan} from "../api/projectPlan";
+import {addSprint, getProjectPlan} from "../api/projectPlan";
+import AddIcon from '@mui/icons-material/Add';
 import ListItemProps from "../props.common/ListItemProps";
-import {Accordion, AccordionDetails, AccordionSummary, FormControlLabel, Paper, TextField} from "@mui/material";
-import {DatePicker, LocalizationProvider} from "@mui/lab";
-
+import {
+    Accordion,
+    AccordionDetails,
+    AccordionSummary,
+    Button,
+    Card, CardActionArea, CardContent,
+    FormControlLabel,
+    Paper,
+    TextField
+} from "@mui/material";
 
 const useStyles = makeStyles(theme => ({
     paper: {
@@ -20,7 +28,14 @@ const useStyles = makeStyles(theme => ({
             width: '100%'
         }
     },
-    title: {}
+    label: {
+        margin: '10px'
+    },
+    card: {
+        display: "flex",
+        justifyContent: 'center',
+        alignItems: 'center'
+    }
 }));
 
 interface ProjectParams {
@@ -31,46 +46,34 @@ interface ProjectParams {
 interface SprintProps extends ListItemProps {
     sprint: Sprint
     number: number
-    editable?: boolean
+    editable: boolean
 }
 
-const SprintComponent = ({sprint, number, editable = false}: SprintProps) => (
-    <Accordion /*expanded={expanded === 'panel1'} onChange={handleChange('panel1')}*/>
-        <AccordionSummary aria-controls="panel1d-content" id="panel1d-header">
-            <Typography>Спринт {number}</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-            <Typography paragraph variant='h6'>Цели спринта</Typography>
-            <TextField disabled={!editable} multiline minRows={5} variant='outlined' fullWidth
-                       defaultValue={sprint.goalsDescription}/>
-            <FormControlLabel label='Начало спринта' control={
-                <DatePicker
-                    disableFuture
-                    // label="Начало спринта"
-                    openTo="day"
-                    views={['year', 'month', 'day']}
-                    value={sprint.startDate}
-                    onChange={(newValue) => {
-                        // setValue(newValue);
-                    }}
-                    renderInput={(params) => <TextField {...params} />}
-                />}
-            />
-            <FormControlLabel label='Окончание спринта' control={
-                <DatePicker
-                    disableFuture
-                    // label="Начало спринта"
-                    openTo="day"
-                    views={['year', 'month', 'day']}
-                    value={sprint.endDate}
-                    onChange={(newValue) => {
-                        // setValue(newValue);
-                    }}
-                    renderInput={(params) => <TextField {...params} />}
-                />}
-            />
-        </AccordionDetails>
-    </Accordion>);
+const SprintComponent = ({sprint, number, editable}: SprintProps) => {
+    const classes = useStyles();
+
+    return (
+        <Accordion>
+            <AccordionSummary
+                expandIcon={<ArrowForwardIosSharpIcon sx={{fontSize: '0.9rem', transform: 'rotate(90deg)'}}/>}>
+                <Typography>Спринт {number}</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+                <Typography paragraph variant='h6'>Цели спринта</Typography>
+                <TextField disabled={!editable} multiline minRows={5} variant='outlined' fullWidth
+                           defaultValue={sprint.goalsDescription} className={classes.label}/>
+                <Typography className={classes.label}>Начало спринта</Typography>
+                <TextField disabled={!editable} type='date' defaultValue={sprint.endDate.toISOString().slice(0, 10)}/>
+                <br/>
+                <Typography className={classes.label}>Окончание спринта</Typography>
+                <TextField disabled={!editable} type='date' defaultValue={sprint.endDate.toISOString().slice(0, 10)}/>
+                <div className={classes.label}>
+                    <Button>Удалить</Button>
+                    {editable ? <Button>Подтвердить изменения</Button> : <></>}
+                </div>
+            </AccordionDetails>
+        </Accordion>);
+};
 
 export default function ProjectPlanComponent() {
 
@@ -87,13 +90,27 @@ export default function ProjectPlanComponent() {
         getProjectPlan(projectId, workspaceId).then(r => setProjectPlan(r.payload));
     }, [projectId, workspaceId]);
 
+    function addNewSprint() {
+        const sprint = new Sprint();
+        addSprint(projectId, workspaceId, sprint)
+            .then(r => {
+                projectPlan?.plan.push(sprint);
+                setProjectPlan(new ProjectPlan(projectPlan?.projectTitle as string,
+                    projectPlan?.plan as Sprint[])); //TODO: rewrite for null-safe
+            });
+    }
+
     return (
         <Paper className={classes.paper}>
             <Typography align='center' paragraph variant='h4'>План проекта {}</Typography>
             <br/>
-
-            <LocalizationProvider dateAdapter={AdapterDateFns}>
-                {projectPlan?.plan.map((s, i) => <SprintComponent sprint={s} number={i} key={s.goalsDescription}/>)}
-            </LocalizationProvider>
+            {projectPlan?.plan.map((s, i) => <SprintComponent editable={projectPlan.owner} sprint={s} number={i} key={s.goalsDescription}/>)}
+            <Card sx={{margin: '30px 0'}} onClick={addNewSprint}>
+                <CardActionArea>
+                    <CardContent sx={{padding: '5px'}} className={classes.card}>
+                        <AddIcon fontSize='large' color='action'/>
+                    </CardContent>
+                </CardActionArea>
+            </Card>
         </Paper>);
 }

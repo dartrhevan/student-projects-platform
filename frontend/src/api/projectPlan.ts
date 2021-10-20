@@ -11,7 +11,15 @@ import CommonResponse from "../model/dto/CommonResponse";
 export function getProjectPlan(projectId: string, workspaceId: string) {//TODO: implement
     return new Promise<GenericResponse<ProjectPlan>>((res, rej) => res(
         new GenericResponse(new ProjectPlan('My project',
-            [new Sprint(new Date(), new Date(), 'To start', 'Excellent')]))));
+            [new Sprint('1', new Date(), new Date(), 'To start', 'Excellent')]))));
+}
+
+/**
+ *
+ * @param sprintId
+ */
+export function removeSprint(sprintId: string) {
+    return new Promise<CommonResponse>(resolve => resolve(new CommonResponse())); //TODO: implement
 }
 
 /**
