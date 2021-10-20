@@ -10,7 +10,8 @@ interface Row {
     roles: string,
     skills: string,
     username: string,
-    reputation: string
+    reputation: string,
+    interests: string
 }
 
 const useStyles = makeStyles(theme => ({
@@ -28,23 +29,29 @@ const tableColumns = [
         title: 'Имя',
         field: "name",
         sorting: false,
-        filtering: false
+        // filtering: false
     },
     {
         title: 'Фамилимя',
         field: "surname",
         sorting: false,
-        filtering: false
+        // filtering: false
     },
     {
         title: 'Роли',
         field: "roles",
-        sorting: true,
+        sorting: false,
     },
     {
         title: 'Навыки',
         field: "skills",
-        sorting: true,
+        sorting: false,
+    },
+    {
+        title: 'Интересы',
+        field: "interests",
+        sorting: false,
+        filtering: false
     },
     {
         title: 'Репутация',
@@ -55,7 +62,9 @@ const tableColumns = [
 
 export default function Users() {
     const classes = useStyles();
-    const data = (query: Query<Row>) => new Promise<QueryResult<Row>>((res, rej) =>
+    const data = (query: Query<Row>) => new Promise<QueryResult<Row>>((res, rej) => {
+        console.log(`query`);
+        console.log(query);
         res({
             data: [{
                 name: 'Vova',
@@ -63,9 +72,11 @@ export default function Users() {
                 roles: 'backend',
                 skills: 'Java',
                 reputation: '5',
-                username: 'me'
+                username: 'me',
+                interests: 'Programming Programming Programming Programming Programming\nProgramming Programming Programming Programming Programming Programming Programming Programming Programming\nProgramming Programming Programming Programming'
             }], page: 0, totalCount: 1
-        }));
+        });
+    });
     const tableActions: Action<Row>[] = [
         {
             icon: () => <Person/>,

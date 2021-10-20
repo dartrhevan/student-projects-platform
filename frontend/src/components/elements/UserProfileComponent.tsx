@@ -71,6 +71,7 @@ export default function UserProfileComponent({user, title}: UserProfileProps) {
     }, [user]);
     const [password, setPassword] = useState('');
     const [passwordConfirm, setPasswordConfirm] = useState('');
+    const [comment, setComment] = useState('');
     const passwordConfirmed = password === passwordConfirm;
     const rolesReference = ['front', 'back', 'devops', 'test', 'analytic']; //TODO: get from backend
     const [roles, setRoles] = useState([] as string[]);
@@ -82,9 +83,9 @@ export default function UserProfileComponent({user, title}: UserProfileProps) {
     console.log(name);
     const dispatch = useDispatch();
     const onRegister = () => register(new UserProfile(name as string, surname as string,
-        username as string, roles, []), password as string)
+        username as string, comment, roles, []), password as string)
         .then(r => {//TODO: extract common part from login
-            //dispatch(setLoginAction(r));
+            dispatch(setLoginAction(r));
             window.location.href = '/';
         }).catch(alert); //TODO: implement correct catch;
 
@@ -110,6 +111,8 @@ export default function UserProfileComponent({user, title}: UserProfileProps) {
                 <TextField label="Логин" value={username} className={classes.def}
                            onChange={getOnFieldChange(setUsername)}
                            fullWidth={true}/>
+                <TextField label='Кратко опишите ваши интерересы' multiline={true}
+                           className={classes.def} onChange={getOnFieldChange(setComment)} fullWidth={true}/>
                 <CssBaseline/>
                 <div className={clsx(classes.def, classes.skills)}>
                     <Typography className={classes.def} align='center'>Введи ваши навыки</Typography>

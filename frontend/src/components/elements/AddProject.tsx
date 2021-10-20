@@ -107,7 +107,7 @@ export default function AddProject({onSubmit, title}: DialogProps) {
                             </ListSubheader>
                         }>
                         {participants.map(p => (
-                            <ListItemButton>
+                            <ListItemButton key={p}>
                                 {/*<ListItemIcon>*/}
                                 {/*    <ClearIcon />*/}
                                 {/*</ListItemIcon>*/}
@@ -121,8 +121,8 @@ export default function AddProject({onSubmit, title}: DialogProps) {
                 </Paper>
 
                 <div className={classes.buts}>
-                    <Button className={classes.but} onClick={submit}>Submit</Button>
-                    <Button className={classes.but} onClick={onCloseDialog}>Cancel</Button>
+                    <Button className={classes.but} onClick={submit}>Подтвердить</Button>
+                    <Button className={classes.but} onClick={onCloseDialog}>Отменить</Button>
                 </div>
             </div>
         </Dialog>

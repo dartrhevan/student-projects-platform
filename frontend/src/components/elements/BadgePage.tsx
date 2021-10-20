@@ -45,7 +45,7 @@ export default function BadgePage<T extends IBadge>({checkBoxes, badgeData, titl
                 <Centered row={true} additionalClasses={[classes.main]}>
                     {badgeData.map(s => <DefaultBadge key={s.id} description={s.description} squared={squared}
                                                       tags={s.tags} id={s.id} title={s.title}
-                                                      label={s.label}
+                                                      label={s.label} labelColor={s.labelColor}
                                                       href={href ? href(s.id) : undefined}/>)}
                 </Centered>
             </Container>

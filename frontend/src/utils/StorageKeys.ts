@@ -1,5 +1,5 @@
 export enum StorageKeys {
     Login = 'login',
-    // AccessToken = 'accessToken',
-    // RefreshToken = 'refreshToken'
+    AccessToken = 'accessToken',
+    RefreshToken = 'refreshToken'
 }

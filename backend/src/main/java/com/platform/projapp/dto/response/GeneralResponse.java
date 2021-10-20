@@ -17,12 +17,17 @@ public class GeneralResponse<T> {
     private List<ErrorInfo> errors;
     private T payload;
 
-    public GeneralResponse<T> withErrors(List<ErrorInfo> errors){
+    public GeneralResponse<T> withErrors(List<ErrorInfo> errors) {
         this.errors = errors;
         return this;
     }
-    public GeneralResponse<T> withPayload(T payload){
+
+    public GeneralResponse<T> withPayload(T payload) {
         this.payload = payload;
         return this;
+    }
+
+    public boolean success() {
+        return payload != null;
     }
 }

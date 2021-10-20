@@ -14,7 +14,7 @@ export function getCurrentUser() {
  */
 export function getCurrentUserProfile() {
     return new Promise<GenericResponse<UserProfile>>((res, rej) => res(new GenericResponse(new UserProfile(
-        'XXX', '', 'QWERTY', ['backend'], [])))); //TODO: implement
+        'XXX', '', 'QWERTY', '', ['backend'], [])))); //TODO: implement
 }
 
 /**

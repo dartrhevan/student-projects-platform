@@ -10,4 +10,5 @@ export interface IBadge {
     description?: string
     tags?: Tag[]
     label?: string
+    labelColor?: string
 }

@@ -41,7 +41,7 @@ interface ProjectBadgeProp extends ListItemProps, IBadge {
     squared?: boolean,
 }
 
-export default function DefaultBadge({id, title, href, description, tags, label, squared = true}: ProjectBadgeProp) {
+export default function DefaultBadge({id, title, href, description, tags, label, labelColor, squared = true}: ProjectBadgeProp) {
     const classes = useStyles();
     const dispatch = useDispatch();
     // const onClick = () => {
@@ -58,7 +58,7 @@ export default function DefaultBadge({id, title, href, description, tags, label,
                         <br/>
                     </Centered>
                     {tags?.map(t => <Dot key={t.text} color={t.backgroundColor}/>)}
-                    <Typography variant='subtitle2' align='right'>{label}</Typography>
+                    <Typography sx={{color: labelColor}} variant='subtitle2' align='right'>{label}</Typography>
                 </CardContent>
             </CardActionArea>
         </Card>);
