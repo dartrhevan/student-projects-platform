@@ -7,16 +7,14 @@ import Register from "./pages/Register";
 import Centered from "./components/util/Centered";
 import MainMenu from './components/elements/MainMenu';
 import Projects from "./pages/Projects";
-import {getCurrentUser} from "./api/auth";
 import {useDispatch} from "react-redux";
-import setLoginAction from "./store/actions/auth/setLoginAction";
 import Users from "./pages/Users";
 import Notifications from "./pages/Notifications";
 import Workspaces from './pages/Workspaces';
 import ProjectDetailedPage from "./pages/ProjectDetailedPage";
-import ProjectPlan from "./pages/ProjectPlan";
 import UserProfilePage from "./pages/UserProfilePage";
 import Portfolio from "./pages/Portfolio";
+import ProjectPlanComponent from "./pages/ProjectPlanComponent";
 
 function App() {
     // const dispatch = useDispatch();
@@ -37,7 +35,7 @@ function App() {
                         <Route component={Users} path='/users'/>
                         <Route component={Notifications} path='/notifications'/>
                         <Route component={ProjectDetailedPage} path='/project'/>
-                        <Route component={ProjectPlan} path='/project_plan'/>
+                        <Route component={ProjectPlanComponent} path='/project_plan'/>
                         <Route component={UserProfilePage} path='/profile'/>
                         <Route component={Portfolio} path='/portfolio/:login'/>
                         <Route component={Workspaces} path='/'/>
