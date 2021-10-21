@@ -54,6 +54,7 @@ export default function Workspaces() {
     }, [workspaceId, workspaceTitle]);
 
     return (<BadgePage
+        showDialog={true}
         addTitle='Создать рабочее пространство'
         addOnClick={() => dispatch(openDialog())}
         title='Просмотр рабочих пространств'

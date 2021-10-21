@@ -10,11 +10,12 @@ import {
     Typography,
     ListItemText,
     ListSubheader,
-    List
+    List, IconButton
 } from "@mui/material";
 import TagsPanel from "../components/util/TagsPanel";
 import Centered from "../components/util/Centered";
 import ErrorMessage from "../components/elements/ErrorMessage";
+import {Clear} from "@material-ui/icons";
 
 const useStyles = makeStyles(theme => ({
     paper: {
@@ -99,8 +100,10 @@ interface EditableFieldProps {
     onChange: (s: string) => void
 }
 
-const EditableField = ({project, props = {}, left = false, field, prefix = '', onChange,
-                           label, multiline = false, isNew = false}: EditableFieldProps) =>
+const EditableField = ({
+                           project, props = {}, left = false, field, prefix = '', onChange,
+                           label, multiline = false, isNew = false
+                       }: EditableFieldProps) =>
     project?.role === ProjectRole.OWNER || isNew
         ? (
             <div style={{
@@ -145,6 +148,11 @@ export default function ProjectDetailedPage() {
         }
     }
 
+    function removeParticipant(participant: string) {
+        const newProj = project?.removeParticipant(participant);
+        setProject(newProj as unknown as DetailedProject)
+    }
+
     return (
         <Paper className={classes.paper}>
             <Centered additionalClasses={[classes.inner]}>
@@ -179,8 +187,11 @@ export default function ProjectDetailedPage() {
                         </ListSubheader>
                     }>
                     {project?.participantLogins.map(p => (
-                        <ListItemButton key={p}>
+                        <ListItemButton disableRipple sx={{cursor: 'default'}} key={p}>
                             <ListItemText primary={p}/>
+                            <IconButton onClick={() => removeParticipant(p)}>
+                                <Clear/>
+                            </IconButton>
                         </ListItemButton>))}
                 </List>
                 <div className={classes.butGr} style={{justifyContent: 'start'}}>

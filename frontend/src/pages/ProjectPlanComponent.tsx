@@ -95,8 +95,7 @@ export default function ProjectPlanComponent() {
         addSprint(projectId, workspaceId, sprint)
             .then(r => {
                 projectPlan?.plan.push(sprint);
-                setProjectPlan(new ProjectPlan(projectPlan?.projectTitle as string,
-                    projectPlan?.plan as Sprint[])); //TODO: rewrite for null-safe
+                setProjectPlan(new ProjectPlan(projectPlan?.plan as Sprint[], projectPlan?.projectTitle as string));//TODO: rewrite for null-safe
             });
     }
 

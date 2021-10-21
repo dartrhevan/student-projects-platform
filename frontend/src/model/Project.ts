@@ -22,7 +22,7 @@ labelColors.set(ProjectStatus.NEW, 'green');
 
 export default class Project implements IBadge {
     constructor(public id: string, public workSpaceId: string, public title: string, public description: string,
-                public tags: Tag[], public status = ProjectStatus.NEW, public label= status,
+                public tags: Tag[], public status = ProjectStatus.NEW, public label = status,
                 public labelColor = labelColors.get(status) as string) {
     }
 }
@@ -57,14 +57,16 @@ export class DetailedProject {
         return project;
     }
 
+    public removeParticipant(participant: string) {
+        const project: DetailedProject = this.clone();//Object.assign({}, this);
+        project.participantLogins = project.participantLogins.filter(p => p !== participant);
+        return project;
+    }
+
     public clone(): any {
         const cloneObj = new (this.constructor as any)(this.workSpaceId);
         for (const attribute in this) {
-            // if (typeof this[attribut] === "object") {
-            //     cloneObj[attribut] = this[attribut].clone();
-            // } else {
-                cloneObj[attribute] = this[attribute];
-            // }
+            cloneObj[attribute] = this[attribute]
         }
         return cloneObj;
     }

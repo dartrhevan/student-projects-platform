@@ -6,6 +6,7 @@ import TagsPanel from "../util/TagsPanel";
 import clsx from "clsx";
 import isMobile from "../../hooks/isMobile";
 import Typography from "@material-ui/core/Typography";
+import Tag from "../../model/Tag";
 
 const useStyles = makeStyles(theme => ({
     queryPanel: {
@@ -32,16 +33,16 @@ const useStyles = makeStyles(theme => ({
 interface QueryProps {
     buttonTitle: string
     buttonOnClick: () => void
+    showDialog: boolean
 }
 
-export default function QueryPanel({buttonTitle, buttonOnClick}: QueryProps) {
+export default function QueryPanel({buttonTitle, buttonOnClick, showDialog}: QueryProps) {
     const classes = useStyles();
     const mobile = isMobile();
 
     return (<Paper className={clsx({[classes.queryPanel]: true, [classes.mobilePanel]: mobile})}>
         <Typography className={classes.typ}>Введите тэги для поиска:</Typography>
-        <AddWorkspace onSubmit={(ti, d, t, p) =>
-            console.log(`title: ${ti} description: ${d} tags: ${t} participants: ${p}`)} title={buttonTitle} />
+        {showDialog ? <AddWorkspace /> : <></>}
         <TagsPanel onSetTag={s => {}} />
         <Button className={classes.addButton} variant='outlined'
             onClick={buttonOnClick}>

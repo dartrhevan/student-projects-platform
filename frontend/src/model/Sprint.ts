@@ -5,6 +5,7 @@ export default class Sprint {
 }
 
 export class ProjectPlan {
-    constructor(public projectTitle: string, public plan: Sprint[], public owner: boolean = false) {
+    constructor(public plan: Sprint[], public projectTitle?: string,
+                public belongToWorkSpace: boolean = false, public owner: boolean = false) {
     }
 }

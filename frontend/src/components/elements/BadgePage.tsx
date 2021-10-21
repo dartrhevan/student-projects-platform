@@ -7,6 +7,7 @@ import PagingPanel from "./PagingPanel";
 import {IBadge} from "../../props.common/ListItemProps";
 import CheckBoxGroup from "../util/CheckBoxGroup";
 import CheckBoxInfo from "../../model/CheckBoxInfo";
+import Tag from "../../model/Tag";
 
 const useStyles = makeStyles(theme => ({
     main: {
@@ -32,16 +33,18 @@ interface BadgePageProps<T extends IBadge> {
     checkBoxes?: CheckBoxInfo[]
     addTitle: string
     addOnClick: () => void
+    // onDialogSubmitted?: (ti: string, d: string, t: Tag[], p: string[]) => void
+    showDialog?: boolean
 }
 
 export default function BadgePage<T extends IBadge>(
-    {checkBoxes, badgeData, title, href, addTitle, addOnClick, squared = true}: BadgePageProps<T>) {
+    {checkBoxes, badgeData, title, href, addTitle, addOnClick, squared = true, showDialog = false}: BadgePageProps<T>) {
     const classes = useStyles();
 
     return (
         <>
             <Typography className={classes.title} variant='h3'>{title}</Typography>
-            <QueryPanel buttonTitle={addTitle} buttonOnClick={addOnClick}/>
+            <QueryPanel buttonTitle={addTitle} buttonOnClick={addOnClick} showDialog={showDialog}/>
             {checkBoxes ? <CheckBoxGroup checkBoxes={checkBoxes}/> : <></>}
             <Container>
                 <Centered row={true} additionalClasses={[classes.main]}>
