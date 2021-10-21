@@ -30,7 +30,7 @@ interface ITagsPanelProps {
 // const stub = () => {
 // };
 
-export default function TagsPanel({onSetTag, label = 'tag', tagInputClasses = [], editable = true, values = []}: ITagsPanelProps) {
+export default function TagsPanel({onSetTag, label = 'тэг', tagInputClasses = [], editable = true, values = []}: ITagsPanelProps) {
     const classes = useStyles();
     const [tagsReference, setTagsReference] = useState(values);
     const [tags, setTags] = useState(values);
@@ -67,7 +67,7 @@ export default function TagsPanel({onSetTag, label = 'tag', tagInputClasses = []
 
     return (
         <>
-            {editable ? (<TextField className={clsx(classes.input, ...tagInputClasses)} label={`Type ${label}`}
+            {editable ? (<TextField className={clsx(classes.input, ...tagInputClasses)} label={`Введите ${label}`}
                                     value={tag} onChange={handleChange} onKeyPress={addTag}/>) : (<></>)}
 
             <div className={classes.chips}>

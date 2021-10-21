@@ -15,7 +15,7 @@ import {closeDialog} from "../../store/actions/dialog/dialog";
 import {useDispatch, useSelector} from "react-redux";
 import isOpenDialog from "../../hooks/isOpenDialog";
 import List from "@material-ui/core/List";
-import {ListItemButton} from "@mui/material";
+import {Divider, ListItemButton} from "@mui/material";
 import Tag from "../../model/Tag";
 
 const useStyles = makeStyles(theme => ({
@@ -50,10 +50,10 @@ interface DialogProps {
     // open: boolean
     title: string
 
-    onSubmit: ((title:string, description: string, t: Tag[], p: string[]) => void)
+    onSubmit: ((title: string, description: string, t: Tag[], p: string[]) => void)
 }
 
-export default function AddProject({onSubmit, title}: DialogProps) {
+export default function AddWorkspace({onSubmit, title}: DialogProps) {
     const classes = useStyles();
     const dispatch = useDispatch();
     const open = useSelector(isOpenDialog);
@@ -91,8 +91,18 @@ export default function AddProject({onSubmit, title}: DialogProps) {
                 <TextField className={classes.but} variant='outlined' label='Название' onChange={handleTitleChange}/>
                 <TextField className={classes.but} minRows={3} variant='outlined' label='Enter description'
                            multiline={true} onChange={handleDescriptionChange}/>
-
-                <Paper className={clsx(classes.but, classes.paper)}>
+                <Typography variant='h6' paragraph>Настройки стандартного плана</Typography>
+                <Divider flexItem/>
+                <br/>
+                <Typography>Дата начала</Typography>
+                <TextField margin='normal' type='date'/>
+                <br/>
+                <Typography>Колличество спринтов</Typography>
+                <TextField margin='normal' type='number'/>
+                <br/>
+                <Typography>Длительность спринта (в неделях)</Typography>
+                <TextField margin='normal' type='number'/>
+                {/*<Paper className={clsx(classes.but, classes.paper)}>
                     <Typography className={classes.but}>Тэги</Typography>
                     <TagsPanel onSetTag={setTags} />
                 </Paper>
@@ -108,9 +118,6 @@ export default function AddProject({onSubmit, title}: DialogProps) {
                         }>
                         {participants.map(p => (
                             <ListItemButton key={p}>
-                                {/*<ListItemIcon>*/}
-                                {/*    <ClearIcon />*/}
-                                {/*</ListItemIcon>*/}
                                 <ListItemText primary={p}/>
                             </ListItemButton>))}
                     </List>
@@ -118,7 +125,7 @@ export default function AddProject({onSubmit, title}: DialogProps) {
                         <TextField label='Логин участниа' className={classes.but} onChange={handleNewPartChange}/>
                         <Button onClick={onAddNewParticipant}>Добавить участника</Button>
                     </div>
-                </Paper>
+                </Paper>*/}
 
                 <div className={classes.buts}>
                     <Button className={classes.but} onClick={submit}>Подтвердить</Button>

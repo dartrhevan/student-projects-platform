@@ -26,27 +26,29 @@ const useStyles = makeStyles(theme => ({
 interface BadgePageProps<T extends IBadge> {
     badgeData: T[]
     onBadgeClick?: ((badge: T) => void)
-    href?: ((id: string) => string)
+    href?: ((id: IBadge) => string)
     title: string
     squared?: boolean
     checkBoxes?: CheckBoxInfo[]
+    addTitle: string
+    addOnClick: () => void
 }
 
-export default function BadgePage<T extends IBadge>({checkBoxes, badgeData, title, href, squared = true}: BadgePageProps<T>) {
+export default function BadgePage<T extends IBadge>(
+    {checkBoxes, badgeData, title, href, addTitle, addOnClick, squared = true}: BadgePageProps<T>) {
     const classes = useStyles();
 
-    console.log("render Projects")
     return (
         <>
             <Typography className={classes.title} variant='h3'>{title}</Typography>
-            <QueryPanel/>
+            <QueryPanel buttonTitle={addTitle} buttonOnClick={addOnClick}/>
             {checkBoxes ? <CheckBoxGroup checkBoxes={checkBoxes}/> : <></>}
             <Container>
                 <Centered row={true} additionalClasses={[classes.main]}>
                     {badgeData.map(s => <DefaultBadge key={s.id} description={s.description} squared={squared}
                                                       tags={s.tags} id={s.id} title={s.title}
                                                       label={s.label} labelColor={s.labelColor}
-                                                      href={href ? href(s.id) : undefined}/>)}
+                                                      href={href ? href(s) : undefined}/>)}
                 </Centered>
             </Container>
             <PagingPanel/>

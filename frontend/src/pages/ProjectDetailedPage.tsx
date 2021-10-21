@@ -1,17 +1,25 @@
 import React, {useEffect, useState} from 'react';
-import {useParams} from "react-router-dom";
-import {getProjectInfo} from "../api/projects";
+import {addProject, editProject, getProjectInfo} from "../api/projects";
 import {DetailedProject, ProjectRole} from "../model/Project";
 import {Button, makeStyles, Paper} from "@material-ui/core";
-import {Divider, ListItemButton, TextField, Typography, ListItemText, ListSubheader, List} from "@mui/material";
+import queryString from 'query-string';
+import {
+    Divider,
+    ListItemButton,
+    TextField,
+    Typography,
+    ListItemText,
+    ListSubheader,
+    List
+} from "@mui/material";
 import TagsPanel from "../components/util/TagsPanel";
-
 import Centered from "../components/util/Centered";
+import ErrorMessage from "../components/elements/ErrorMessage";
 
 const useStyles = makeStyles(theme => ({
     paper: {
         padding: '10px 20px',
-        width: '70vw',
+        width: '70%',
         minHeight: '70vh',
         marginTop: '70px',
         '&:only-child': {
@@ -36,11 +44,13 @@ const useStyles = makeStyles(theme => ({
 }));
 
 interface ProjectParams {
-    workspaceId: string,
-    projectId: string
+    workspaceId: string
+    projectId?: string
+    isNew?: string
 }
 
-const RoleSpecificButton = ({project}: { project?: DetailedProject }) => {
+const RoleSpecificButton = ({project, onSubmit, enabled, isNew}:
+                                { isNew: boolean, enabled?: boolean, project?: DetailedProject, onSubmit: () => void }) => {
     switch (project?.role) {
         case ProjectRole.OWNER:
             return (
@@ -51,69 +61,116 @@ const RoleSpecificButton = ({project}: { project?: DetailedProject }) => {
                     <Button href={`/project_plan?projectId=${project.id}&workspaceId=${project.workSpaceId}`}>
                         Просмотр плана
                     </Button>
+                    <Button variant='contained' disabled={!enabled} onClick={onSubmit}>
+                        Подтвердить изменения
+                    </Button>
                 </>);
         case ProjectRole.PARTICIPANT:
-            return (
-                <Button href={`/project_plan?projectId=${project.id}&workspaceId=${project.workSpaceId}`}>
-                    Просмотр плана
-                </Button>);
         case ProjectRole.MENTOR:
             return (
                 <Button href={`/project_plan?projectId=${project.id}&workspaceId=${project.workSpaceId}`}>
                     Просмотр плана
                 </Button>);
+        // case ProjectRole.MENTOR:
+        //     return (
+        //         <Button href={`/project_plan?projectId=${project.id}&workspaceId=${project.workSpaceId}`}>
+        //             Просмотр плана
+        //         </Button>);
         case ProjectRole.STRANGER:
             return (<Button>Присоединиться</Button>);
         default:
-            return <></>
+            return isNew ?
+                <Button variant='contained' disabled={!enabled} onClick={onSubmit}>
+                    Подтвердить изменения
+                </Button>
+                : <></>
     }
 }
 
 interface EditableFieldProps {
     field: (project?: DetailedProject) => string | undefined,
-    props: object,
+    props?: object,
     prefix?: string
     project?: DetailedProject
     multiline?: boolean
+    left?: boolean
     label: string
+    isNew?: boolean
+    onChange: (s: string) => void
 }
 
-const EditableField = ({project, props, field, prefix = '', label, multiline = false}: EditableFieldProps) =>
-    project?.role === ProjectRole.OWNER
+const EditableField = ({project, props = {}, left = false, field, prefix = '', onChange,
+                           label, multiline = false, isNew = false}: EditableFieldProps) =>
+    project?.role === ProjectRole.OWNER || isNew
         ? (
-            <div style={{width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'center'}}>
+            <div style={{
+                width: '100%',
+                display: 'flex',
+                flexDirection: 'row',
+                justifyContent: left ? 'start' : 'center'
+            }}>
                 <Typography {...props}>{prefix}</Typography>
                 <TextField label={label} sx={{margin: '10px'}} fullWidth={multiline} minRows={5}
                            variant={multiline ? 'outlined' : 'standard'} multiline={multiline}
-                           defaultValue={field(project)}/>
+                           defaultValue={field(project)} onChange={e => onChange((e.target as HTMLInputElement).value)}/>
             </div>)
         : <Typography {...props}>{prefix + field(project)}</Typography>;
 
 export default function ProjectDetailedPage() {
-    const {workspaceId, projectId} = useParams<ProjectParams>();
+    // const params = useLocation<ProjectParams>().state;
+    const params = queryString.parse(window.location.search);
+    const workspaceId = params?.workspaceId, projectId = params?.projectId;
+    const isNew = params?.isNew !== undefined;
+
     const classes = useStyles();
-    const [project, setProject] = useState(undefined as DetailedProject | undefined);
+    const [project, setProject] = useState(isNew ? new DetailedProject(workspaceId as string) : undefined);
 
     useEffect(() => {
-            getProjectInfo(workspaceId, projectId).then(r => setProject(r.payload)).catch(console.log)
+            if (!isNew) {
+                getProjectInfo(projectId as string, workspaceId as string)
+                    .then(r => setProject(r.payload)).catch(console.log)
+            }
         }, //TODO: catch
-        [workspaceId, projectId]);
+        [workspaceId, projectId, isNew]);
+
     console.log('render with')
     console.log(project)
+    const allFilled = project?.isNewFilled;//allNotEmpty(username, password);
+
+    function onSubmit() {
+        if (isNew) {
+            addProject(project as DetailedProject);
+        } else {
+            editProject(project as DetailedProject);
+        }
+    }
+
     return (
         <Paper className={classes.paper}>
             <Centered additionalClasses={[classes.inner]}>
-                <EditableField label='' props={{variant: 'h4'}} project={project} prefix={'Проект '}
-                               field={p => `${p?.title}`}/>
-                <div style={{width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'center', flexWrap: 'wrap' }}>
-                    <TagsPanel onSetTag={() => {}} editable={project?.role === ProjectRole.OWNER} values={project?.tags}/>
+                <EditableField isNew={isNew} label='' props={{variant: 'h4'}} project={project}
+                               prefix={'Проект '} field={p => p?.title}
+                               onChange={t => setProject((project as DetailedProject).withTitle(t))}/>
+                <EditableField isNew={isNew} left label='Краткое описание'
+                               project={project} field={p => p?.shortDescription}
+                               onChange={t => setProject((project as DetailedProject).withShortDescription(t))}/>
+                <div style={{
+                    width: '100%',
+                    display: 'flex',
+                    flexDirection: 'row',
+                    justifyContent: 'center',
+                    flexWrap: 'wrap'
+                }}>
+                    <TagsPanel onSetTag={() => {
+                    }} editable={project?.role === ProjectRole.OWNER} values={project?.tags}/>
                 </div>
                 <Divider flexItem/>
                 <EditableField label='Описание' multiline props={{className: classes.descr}} project={project}
-                               field={p => p?.fullDescription}/>
+                               field={p => p?.fullDescription} isNew={isNew}
+                               onChange={t => setProject((project as DetailedProject).withFullDescription(t))}/>
                 <Divider flexItem/>
                 <List
-                    sx={{ width: '100%' }}
+                    sx={{width: '100%'}}
                     component="nav"
                     aria-labelledby="nested-list-subheader"
                     subheader={
@@ -126,8 +183,13 @@ export default function ProjectDetailedPage() {
                             <ListItemText primary={p}/>
                         </ListItemButton>))}
                 </List>
+                <div className={classes.butGr} style={{justifyContent: 'start'}}>
+                    <Typography sx={{margin: '10px'}}>Максимальное кол-во участников</Typography>
+                    <TextField sx={{width: '40px'}} type='number' variant='standard'/>
+                </div>
+                <ErrorMessage message='*Не все обязательные поля заполнены' condition={!allFilled}/>
                 <div className={classes.butGr}>
-                    <RoleSpecificButton project={project}/>
+                    <RoleSpecificButton isNew={isNew} enabled={allFilled} onSubmit={onSubmit} project={project}/>
                 </div>
             </Centered>
         </Paper>
