@@ -1,6 +1,7 @@
 package com.platform.projapp.controller;
 
 import com.platform.projapp.dto.request.AuthRequest;
+import com.platform.projapp.dto.request.CurrentUserRequest;
 import com.platform.projapp.dto.request.RegisterRequest;
 import com.platform.projapp.dto.request.TokenRefreshRequest;
 import com.platform.projapp.dto.response.GeneralResponse;
@@ -9,10 +10,7 @@ import com.platform.projapp.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
@@ -41,5 +39,11 @@ public class AuthController {
     public ResponseEntity<?> refreshToken(@RequestBody TokenRefreshRequest token) {
         var response = authService.refreshToken(token);
         return response.success() ? ResponseEntity.ok(response) : ResponseEntity.badRequest().body(response);
+    }
+
+    @GetMapping("/currentuser")
+    public ResponseEntity<?> getCurrentUser(@RequestBody CurrentUserRequest currentUserRequest){
+
+        return ResponseEntity.ok(authService.GetCurrentUser(currentUserRequest.getLogin()));
     }
 }
