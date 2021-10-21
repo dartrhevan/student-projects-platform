@@ -4,6 +4,7 @@ import com.platform.projapp.configuration.jwt.JwtUtils;
 import com.platform.projapp.dto.request.RegisterRequest;
 import com.platform.projapp.dto.request.TokenRefreshRequest;
 import com.platform.projapp.dto.response.GeneralResponse;
+import com.platform.projapp.dto.response.body.CurrentUserResponseBody;
 import com.platform.projapp.dto.response.body.JwtResponseBody;
 import com.platform.projapp.dto.response.body.TokenRefreshResponseBody;
 import com.platform.projapp.error.ErrorConstants;
@@ -81,5 +82,16 @@ public class AuthService {
                     return (response);
                 }).orElse(new GeneralResponse<TokenRefreshResponseBody>()
                                 .withErrors(List.of(ErrorConstants.RT_NOT_IN_BD)));
+    }
+
+    public GeneralResponse<CurrentUserResponseBody> GetCurrentUser(String login) {
+        GeneralResponse<CurrentUserResponseBody> response = new GeneralResponse<>();
+        try{
+            User user=userRepository.findByLogin(login);
+            return response.withPayload(new CurrentUserResponseBody(user.getId(),user.getLogin(), user.getPassword(), user.getName(),user.getSurname()));
+        }
+        catch (UsernameNotFoundException e) {
+            return response.withErrors(List.of(ErrorConstants.USERNAME_NOT_FOUND));
+        }
     }
 }
