@@ -17,6 +17,7 @@ import {
     Paper,
     TextField
 } from "@mui/material";
+import {toDateString} from "../utils/utils";
 
 const useStyles = makeStyles(theme => ({
     paper: {
@@ -63,10 +64,10 @@ const SprintComponent = ({sprint, number, editable}: SprintProps) => {
                 <TextField disabled={!editable} multiline minRows={5} variant='outlined' fullWidth
                            defaultValue={sprint.goalsDescription} className={classes.label}/>
                 <Typography className={classes.label}>Начало спринта</Typography>
-                <TextField disabled={!editable} type='date' defaultValue={sprint.endDate.toISOString().slice(0, 10)}/>
+                <TextField disabled={!editable} type='date' defaultValue={toDateString(sprint.endDate)}/>
                 <br/>
                 <Typography className={classes.label}>Окончание спринта</Typography>
-                <TextField disabled={!editable} type='date' defaultValue={sprint.endDate.toISOString().slice(0, 10)}/>
+                <TextField disabled={!editable} type='date' defaultValue={toDateString(sprint.endDate)}/>
                 <div className={classes.label}>
                     <Button>Удалить</Button>
                     {editable ? <Button>Подтвердить изменения</Button> : <></>}

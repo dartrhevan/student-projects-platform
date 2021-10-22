@@ -15,3 +15,6 @@ export function randomInt(min: number = 0, max: number) {
 // export function randomInt(max: number) {
 //     return randomInt(0, max);
 // }
+export function toDateString(date: Date) {
+    return date.toISOString().slice(0, 10);
+}

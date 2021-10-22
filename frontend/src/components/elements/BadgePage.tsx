@@ -35,16 +35,17 @@ interface BadgePageProps<T extends IBadge> {
     addOnClick: () => void
     // onDialogSubmitted?: (ti: string, d: string, t: Tag[], p: string[]) => void
     showDialog?: boolean
+    showTags?: boolean
 }
 
 export default function BadgePage<T extends IBadge>(
-    {checkBoxes, badgeData, title, href, addTitle, addOnClick, squared = true, showDialog = false}: BadgePageProps<T>) {
+    {checkBoxes, badgeData, title, href, addTitle, addOnClick, squared = true, showDialog = false, showTags = true}: BadgePageProps<T>) {
     const classes = useStyles();
 
     return (
         <>
             <Typography className={classes.title} variant='h3'>{title}</Typography>
-            <QueryPanel buttonTitle={addTitle} buttonOnClick={addOnClick} showDialog={showDialog}/>
+            <QueryPanel buttonTitle={addTitle} buttonOnClick={addOnClick} showTags={showTags} showDialog={showDialog}/>
             {checkBoxes ? <CheckBoxGroup checkBoxes={checkBoxes}/> : <></>}
             <Container>
                 <Centered row={true} additionalClasses={[classes.main]}>

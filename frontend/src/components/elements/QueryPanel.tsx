@@ -34,18 +34,22 @@ interface QueryProps {
     buttonTitle: string
     buttonOnClick: () => void
     showDialog: boolean
+    showTags: boolean
 }
 
-export default function QueryPanel({buttonTitle, buttonOnClick, showDialog}: QueryProps) {
+export default function QueryPanel({buttonTitle, buttonOnClick, showDialog, showTags}: QueryProps) {
     const classes = useStyles();
     const mobile = isMobile();
 
     return (<Paper className={clsx({[classes.queryPanel]: true, [classes.mobilePanel]: mobile})}>
-        <Typography className={classes.typ}>Введите тэги для поиска:</Typography>
-        {showDialog ? <AddWorkspace /> : <></>}
-        <TagsPanel onSetTag={s => {}} />
+        {showTags ? <>
+            <Typography className={classes.typ}>Введите тэги для поиска:</Typography>
+            <TagsPanel onSetTag={s => {
+            }}/>
+        </> : <div className={clsx({[classes.queryPanel]: true, [classes.mobilePanel]: mobile})}></div>}
+        {showDialog ? <AddWorkspace/> : <></>}
         <Button className={classes.addButton} variant='outlined'
-            onClick={buttonOnClick}>
+                onClick={buttonOnClick}>
             <Add/> {buttonTitle}
         </Button>
     </Paper>)

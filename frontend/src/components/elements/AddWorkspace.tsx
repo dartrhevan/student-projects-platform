@@ -11,6 +11,8 @@ import {useDispatch, useSelector} from "react-redux";
 import isOpenDialog from "../../hooks/isOpenDialog";
 import {Divider} from "@mui/material";
 import {addNewWorkspace} from "../../api/workspaces";
+import {allNotEmpty, toDateString} from "../../utils/utils";
+import ErrorMessage from "./ErrorMessage";
 
 const useStyles = makeStyles(theme => ({
     main: {
@@ -53,11 +55,18 @@ export default function AddWorkspace() {
     const [startDate, setStartDate] = useState(new Date());
 
     function submit() {
+        const match = (/[^\w\s]/).exec(title);
+        if (match && match.length > 0) {
+            alert('incorrect title');
+            return;
+        }
         addNewWorkspace(title, sprintsCount, sprintsLength, startDate)
         onCloseDialog();
     }
 
     const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => setTitle(event.target.value);
+
+    const allFilled = allNotEmpty(title/*sprintsCount, sprintsLength, startDate*/);
 
     return (
         <Dialog open={open} onClose={onCloseDialog}>
@@ -68,16 +77,17 @@ export default function AddWorkspace() {
                 <Divider flexItem/>
                 <br/>
                 <Typography>Дата начала</Typography>
-                <TextField className={classes.but} type='date'/>
+                <TextField defaultValue={toDateString(startDate)} className={classes.but} type='date'/>
                 <br/>
                 <Typography>Колличество спринтов</Typography>
-                <TextField className={classes.but} type='number'/>
+                <TextField defaultValue={sprintsCount} className={classes.but} type='number'/>
                 <br/>
                 <Typography>Длительность спринта (в неделях)</Typography>
-                <TextField className={classes.but} type='number'/>
+                <TextField defaultValue={sprintsLength} className={classes.but} type='number'/>
+                <ErrorMessage message='*Не все обязательные поля заполнены' condition={!allFilled}/>
 
                 <div className={classes.buts}>
-                    <Button className={classes.but} onClick={submit}>Подтвердить</Button>
+                    <Button disabled={!allFilled} className={classes.but} onClick={submit}>Подтвердить</Button>
                     <Button className={classes.but} onClick={onCloseDialog}>Отменить</Button>
                 </div>
             </div>
