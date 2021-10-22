@@ -11,7 +11,7 @@ import getPaging from "../hooks/getPaging";
 import CheckBoxInfo from "../model/CheckBoxInfo";
 
 
-interface ProjectsParams {
+interface ProjectsParams {//TODO: remove
     workspaceId: string,
     workspaceTitle: string
 }
@@ -44,5 +44,6 @@ export default function Projects() {
 
     return (<BadgePage checkBoxes={[new CheckBoxInfo('Показать только активные', setActiveOnly)]}
                        title={`Проекты из "${workspaceTitle}"`} badgeData={data} squared={false}
-                       href={i => `/project?projectId=${i}&workspaceId=${workspaceId}`}/>);
+                       href={i => `/project?projectId=${i}&workspaceId=${workspaceId}`}
+                       addTitle='Добавить проект' addOnClick={() => window.location.href=`/project?isNew&workspaceId=${workspaceId}`}/>);
 }

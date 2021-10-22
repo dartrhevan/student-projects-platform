@@ -1,7 +1,18 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {makeStyles} from "@material-ui/core";
 import BadgePage from "../components/elements/BadgePage";
 import CheckBoxInfo from "../model/CheckBoxInfo";
+import {openDialog} from "../store/actions/dialog/dialog";
+import {shallowEqual, useDispatch, useSelector} from "react-redux";
+import {getProjectsForWorkspace} from "../api/projects";
+import ProjectQuery from "../model/dto/ProjectQuery";
+import Pageable from "../model/Pageable";
+import {initPaging} from "../store/actions/paging/setPagingData";
+import {useParams} from "react-router-dom";
+import getPaging from "../hooks/getPaging";
+import Project from "../model/Project";
+import Workspace from "../model/Workspace";
+import {getUsersWorkspaces} from "../api/workspaces";
 
 
 const useStyles = makeStyles(theme => ({
@@ -20,13 +31,33 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-export default function Projects() {
-    const classes = useStyles();
+interface WorkspacesParams {
+    workspaceId: string,
+    workspaceTitle: string
+}
 
+export default function Workspaces() {
+    const classes = useStyles();
+    const {workspaceId, workspaceTitle} = useParams<WorkspacesParams>();
+    const {totalCount, pageSize, pageNumber} = useSelector(getPaging, shallowEqual);
+
+    const [data, setData] = useState([] as Workspace[]);
     console.log("render Projects")
 
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        getUsersWorkspaces(new Pageable(pageNumber, pageSize)).then(r => {
+            setData(r.payload.w)
+            dispatch(initPaging(r.payload.p.totalCount, r.payload.p.pageSize, r.payload.p.pageNumber))//TODO: call back here
+        })
+    }, [workspaceId, workspaceTitle]);
+
     return (<BadgePage
-        title='Просмотр публичных рабочих пространств'
-        badgeData={['A', 'B', 'C', 'D', 'E', 'F', 'A1', '1B', 'C1', 'D1', 'E1', '1F'].map(s => ({id: s, title: s}))}
-        href={s => `/projects/${s}/${s}`}/>);
+        showDialog={true}
+        addTitle='Создать рабочее пространство'
+        addOnClick={() => dispatch(openDialog())}
+        title='Просмотр рабочих пространств'
+        badgeData={data}
+        href={s => `/projects/${(s as Workspace).id}/${(s as Workspace).title}`}/>);
 }

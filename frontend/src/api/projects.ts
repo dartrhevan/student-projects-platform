@@ -6,13 +6,17 @@ import GenericResponse from "../model/dto/GenericResponse";
 import Tag from "../model/Tag";
 
 
-export function addProjects(project: Project) {
+export function addProject(project: DetailedProject) {
     //TODO: implement
+    console.log('Add project');
+    console.log(project);
     return new Promise<CommonResponse>((res, rej) => res(new CommonResponse()));
 }
 
-export function editProjects(project: Project) {
+export function editProject(project: DetailedProject) {
     //TODO: implement
+    console.log('Edit project');
+    console.log(project);
     return new Promise<CommonResponse>((res, rej) => res(new CommonResponse()));
 }
 
@@ -28,6 +32,6 @@ export function getProjectsForWorkspace(query: ProjectQuery) {
 export function getProjectInfo(projectId: string, workspaceId: string) {
     //TODO: implement
     return new Promise<GenericResponse<DetailedProject>>((res, rej) => res(new GenericResponse(
-        new DetailedProject(projectId, workspaceId, 'Project', ' Blabla', ' Blabla',
+        new DetailedProject(workspaceId, projectId, 'Project', ' Blabla', ' Blabla',
             ['1', "12"], [new Tag('Java', 0xE94907), new Tag('React')]))));
 }
