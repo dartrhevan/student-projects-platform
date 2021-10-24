@@ -5,8 +5,10 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class CurrentUserResponseBody {
-    private String login;
+public class CurrentUserProfileResponseBody{
     private String name;
     private String surname;
+    private String login;
+    private String interests;
+    //TODO:ADD
 }

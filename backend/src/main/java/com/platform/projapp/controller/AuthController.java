@@ -1,17 +1,19 @@
 package com.platform.projapp.controller;
 
 import com.platform.projapp.dto.request.AuthRequest;
-import com.platform.projapp.dto.request.CurrentUserRequest;
 import com.platform.projapp.dto.request.RegisterRequest;
 import com.platform.projapp.dto.request.TokenRefreshRequest;
 import com.platform.projapp.dto.response.GeneralResponse;
 import com.platform.projapp.dto.response.body.MessageResponseBody;
 import com.platform.projapp.service.AuthService;
+import com.platform.projapp.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 /**
@@ -22,6 +24,7 @@ import javax.validation.Valid;
 @RequiredArgsConstructor
 public class AuthController {
     private final AuthService authService;
+    private final UserService userService;
 
     @PostMapping("/signin")
     public ResponseEntity<?> authUser(@RequestBody AuthRequest authRequest) {
@@ -42,8 +45,13 @@ public class AuthController {
     }
 
     @GetMapping("/currentuser")
-    public ResponseEntity<?> getCurrentUser(@RequestBody CurrentUserRequest currentUserRequest){
-
-        return ResponseEntity.ok(authService.GetCurrentUser(currentUserRequest.getLogin()));
+    public ResponseEntity<?> getCurrentUser(HttpServletRequest req) {
+        return ResponseEntity.ok(userService.GetCurrentUser(req));
     }
+
+    @GetMapping("/userprofile")
+    public ResponseEntity<?> getCurrentUserProfile(HttpServletRequest req){
+        return ResponseEntity.ok(userService.GetCurrentUserProfile(req));
+    }
+
 }
