@@ -5,11 +5,10 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class CurrentUserProfileResponseBody{
+public class ChangeUserProfileResponseBody {
     private String name;
     private String surname;
     private String login;
     private String interests;
-    private Long id;//Выводить пользователю не надо, нужен для изменения профиля
     //TODO:ADD
 }

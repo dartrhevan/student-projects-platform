@@ -1,6 +1,7 @@
 package com.platform.projapp.controller;
 
 import com.platform.projapp.dto.request.AuthRequest;
+import com.platform.projapp.dto.request.ChangeUserProfileRequest;
 import com.platform.projapp.dto.request.RegisterRequest;
 import com.platform.projapp.dto.request.TokenRefreshRequest;
 import com.platform.projapp.dto.response.GeneralResponse;
@@ -52,6 +53,11 @@ public class AuthController {
     @GetMapping("/userprofile")
     public ResponseEntity<?> getCurrentUserProfile(HttpServletRequest req){
         return ResponseEntity.ok(userService.GetCurrentUserProfile(req));
+    }
+
+    @PostMapping("/changeprofile")
+    public ResponseEntity<?> ChangeUserProfile(@RequestBody ChangeUserProfileRequest request) {
+        return ResponseEntity.ok(userService.ChangeUserProfile(request));
     }
 
 }
