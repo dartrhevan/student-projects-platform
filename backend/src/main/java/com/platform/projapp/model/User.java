@@ -9,8 +9,10 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
+import java.util.List;
 
 /**
  * @author Yarullin Renat
@@ -28,24 +30,35 @@ public class User implements UserDetails {
     private Long id;
     @Column(unique = true)
     private String login;
-    private String password;
+    private String passwordHash;
     private String name;
     private String surname;
     private String middleName;
     private String interests;
     private Integer reputation;
+    private String email;
+    private String comment;
+    @ElementCollection
+    private List<String> skills;
+    @ElementCollection
+    private List<String> roles;
+
 
     @ElementCollection(targetClass = AccessRole.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"))
     @Enumerated(EnumType.STRING)
     private Set<AccessRole> accessRoles;
 
-    public User(String login, String password, String name, String surname, String middleName, Set<AccessRole> accessRoles) {
+    public User(String login, String passwordHash, String name, String surname, String middleName,String email,List<String> roles,List<String> skills, String comment, Set<AccessRole> accessRoles) {
         this.login = login;
-        this.password = password;
+        this.passwordHash = passwordHash;
         this.name = name;
         this.surname = surname;
         this.middleName = middleName;
+        this.email=email;
+        this.roles=roles;
+        this.skills=skills;
+        this.comment=comment;
 
         this.accessRoles = accessRoles;
 
@@ -56,6 +69,9 @@ public class User implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return accessRoles;
     }
+
+    @Override
+    public String getPassword() {return passwordHash;}
 
     @Override
     public String getUsername() {

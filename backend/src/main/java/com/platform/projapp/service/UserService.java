@@ -48,6 +48,10 @@ public class UserService {
                     registerRequest.getName(),
                     registerRequest.getSurname(),
                     registerRequest.getMiddleName(),
+                    registerRequest.getEmail(),
+                    registerRequest.getRoles(),
+                    registerRequest.getSkills(),
+                    registerRequest.getComment(),
                     Set.of(AccessRole.ROLE_USER));
             userRepository.save(user);
         }
@@ -72,7 +76,7 @@ public class UserService {
             String token = jwtTokenFilter.parseJwt(req);
             String login = jwtUtils.getUserNameFromJwtToken(token);
             User user = userRepository.findByLogin(login);
-            return response.withPayload(new CurrentUserProfileResponseBody(user.getLogin(), user.getName(), user.getSurname(), user.getInterests(), user.getId()));
+            return response.withPayload(new CurrentUserProfileResponseBody(user.getLogin(), user.getName(), user.getSurname(), user.getInterests(), user.getEmail(), user.getComment(), user.getSkills(),user.getRoles(), user.getId()));
         }
         catch (ExpiredJwtException e) {
             return response.withErrors(List.of(ErrorInfo.of("Jwt is Expired","Срок использования токена истек")));
@@ -90,16 +94,29 @@ public class UserService {
             user.setSurname(req.getSurname());
             user.setLogin(req.getLogin());
             user.setInterests(req.getInterests());
-            //TODO:ADD
+            user.setEmail(req.getEmail());
+            user.setComment(req.getComment());
+            user.setRoles(req.getRoles());
+            user.setSkills(req.getSkills());
+            if(req.getOldPassword()!=null && req.getNewPassword()!=null && req.getNewPasswordConfirm()!=null && passwordEncoder.matches(req.getOldPassword(), user.getPasswordHash())==false)
+            {
+                errors.add(ErrorConstants.WRONG_PASSWORD);
+                return response.withErrors(errors);
+            }
+            else if (req.getNewPassword()!=null && !req.getNewPassword().equals(req.getNewPasswordConfirm()))
+                return response.withErrors(List.of(ErrorInfo.of("New Password Not Confirmed","Новый пароль не подтвержден")));
+            else if(req.getOldPassword()==null && req.getNewPassword()!=null)
+                return response.withErrors(List.of(ErrorInfo.of("Old Password Not Confirmed","Необходимо ввести текущий пароль")));
+            else if (req.getNewPassword()!=null && req.getNewPassword().equals(req.getNewPasswordConfirm()) && passwordEncoder.matches(req.getOldPassword(), user.getPasswordHash()))
+                user.setPasswordHash(passwordEncoder.encode(req.getNewPassword()));
+
             userRepository.save(user);
-            return response.withPayload(new ChangeUserProfileResponseBody(user.getName(), user.getSurname(), user.getLogin(), user.getInterests()));
+            return response.withPayload(new ChangeUserProfileResponseBody(user.getName(), user.getSurname(), user.getLogin(), user.getInterests(), user.getEmail(), user.getComment(),user.getSkills(),user.getRoles()));
         }
         catch (DataIntegrityViolationException e) {
             if (e.getMostSpecificCause().getClass().getName().equals("org.postgresql.util.PSQLException"))
-            {
                 errors.add(ErrorConstants.LOGIN_IS_BUSY);
-                return response.withErrors(errors);
-            }
+
             return response.withErrors(errors);
         }
     }

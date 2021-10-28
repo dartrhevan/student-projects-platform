@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
+import java.util.List;
 
 /**
  * @author Yarullin Renat
@@ -25,4 +26,8 @@ public class RegisterRequest {
     @NotBlank(message = "Поле surname обязательно для заполнения")
     private String surname;
     private String middleName;
+    private String email;
+    private List<String> roles;
+    private List<String> skills;
+    private String comment;
 }
