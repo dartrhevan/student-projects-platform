@@ -1,8 +1,14 @@
-import React from 'react';
-import {makeStyles, Typography} from "@material-ui/core";
+import React, {useState} from 'react';
+import {Button, makeStyles, Typography} from "@material-ui/core";
 import {Action, Query, QueryResult} from 'material-table';
 import {Person, PersonAdd,} from "@material-ui/icons";
 import Table from "../components/util/Table";
+import queryString from "query-string";
+import {allNotEmpty, getOnFieldChange} from "../utils/utils";
+import ViewableText from "../components/elements/ViewableText";
+import {Dialog, MenuItem, Select, TextField} from "@mui/material";
+import Centered from "../components/util/Centered";
+import {invitePerson} from "../api/workspaces";
 
 interface Row {
     name: string,
@@ -11,7 +17,8 @@ interface Row {
     skills: string,
     username: string,
     reputation: string,
-    interests: string
+    interests: string,
+    project: string
 }
 
 const useStyles = makeStyles(theme => ({
@@ -51,7 +58,13 @@ const tableColumns = [
         title: 'Интересы',
         field: "interests",
         sorting: false,
-        filtering: false
+        filtering: false,
+        render: (row: Row) => <ViewableText maxWidth={200}>{row.interests}</ViewableText>
+    },
+    {
+        title: 'Текущий проект',
+        field: "project",
+        sorting: true,
     },
     {
         title: 'Репутация',
@@ -61,6 +74,11 @@ const tableColumns = [
 ];
 
 export default function Users() {
+    const params = queryString.parse(window.location.search);
+    const workspaceId = params?.workspaceId, projectId = params?.projectId;
+
+    const invite = allNotEmpty(workspaceId, projectId);
+
     const classes = useStyles();
     const data = (query: Query<Row>) => new Promise<QueryResult<Row>>((res, rej) => {
         console.log(`query`);
@@ -73,7 +91,8 @@ export default function Users() {
                 skills: 'Java',
                 reputation: '5',
                 username: 'me',
-                interests: 'Programming Programming Programming Programming Programming\nProgramming Programming Programming Programming Programming Programming Programming Programming Programming\nProgramming Programming Programming Programming'
+                project: 'Project Activity',
+                interests: 'Programming Programming Programming Programming Programming Programming\nProgramming Programming Programming\nProgramming Programming Programming Programming'
             }], page: 0, totalCount: 1
         });
     });
@@ -83,15 +102,44 @@ export default function Users() {
             onClick: (event: React.EventHandler<any>, objectData: Row | Row[]) =>
                 window.location.href = `/portfolio/${(objectData as Row).username}`,
             tooltip: 'Просмотр портфолио',
-        },
-        {
-            icon: () => <PersonAdd/>,
-            onClick: (event: React.EventHandler<any>, objectData: Row | Row[]) => {
-                console.log(objectData);
-            },
-            tooltip: 'Пригласить',
-        },
+        }
     ];
 
-    return (<Table title='Поиск учасников' data={data} tableColumns={tableColumns} tableActions={tableActions}/>);
+    if (invite)
+        tableActions.push({
+            icon: () => <PersonAdd/>,
+            onClick: (event: React.EventHandler<any>, objectData: Row | Row[]) => {
+                // console.log(objectData);
+
+                setOpenInviteUsername((objectData as Row).username);
+            },
+            tooltip: 'Пригласить',
+        });
+
+    const [openInviteUsername, setOpenInviteUsername] = useState(null as string | null);
+    const [inviteRole, setInviteRole] = useState(null as string | null);
+
+    function onInvite() {
+        invitePerson(openInviteUsername as string, inviteRole as string).then(() => {
+            alert('Invitation has been sent');
+            setOpenInviteUsername(null);
+        })
+    }
+
+    return (<>
+        <Dialog open={openInviteUsername !== null} onClose={() => setOpenInviteUsername(null)}>
+            <Centered>
+                {/*<Select*/}
+                {/*    value={}*/}
+                {/*    label="Выберите роль"*/}
+                {/*    onChange={handleChange}>*/}
+                {/*    */}
+                {/*</Select>*/}
+                <TextField margin='normal' value={inviteRole} onChange={getOnFieldChange(setInviteRole)}
+                           label="Введите роль"/>
+                <Button disabled={!inviteRole} onClick={onInvite}>Подтвердить</Button>
+            </Centered>
+        </Dialog>
+        <Table title='Поиск учасников' data={data} tableColumns={tableColumns} tableActions={tableActions}/>
+    </>);
 }

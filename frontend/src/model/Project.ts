@@ -27,6 +27,11 @@ export default class Project implements IBadge {
     }
 }
 
+export class Participant {
+    constructor(public login: string, public role: string) {
+    }
+}
+
 export class DetailedProject {
     constructor(public workSpaceId: string, public id: string = '', public title: string = '',
                 public shortDescription: string = '', public fullDescription: string = '',
@@ -40,26 +45,32 @@ export class DetailedProject {
     }
 
     public withTitle(title: string) {
-        const project: DetailedProject = this.clone();//Object.assign({}, this);
+        const project: DetailedProject = this.clone();
         project.title = title;
         return project;
     }
 
     public withFullDescription(descr: string) {
-        const project: DetailedProject = this.clone();//Object.assign({}, this);
+        const project: DetailedProject = this.clone();
         project.fullDescription = descr;
         return project;
     }
 
     public withShortDescription(descr: string) {
-        const project: DetailedProject = this.clone();//Object.assign({}, this);
+        const project: DetailedProject = this.clone();
         project.shortDescription = descr;
         return project;
     }
 
+    public withTags(tags: Tag[]) {
+        const project: DetailedProject = this.clone();
+        project.tags = tags;
+        return project;
+    }
+
     public removeParticipant(participant: string) {
-        const project: DetailedProject = this.clone();//Object.assign({}, this);
-        project.participantLogins = project.participantLogins.filter(p => p !== participant);
+        const project: DetailedProject = this.clone();
+        project.participants = project.participants.filter(p => p.login !== participant);
         return project;
     }
 

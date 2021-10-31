@@ -169,12 +169,13 @@ export default function ProjectDetailedPage() {
                     justifyContent: 'center',
                     flexWrap: 'wrap'
                 }}>
-                    <TagsPanel onSetTag={() => {
-                    }} editable={project?.role === ProjectRole.OWNER} values={project?.tags}/>
+                    <TagsPanel onSetTag={tags => setProject(project?.withTags(tags))}
+                               editable={project?.role === ProjectRole.OWNER} values={project?.tags}/>
                 </div>
                 <Divider flexItem/>
-                <EditableField label='Описание' multiline props={{className: classes.descr}} project={project}
-                               field={p => p?.fullDescription} isNew={isNew}
+                <EditableField label='Описание' multiline
+                               props={{className: classes.descr, sx: {width: '100%', padding: '15px'}}}
+                               project={project} field={p => p?.fullDescription} isNew={isNew}
                                onChange={t => setProject((project as DetailedProject).withFullDescription(t))}/>
                 <Divider flexItem/>
                 <List
@@ -186,12 +187,13 @@ export default function ProjectDetailedPage() {
                             Список участников
                         </ListSubheader>
                     }>
-                    {project?.participantLogins.map(p => (
-                        <ListItemButton disableRipple sx={{cursor: 'default'}} key={p}>
-                            <ListItemText primary={p}/>
-                            <IconButton onClick={() => removeParticipant(p)}>
-                                <Clear/>
-                            </IconButton>
+                    {project?.participants.map(p => (
+                        <ListItemButton disableRipple sx={{cursor: 'default'}} key={p.login}>
+                            <ListItemText primary={`${p.login} (${p.role})`}/>
+                            {project?.role === ProjectRole.OWNER ?
+                                <IconButton onClick={() => removeParticipant(p.login)}>
+                                    <Clear/>
+                                </IconButton> : <></>}
                         </ListItemButton>))}
                 </List>
                 <div className={classes.butGr} style={{justifyContent: 'start'}}>

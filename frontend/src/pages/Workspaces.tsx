@@ -1,18 +1,17 @@
 import React, {useEffect, useState} from 'react';
-import {makeStyles} from "@material-ui/core";
 import BadgePage from "../components/elements/BadgePage";
-import CheckBoxInfo from "../model/CheckBoxInfo";
 import {openDialog} from "../store/actions/dialog/dialog";
 import {shallowEqual, useDispatch, useSelector} from "react-redux";
-import {getProjectsForWorkspace} from "../api/projects";
-import ProjectQuery from "../model/dto/ProjectQuery";
 import Pageable from "../model/Pageable";
 import {initPaging} from "../store/actions/paging/setPagingData";
 import {useParams} from "react-router-dom";
 import getPaging from "../hooks/getPaging";
-import Project from "../model/Project";
 import Workspace from "../model/Workspace";
-import {getUsersWorkspaces} from "../api/workspaces";
+import {attachToWorkspace, getUsersWorkspaces} from "../api/workspaces";
+import {Dialog, TextField, Typography} from "@mui/material";
+import {Button, makeStyles} from "@material-ui/core";
+import Centered from "../components/util/Centered";
+import {allNotEmpty, getOnFieldChange} from "../utils/utils";
 
 
 const useStyles = makeStyles(theme => ({
@@ -28,6 +27,12 @@ const useStyles = makeStyles(theme => ({
     },
     title: {
         margin: '45px 0 10px 0'
+    },
+    button: {
+        maxHeight: '70%',
+        minHeight: '50px',
+        width: '170px',
+        margin: '10px'
     }
 }));
 
@@ -53,12 +58,34 @@ export default function Workspaces() {
         })
     }, [workspaceId, workspaceTitle]);
 
+    const [openAttachDialog, setOpenAttachDialog] = useState(false);
+    const [workspaceCode, setWorkspaceCode] = useState('');
+
+    function onDialogClose() {
+        attachToWorkspace(workspaceCode)
+            .then(r => window.location.reload());
+    }
+
     return (<BadgePage
         showTags={false}
         showDialog={true}
-        addTitle='Создать рабочее пространство'
+        addTitle='Создать'
         addOnClick={() => dispatch(openDialog())}
         title='Просмотр рабочих пространств'
         badgeData={data}
+        additionalButtons={(
+            <>
+                <Dialog open={openAttachDialog} onClose={() => setOpenAttachDialog(false)}>
+                    <Centered>
+                        <Typography>Введите код рабочего пространства</Typography>
+                        <TextField value={workspaceCode} onChange={getOnFieldChange(setWorkspaceCode)}/>
+                        <Button disabled={!allNotEmpty(workspaceCode)} onClick={onDialogClose}>Подтвердить</Button>
+                    </Centered>
+                </Dialog>
+                <Button variant='outlined' className={classes.button}
+                        onClick={() => setOpenAttachDialog(true)}>
+                    Присоединиться
+                </Button>
+            </>)}
         href={s => `/projects/${(s as Workspace).id}/${(s as Workspace).title}`}/>);
 }

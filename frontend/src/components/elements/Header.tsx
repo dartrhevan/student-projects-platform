@@ -6,6 +6,7 @@ import {shallowEqual, useDispatch, useSelector} from "react-redux";
 import LoginButton from "./LoginButton";
 import {getMainMenuOpen} from "../../hooks/getMenuState";
 import {closeMainMenuAction, openMainMenuAction} from "../../store/actions/menu/mainMenu";
+import isMobile from "../../hooks/isMobile";
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -27,6 +28,7 @@ export default function Header() {
     const dispatch = useDispatch();
     const classes = useStyles();
 
+    const mobile = isMobile();
     const mainMenuOpen = useSelector(getMainMenuOpen, shallowEqual);
 
     const onMenuButtonClicked = () => dispatch(mainMenuOpen ? closeMainMenuAction() : openMainMenuAction());
@@ -39,7 +41,10 @@ export default function Header() {
                     {mainMenuOpen ? <ArrowBackIcon/> : <MenuIcon/>}
                 </IconButton>
                 <Typography variant="h6" align="center" className={classes.title}>
-                    <Link underline='none' color='inherit' href='/'>Project Activities: Платформа для организации проектной деятельности</Link>
+                    <Link underline='none' color='inherit' href='/'>
+                        Project Activities{mobile ? '' :
+                        ': Платформа для организации проектной деятельности'}
+                    </Link>
                 </Typography>
                 <LoginButton/>
             </Toolbar>

@@ -14,6 +14,7 @@ import isMobile from "../../hooks/isMobile";
 import FormatAlignJustifyIcon from '@mui/icons-material/FormatAlignJustify';
 import EmailIcon from '@mui/icons-material/Email';
 import getUsername from "../../hooks/getUsername";
+import GroupIcon from '@mui/icons-material/Group';
 
 const drawerWidth = 240;
 
@@ -105,6 +106,10 @@ export default function MiniDrawer() {
                 <ListItem button key={'Мой профиль'} onClick={() => window.location.href = '/profile'}>
                     <ListItemIcon><Person/></ListItemIcon>
                     <ListItemText primary={'Мой профиль'}/>
+                </ListItem>
+                <ListItem button key={'Пользователи'} onClick={() => window.location.href = '/users'}>
+                    <ListItemIcon><GroupIcon/></ListItemIcon>
+                    <ListItemText primary={'Пользователи'}/>
                 </ListItem>
                 <ListItem button key={'Уведомления'} onClick={() => window.location.href = '/notifications'}>
                     <ListItemIcon><EmailIcon/></ListItemIcon>

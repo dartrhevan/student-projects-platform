@@ -4,7 +4,7 @@ export function getOnFieldChange(setter: (v: string) => void) {
     return (e: ChangeEvent<HTMLInputElement>) => setter((e.currentTarget as HTMLInputElement).value);
 }
 
-export function allNotEmpty(...values: (string | null | undefined)[]) {
+export function allNotEmpty(...values: any[]) {
     return values.every(e => e && e !== '');
 }
 

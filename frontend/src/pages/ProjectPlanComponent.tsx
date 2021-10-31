@@ -2,11 +2,13 @@ import React, {useEffect, useState} from 'react';
 import {useParams} from "react-router-dom";
 import {shallowEqual, useDispatch, useSelector} from "react-redux";
 import ArrowForwardIosSharpIcon from '@mui/icons-material/ArrowForwardIosSharp';
-import {makeStyles, Typography} from "@material-ui/core";
+import {Button, makeStyles, Typography} from "@material-ui/core";
 import Sprint, {ProjectPlan} from "../model/Sprint";
-import {addSprint, getProjectPlan} from "../api/projectPlan";
+import {addSprint, getProjectPlan, updateSprint, uploadPresentation} from "../api/projectPlan";
 import AddIcon from '@mui/icons-material/Add';
 import ListItemProps from "../props.common/ListItemProps";
+import FileUploadIcon from '@mui/icons-material/FileUpload';
+import Dropzone from 'react-dropzone'
 import {
     Accordion,
     AccordionDetails,
@@ -20,6 +22,16 @@ import {
 import {toDateString} from "../utils/utils";
 
 const useStyles = makeStyles(theme => ({
+    score: {
+        width: '60px',
+        margin: '0 10px',
+    },
+    scores: {
+        display: 'flex',
+        flexWrap: 'wrap',
+        flexDirection: 'row',
+        alignItems: 'baseline'
+    },
     paper: {
         padding: '10px 20px',
         width: '70vw',
@@ -36,6 +48,10 @@ const useStyles = makeStyles(theme => ({
         display: "flex",
         justifyContent: 'center',
         alignItems: 'center'
+    },
+    dropzone: {
+        height: '60px',
+        width: '100%'
     }
 }));
 
@@ -52,6 +68,28 @@ interface SprintProps extends ListItemProps {
 
 const SprintComponent = ({sprint, number, editable}: SprintProps) => {
     const classes = useStyles();
+    const editable = true;//role === ProjectRole.OWNER;
+
+    const [presentationFile, setPresentationFile] = useState(undefined as File | undefined);
+    const [goalsDescription, setGoalsDescription] = useState(sprint.goalsDescription);
+    const [scores, setScores] = useState(sprint.scores);
+    const [startDate, setStartDate] = useState(sprint.startDate);
+    const [endDate, setEndDate] = useState(sprint.endDate);
+    const [resultComment, setResultComment] = useState(sprint.resultComment);
+
+    function onChangesSubmit() {
+        sprint.goalsDescription = goalsDescription;
+        sprint.scores = scores;
+        sprint.startDate = startDate;
+        sprint.endDate = endDate;
+        sprint.resultComment = resultComment;
+        onSprintUpdate(sprint, presentationFile);
+    }
+
+    function onSetScore(index: number, value: string) {
+        scores[index] = Number.parseInt(value);
+        setScores(scores);
+    }
 
     return (
         <Accordion>
@@ -92,12 +130,27 @@ export default function ProjectPlanComponent() {
     }, [projectId, workspaceId]);
 
     function addNewSprint() {
-        const sprint = new Sprint();
-        addSprint(projectId, workspaceId, sprint)
+        addSprint(projectId, workspaceId)
             .then(r => {
-                projectPlan?.plan.push(sprint);
+                projectPlan?.plan.push(new Sprint(r.payload));
                 setProjectPlan(new ProjectPlan(projectPlan?.plan as Sprint[], projectPlan?.projectTitle as string));//TODO: rewrite for null-safe
             });
+    }
+
+    function onSprintUpdate(s: Sprint, pr?: File) {
+        let promise: Promise<any>
+        if (pr)
+            promise = uploadPresentation(workspaceId, projectId, s.id, pr as File)
+                .then(r => {
+                    s.presentationUrl = r.payload;
+                    return updateSprint(workspaceId, projectId, s);
+                })
+        else
+            promise = updateSprint(workspaceId, projectId, s);
+        promise.then(() => {
+            (projectPlan as ProjectPlan).plan = projectPlan?.plan.map(sp => s.id === sp.id ? s : sp) as Sprint[];
+            setProjectPlan(projectPlan);
+        });
     }
 
     return (
