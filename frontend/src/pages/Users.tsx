@@ -1,12 +1,12 @@
 import React, {useState} from 'react';
-import {Button, makeStyles, Typography} from "@material-ui/core";
+import {Button, DialogContent, makeStyles, Typography} from "@material-ui/core";
 import {Action, Query, QueryResult} from 'material-table';
 import {Person, PersonAdd,} from "@material-ui/icons";
 import Table from "../components/util/Table";
 import queryString from "query-string";
 import {allNotEmpty, getOnFieldChange} from "../utils/utils";
 import ViewableText from "../components/elements/ViewableText";
-import {Dialog, MenuItem, Select, TextField} from "@mui/material";
+import {Dialog, DialogActions, DialogTitle, TextField} from "@mui/material";
 import Centered from "../components/util/Centered";
 import {invitePerson} from "../api/workspaces";
 
@@ -128,7 +128,8 @@ export default function Users() {
 
     return (<>
         <Dialog open={openInviteUsername !== null} onClose={() => setOpenInviteUsername(null)}>
-            <Centered>
+            <DialogTitle>Пригласить участника</DialogTitle>
+            <DialogContent dividers>
                 {/*<Select*/}
                 {/*    value={}*/}
                 {/*    label="Выберите роль"*/}
@@ -137,8 +138,11 @@ export default function Users() {
                 {/*</Select>*/}
                 <TextField margin='normal' value={inviteRole} onChange={getOnFieldChange(setInviteRole)}
                            label="Введите роль"/>
-                <Button disabled={!inviteRole} onClick={onInvite}>Подтвердить</Button>
-            </Centered>
+
+                <DialogActions>
+                    <Button disabled={!inviteRole} onClick={onInvite}>Подтвердить</Button>
+                </DialogActions>
+            </DialogContent>
         </Dialog>
         <Table title='Поиск учасников' data={data} tableColumns={tableColumns} tableActions={tableActions}/>
     </>);

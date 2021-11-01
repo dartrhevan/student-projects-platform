@@ -8,7 +8,7 @@ import {useParams} from "react-router-dom";
 import getPaging from "../hooks/getPaging";
 import Workspace from "../model/Workspace";
 import {attachToWorkspace, getUsersWorkspaces} from "../api/workspaces";
-import {Dialog, TextField, Typography} from "@mui/material";
+import {Dialog, DialogActions, DialogContent, DialogTitle, TextField, Typography} from "@mui/material";
 import {Button, makeStyles} from "@material-ui/core";
 import Centered from "../components/util/Centered";
 import {allNotEmpty, getOnFieldChange} from "../utils/utils";
@@ -53,8 +53,8 @@ export default function Workspaces() {
 
     useEffect(() => {
         getUsersWorkspaces(new Pageable(pageNumber, pageSize)).then(r => {
-            setData(r.payload.w)
-            dispatch(initPaging(r.payload.p.totalCount, r.payload.p.pageSize, r.payload.p.pageNumber))//TODO: call back here
+            setData(r.data.w)
+            dispatch(initPaging(r.data.p.totalCount, r.data.p.pageSize, r.data.p.pageNumber))//TODO: call back here
         })
     }, [workspaceId, workspaceTitle]);
 
@@ -76,11 +76,17 @@ export default function Workspaces() {
         additionalButtons={(
             <>
                 <Dialog open={openAttachDialog} onClose={() => setOpenAttachDialog(false)}>
-                    <Centered>
-                        <Typography>Введите код рабочего пространства</Typography>
+                    <DialogTitle>
+                        <Typography>
+                            Введите код рабочего пространства
+                        </Typography>
+                    </DialogTitle>
+                    <DialogContent>
                         <TextField value={workspaceCode} onChange={getOnFieldChange(setWorkspaceCode)}/>
+                    </DialogContent>
+                    <DialogActions>
                         <Button disabled={!allNotEmpty(workspaceCode)} onClick={onDialogClose}>Подтвердить</Button>
-                    </Centered>
+                    </DialogActions>
                 </Dialog>
                 <Button variant='outlined' className={classes.button}
                         onClick={() => setOpenAttachDialog(true)}>

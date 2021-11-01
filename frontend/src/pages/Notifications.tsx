@@ -1,57 +1,63 @@
 import React from 'react';
-import {Action, Query, QueryResult} from 'material-table';
+import MaterialTable, {Action, Query} from 'material-table';
 
 import Table from "../components/util/Table";
 import {Check, Clear} from "@material-ui/icons";
 import Dot from "../components/util/Dot";
 import Checkbox from '@mui/material/Checkbox';
+import {notificationsColors} from "../model/Notification";
+import {apply, deny, getAllNotifications, markRead} from "../api/notifications";
+import Notification from "../model/Notification";
 
-interface Row {
-    new: boolean,
-    date: string,
-    text: string
-}
-
-const tableColumns = [
-    {
-        title: 'Новые',
-        field: "new",
-        filtering: false,
-        render: (row: Row) =>
-            <Checkbox sx={{height: '40px', width: '40px'}} icon={<></>} checked={row.new} checkedIcon={<Dot />}/>
-    },
-    {
-        title: 'Дата',
-        field: "date",
-        sorting: true,
-        filtering: false
-    },
-    {
-        title: 'Текст',
-        field: "text",
-        sorting: false,
-        filtering: false
-    }
-];
 
 export default function Notifications() {
-    const tableActions: Action<Row>[] = [
+    const tableRef = React.createRef<MaterialTable<Notification>>();
+
+    const tableColumns = [
         {
-            icon: () => <Check />,
-            onClick: (event: React.EventHandler<any>, objectData: Row | Row[]) => {
-            },
+            title: 'Новые',
+            field: "new",
+            filtering: false,
+            render: (row: Notification) =>
+                <Checkbox sx={{height: '40px', width: '40px'}} icon={<></>} checked={row.isNew} onClick={() => {
+                    if (row.isNew) {
+                        markRead(row.id).then(r => {
+                            row.isNew = false;
+                            (tableRef.current as any).onQueryChange();
+                        })
+                    }
+                }} checkedIcon={<Dot color={notificationsColors.get(row.type)}/>}/>
+        },
+        {
+            title: 'Дата',
+            field: "date",
+            sorting: true,
+            filtering: false,
+        },
+        {
+            title: 'Текст',
+            field: "text",
+            sorting: false,
+            filtering: false
+        }
+    ];
+
+    const tableActions: Action<Notification>[] = [
+        {
+            icon: () => <Check/>,
+            onClick: (event: React.EventHandler<any>, objectData: Notification | Notification[]) =>
+                apply((objectData as Notification).id).then(alert),
             tooltip: 'Принять',
         },
         {
-            icon: () => <Clear />,
-            onClick: (event: React.EventHandler<any>, objectData: Row | Row[]) => {
-                console.log(objectData);
-            },
+            icon: () => <Clear/>,
+            onClick: (event: React.EventHandler<any>, objectData: Notification | Notification[]) =>
+                deny((objectData as Notification).id).then(alert),
             tooltip: 'Отклонить',
         },
     ];
-    const data = (query: Query<Row>) => new Promise<QueryResult<Row>>((res, rej) =>
-        res({data: [{new: true, date: '10/10//2021', text: 'Java'}, {new: false, date: '10/02/2021', text: 'Lay'}], page: 0, totalCount: 1}));
+    const data = (query: Query<Notification>) => getAllNotifications(query.page, query.pageSize);
 
-    return (<Table title='Уведомления' filtering={false} data={data} tableColumns={tableColumns} tableActions={tableActions}/>);
+    return (<Table title='Уведомления' filtering={false} data={data} tableColumns={tableColumns}
+                   tableActions={tableActions} tableRef={tableRef}/>);
 }

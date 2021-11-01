@@ -7,45 +7,12 @@ import ScoreDTO from "../model/dto/ScoreDTO";
 import {Paper, TableCell, TableContainer, TableHead, TableRow, Typography} from '@mui/material';
 import TableBody from '@material-ui/core/TableBody/TableBody';
 
-// const basicTableColumns = [
-//     {
-//         title: 'Название проекта',
-//         field: "projectTitle",
-//         // filtering: false,
-//         // render: (row: Row) =>
-//         //     <Checkbox sx={{height: '40px', width: '40px'}} icon={<></>} checked={row.new} checkedIcon={<Dot/>}/>
-//     },
-//     {
-//         title: 'Ментор',
-//         field: "mentor",
-//         sorting: true,
-//     }
-// ];
-
 export default function Scores() {
     const {workspaceId} = useParams<{ workspaceId: string }>();
     const [data, setData] = useState([] as ScoreDTO[]);
 
-    // const [tableColumns, setTablesColumns] = useState(basicTableColumns as object[]);
-
     useEffect(() => {
-        getScores(workspaceId).then(r => {
-            // tableColumns = [...basicTableColumns];
-            // tableColumns.push(r.payload[0].scores.map((s, i) =>
-            // if (s.comment)
-            //     baseColumn.push({
-            //
-            //     })
-            // [{title: `Спринт ${i}`, render: (r: ScoreDTO) => r.scores[i]}]
-            // ));
-            // tableColumns.push({
-            //     title: 'Финальная оценка',
-            // render: (r: ScoreDTO) => r.scores.reduce((acc, val) => val + acc) / r.scores.length
-            // });
-            setData(r.payload);
-            // setTablesColumns([...tableColumns])
-            // return {data: r.payload, page: 0, totalCount: 1};
-        });
+        getScores(workspaceId).then(r => setData(r.data));
     }, [workspaceId]);
 
     const sprintsCount = Array.from({
@@ -86,5 +53,4 @@ export default function Scores() {
             </Table>
         </TableContainer>
     </>);
-    //(<Table title='Оценки' paging={false} filtering={false} data={data} tableColumns={tableColumns}/>);
 }

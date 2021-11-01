@@ -18,6 +18,7 @@ import TagsPanel from "../../components/util/TagsPanel";
 import clsx from 'clsx';
 import Card from "@material-ui/core/Card";
 import Autocomplete from "@mui/material/Autocomplete";
+import Tag from "../../model/Tag";
 
 const useStyles = makeStyles(theme => ({
     def: {
@@ -72,9 +73,11 @@ export default function UserProfileComponent({user, title}: UserProfileProps) {
     const [password, setPassword] = useState('');
     const [passwordConfirm, setPasswordConfirm] = useState('');
     const [comment, setComment] = useState('');
+    const [group, setGroup] = useState('');
     const passwordConfirmed = password === passwordConfirm;
     const rolesReference = ['front', 'back', 'devops', 'test', 'analytic']; //TODO: get from backend
     const [roles, setRoles] = useState([] as string[]);
+    const [tags, setTags] = useState([] as Tag[]);
 
     const passwordLabels = getPasswordLabel(user);
 
@@ -116,7 +119,7 @@ export default function UserProfileComponent({user, title}: UserProfileProps) {
                 <CssBaseline/>
                 <div className={clsx(classes.def, classes.skills)}>
                     <Typography className={classes.def} align='center'>Введи ваши навыки</Typography>
-                    <TagsPanel label='skill' tagInputClasses={[classes.tagInput]} onSetTag={console.log}/>
+                    <TagsPanel label='skill' tagInputClasses={[classes.tagInput]} onSetTag={setTags}/>
                 </div>
                 <Autocomplete
                     multiple

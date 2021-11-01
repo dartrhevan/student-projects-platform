@@ -9,7 +9,7 @@ import {
 import {closeDialog} from "../../store/actions/dialog/dialog";
 import {useDispatch, useSelector} from "react-redux";
 import isOpenDialog from "../../hooks/isOpenDialog";
-import {Divider} from "@mui/material";
+import {DialogActions, DialogContent, DialogTitle, Divider} from "@mui/material";
 import {addNewWorkspace, getWorkspaceById, updateWorkspace} from "../../api/workspaces";
 import {allNotEmpty, getOnFieldChange, toDateString} from "../../utils/utils";
 import ErrorMessage from "./ErrorMessage";
@@ -59,11 +59,11 @@ export default function WorkspaceSettings({workspaceId = ''}: WorkspaceProps) {
     useEffect(() => {
         if (workspaceId !== '') {
             getWorkspaceById(workspaceId).then(r => {//TODO: refactor
-                setTitle(r.payload.title);
-                setStartDate(r.payload.startDate);
-                setEndDate(r.payload.endDate);
-                setSprintsLength(r.payload.sprintsLength);
-                setSprintsCount(r.payload.sprintsCount);
+                setTitle(r.data.title);
+                setStartDate(r.data.startDate);
+                setEndDate(r.data.endDate);
+                setSprintsLength(r.data.sprintsLength);
+                setSprintsCount(r.data.sprintsCount);
             });
         }
     }, [workspaceId]);
@@ -90,11 +90,14 @@ export default function WorkspaceSettings({workspaceId = ''}: WorkspaceProps) {
 
     return (
         <Dialog open={open} onClose={onCloseDialog}>
-            <div className={classes.main}>
-                <Typography className={classes.but} variant='h6'>
+            <DialogTitle>
+                <Typography variant='h6'>
                     {workspaceId === '' ? 'Новое рабочее пространство' : `Рабочее пространство ${title}`}
                 </Typography>
-                <TextField className={classes.but} value={title} label='Название' onChange={getOnFieldChange(setTitle)}/>
+            </DialogTitle>
+            <DialogContent dividers className={classes.main}>
+                <TextField className={classes.but} value={title} label='Название'
+                           onChange={getOnFieldChange(setTitle)}/>
                 <Typography variant='h6' paragraph>Настройки стандартного плана</Typography>
                 <Divider flexItem/>
                 <br/>
@@ -113,12 +116,11 @@ export default function WorkspaceSettings({workspaceId = ''}: WorkspaceProps) {
                 <TextField defaultValue={sprintsLength} className={classes.but} type='number'
                            onChange={getOnFieldChange(s => setSprintsLength(Number.parseInt(s)))}/>
                 <ErrorMessage message='*Не все обязательные поля заполнены' condition={!allFilled}/>
-
-                <div className={classes.buts}>
-                    <Button disabled={!allFilled} className={classes.but} onClick={submit}>Подтвердить</Button>
-                    <Button className={classes.but} onClick={onCloseDialog}>Отменить</Button>
-                </div>
-            </div>
+            </DialogContent>
+            <DialogActions className={classes.buts}>
+                <Button disabled={!allFilled} onClick={submit}>Подтвердить</Button>
+                <Button onClick={onCloseDialog}>Отменить</Button>
+            </DialogActions>
         </Dialog>
     );
 }

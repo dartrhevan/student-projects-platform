@@ -11,10 +11,9 @@ import getPaging from "../hooks/getPaging";
 import CheckBoxInfo from "../model/CheckBoxInfo";
 import {Button, makeStyles} from "@material-ui/core";
 import Centered from "../components/util/Centered";
-import {Dialog, TextField} from "@mui/material";
+import {Dialog, DialogActions, DialogContent, DialogTitle, TextField} from "@mui/material";
 import WorkspaceSettings from "../components/elements/WorkspaceSettings";
-import isOpenDialog from "../hooks/isOpenDialog";
-import {closeDialog, openDialog} from "../store/actions/dialog/dialog";
+import {openDialog} from "../store/actions/dialog/dialog";
 import Invite from "../model/dto/Invite";
 import {getInviteForWorkspace} from "../api/workspaces";
 
@@ -49,12 +48,6 @@ export default function Projects() {
             });
     }, [workspaceId, pageNumber, pageSize]);//TODO: call back here
 
-    // const open = useSelector(isOpenDialog);
-
-    // function onCloseDialog() {
-    //     dispatch(closeDialog());
-    // }
-
     const [openInvite, setOpenInvite] = useState(false);
     const [invite, setInvite] = useState(null as Invite | null);
 
@@ -63,7 +56,7 @@ export default function Projects() {
             setOpenInvite(true);
         else
             getInviteForWorkspace(workspaceId).then(r => {
-                setInvite(r.payload);
+                setInvite(r.data);
                 setOpenInvite(true);
             })
     }
@@ -78,15 +71,20 @@ export default function Projects() {
                            {owner ?
                                <>
                                    <Dialog open={openInvite} onClose={closeInvite}>
-                                       <Centered>
-                                           <TextField label='Приглашение участника' value={invite?.userInvite}
-                                                      margin='normal' disabled={true}/>
-                                           <TextField label='Приглашение ментора' value={invite?.mentorInvite}
-                                                      margin='normal' disabled={true}/>
+                                       <DialogTitle>Добавить в рабочее пространство</DialogTitle>
+                                       <DialogContent dividers>
+                                           <Centered>
+                                               <TextField label='Добавить участника' value={invite?.userInvite}
+                                                          margin='normal' disabled={true}/>
+                                               <TextField label='Добавить ментора' value={invite?.mentorInvite}
+                                                          margin='normal' disabled={true}/>
+                                           </Centered>
+                                       </DialogContent>
+                                       <DialogActions>
                                            <Button onClick={closeInvite}>
                                                Закрыть
                                            </Button>
-                                       </Centered>
+                                       </DialogActions>
                                    </Dialog>
                                    <Button href={`/scores/${workspaceId}`} variant='outlined'
                                            className={classes.button}>

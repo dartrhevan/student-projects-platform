@@ -5,6 +5,7 @@ import {Query, QueryResult} from "material-table";
 import ProjectParticipation from "../model/ProjectParticipation";
 import {getPortfolio} from "../api/users";
 import {Link} from "@mui/material";
+import {labelColors} from "../model/Project";
 
 interface LoginParam {
     login: string
@@ -36,7 +37,7 @@ const tableColumns = [
         field: "status",
         sorting: true,
         filtering: false,
-        // render: (p: ProjectParticipation) => p.status
+        render: (p: ProjectParticipation) => <span style={{color: labelColors.get(p.status)}}>{p.status}</span>
     }
 ];
 
@@ -45,11 +46,12 @@ export default function () {
 
     const data = (query: Query<ProjectParticipation>) => new Promise<QueryResult<ProjectParticipation>>((res, rej) =>
         getPortfolio(login).then(d =>
-        res({
-            data: d.payload, page: 0, totalCount: 1
-        })));
+            res({
+                data: d.data, page: 0, totalCount: 1
+            })));
 
 
     return (
-        <Table title={`Портфолио пользователя ${login}`} filtering={false} data={data} tableColumns={tableColumns} paging={false}/>);
+        <Table title={`Портфолио пользователя ${login}`} filtering={false} data={data} tableColumns={tableColumns}
+               paging={false}/>);
 }

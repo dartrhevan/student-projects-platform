@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {Button, Card, CardActionArea, Dialog, Typography} from "@mui/material";
+import {Button, Card, CardActionArea, Dialog, DialogActions, DialogContent, Typography} from "@mui/material";
 
 interface ViewableTextProps {
     // text: string
@@ -26,8 +26,12 @@ export default function ({children, maxWidth}: React.PropsWithChildren<ViewableT
                 {children}
             </CardActionArea>
             <Dialog open={openDialog} onClose={close}>
-                <Typography style={{padding: '20px'}} variant='body1'>{children}</Typography>
-                <Button sx={{marginTop: '10px'}} onClick={close}>Закрыть</Button>
+                <DialogContent dividers>
+                    <Typography style={{padding: '20px'}} variant='body1'>{children}</Typography>
+                </DialogContent>
+                <DialogActions>
+                    <Button sx={{marginTop: '10px'}} onClick={close}>Закрыть</Button>
+                </DialogActions>
             </Dialog>
         </>)
 }

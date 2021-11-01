@@ -52,6 +52,10 @@ const useStyles = makeStyles(theme => ({
     dropzone: {
         height: '60px',
         width: '100%'
+    },
+    criterion: {
+        fontSize: '18px',
+        margin: '0 10px'
     }
 }));
 
@@ -119,20 +123,17 @@ export default function ProjectPlanComponent() {
     const classes = useStyles();
 
     const {workspaceId, projectId} = useParams<ProjectParams>();
-    // const [project, setProject] = useState(null as DetailedProject | null);
 
     const [projectPlan, setProjectPlan] = useState(null as ProjectPlan | null);
 
-    const dispatch = useDispatch();
-
     useEffect(() => {
-        getProjectPlan(projectId, workspaceId).then(r => setProjectPlan(r.payload));
+        getProjectPlan(projectId, workspaceId).then(r => setProjectPlan(r.data));
     }, [projectId, workspaceId]);
 
     function addNewSprint() {
         addSprint(projectId, workspaceId)
             .then(r => {
-                projectPlan?.plan.push(new Sprint(r.payload));
+                projectPlan?.plan.push(new Sprint(r.data));
                 setProjectPlan(new ProjectPlan(projectPlan?.plan as Sprint[], projectPlan?.projectTitle as string));//TODO: rewrite for null-safe
             });
     }
@@ -142,7 +143,7 @@ export default function ProjectPlanComponent() {
         if (pr)
             promise = uploadPresentation(workspaceId, projectId, s.id, pr as File)
                 .then(r => {
-                    s.presentationUrl = r.payload;
+                    s.presentationUrl = r.data;
                     return updateSprint(workspaceId, projectId, s);
                 })
         else

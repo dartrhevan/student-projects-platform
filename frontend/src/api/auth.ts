@@ -36,7 +36,7 @@ export function login(login: string, password: string) {
             throw "Error auth";
         }
     }).then((r: GenericResponse<Login>) => {
-        return r.success ? (alert(r.message), null) : r.payload;
+        return r.success ? (alert(r.message), null) : r.data;
     }).catch(r => (alert(r), null));
     // return new Promise<GenericResponse<LoginState>>((res, rej) => res("vovan")); //TODO: implement
 }
@@ -76,7 +76,7 @@ export function register(user: UserProfile, password: string) {
             throw "Error auth";
         }
     }).then((r: GenericResponse<Login>) => {
-        return r.success ? (alert(r.message), null) : r.payload;
+        return r.success ? (alert(r.message), null) : r.data;
     }).catch(r => (alert(r), null));//new Promise<string>((res, rej) => res("vovan")); //TODO: implement
 }
 

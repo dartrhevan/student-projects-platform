@@ -131,7 +131,7 @@ export default function ProjectDetailedPage() {
     useEffect(() => {
             if (!isNew) {
                 getProjectInfo(projectId as string, workspaceId as string)
-                    .then(r => setProject(r.payload)).catch(console.log)
+                    .then(r => setProject(r.data)).catch(console.log)
             }
         }, //TODO: catch
         [workspaceId, projectId, isNew]);
