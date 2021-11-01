@@ -9,7 +9,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
 import java.util.List;
@@ -39,9 +38,8 @@ public class User implements UserDetails {
     private String email;
     private String comment;
     @ElementCollection
-    private List<String> skills;
-    @ElementCollection
     private List<String> roles;
+    private String groupp;
 
 
     @ElementCollection(targetClass = AccessRole.class, fetch = FetchType.EAGER)
@@ -49,7 +47,7 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Set<AccessRole> accessRoles;
 
-    public User(String login, String passwordHash, String name, String surname, String middleName,String email,List<String> roles,List<String> skills, String comment, Set<AccessRole> accessRoles) {
+    public User(String login, String passwordHash, String name, String surname, String middleName,String email,List<String> roles, String comment, String group, Set<AccessRole> accessRoles) {
         this.login = login;
         this.passwordHash = passwordHash;
         this.name = name;
@@ -57,8 +55,8 @@ public class User implements UserDetails {
         this.middleName = middleName;
         this.email=email;
         this.roles=roles;
-        this.skills=skills;
         this.comment=comment;
+        this.groupp=group;
 
         this.accessRoles = accessRoles;
 

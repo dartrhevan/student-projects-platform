@@ -1,14 +1,14 @@
 package com.platform.projapp.controller;
 
 import com.platform.projapp.dto.request.AuthRequest;
-import com.platform.projapp.dto.request.ChangeUserProfileRequest;
-import com.platform.projapp.dto.request.RegisterRequest;
+import com.platform.projapp.dto.request.RegisterOrUpdateUserRequest;
 import com.platform.projapp.dto.request.TokenRefreshRequest;
 import com.platform.projapp.dto.response.GeneralResponse;
 import com.platform.projapp.dto.response.body.MessageResponseBody;
 import com.platform.projapp.service.AuthService;
 import com.platform.projapp.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+
 
 /**
  * @author Yarullin Renat
@@ -34,9 +35,9 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<?> registerUser(@RequestBody @Valid RegisterRequest registerRequest, BindingResult bindingResult) {
+    public ResponseEntity<?> registerUser(@RequestBody @Valid RegisterOrUpdateUserRequest registerRequest, BindingResult bindingResult) {
         var errors = authService.registerUser(registerRequest, bindingResult);
-        return errors.isEmpty() ? ResponseEntity.ok(authService.authUser(registerRequest.getLogin(), registerRequest.getPassword())) : ResponseEntity.ok().body(new GeneralResponse<MessageResponseBody>().withErrors(errors));
+        return errors.isEmpty() ? ResponseEntity.ok(authService.authUser(registerRequest.getLogin(), registerRequest.getPassword())) : ResponseEntity.badRequest().body(new GeneralResponse<MessageResponseBody>().withErrors(errors));
     }
 
     @PostMapping("/refreshtoken")
@@ -47,17 +48,20 @@ public class AuthController {
 
     @GetMapping("/currentuser")
     public ResponseEntity<?> getCurrentUser(HttpServletRequest req) {
-        return ResponseEntity.ok(userService.GetCurrentUser(req));
+        var response = userService.getCurrentUser(req);
+        return response.success() ? ResponseEntity.ok(response) : ResponseEntity.badRequest().body(response);
     }
 
     @GetMapping("/userprofile")
-    public ResponseEntity<?> getCurrentUserProfile(HttpServletRequest req){
-        return ResponseEntity.ok(userService.GetCurrentUserProfile(req));
+    public ResponseEntity<?> getCurrentUserProfile(HttpServletRequest req) {
+        var response = userService.getCurrentUserProfile(req);
+        return response.success() ? ResponseEntity.ok(response) : ResponseEntity.badRequest().body(response);
     }
 
-    @PostMapping("/changeprofile")
-    public ResponseEntity<?> ChangeUserProfile(@RequestBody ChangeUserProfileRequest request) {
-        return ResponseEntity.ok(userService.ChangeUserProfile(request));
+    @PutMapping("/userprofile")
+    public ResponseEntity<?> changeUserProfile(@RequestBody RegisterOrUpdateUserRequest request) {
+        var response = userService.changeUserProfile(request);
+        return response.success() ? ResponseEntity.ok(response) : ResponseEntity.badRequest().body(response);
     }
 
 }

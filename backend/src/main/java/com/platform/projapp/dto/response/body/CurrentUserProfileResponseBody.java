@@ -14,8 +14,8 @@ public class CurrentUserProfileResponseBody{
     private String interests;
     private String email;
     private String comment;
-    private List<String> skills;
     private List<String> roles;
+    private String group;
     private Long id;//Выводить пользователю не надо, нужен для изменения профиля
     //TODO:ADD
 }

@@ -10,4 +10,5 @@ public class ErrorConstants {
     public static ErrorInfo USER_NOT_AUTH = ErrorInfo.of("UserNotAuth", "Пользователь не авторизован");
     public static ErrorInfo LOGIN_IS_BUSY = ErrorInfo.of("LoginIsBusy", "Пользователь с таким логином уже зарегистрирован");
     public static ErrorInfo WRONG_PASSWORD = ErrorInfo.of("WrongPassword", "Неправильный пароль");
+    public static ErrorInfo PASSWORD_IS_EMPTY = ErrorInfo.of("PasswordIsEmpty", "Поле пароль обязательно для заполнения");
 }
