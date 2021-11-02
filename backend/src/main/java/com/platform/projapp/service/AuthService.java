@@ -1,7 +1,7 @@
 package com.platform.projapp.service;
 
 import com.platform.projapp.configuration.jwt.JwtUtils;
-import com.platform.projapp.dto.request.RegisterRequest;
+import com.platform.projapp.dto.request.RegisterOrUpdateUserRequest;
 import com.platform.projapp.dto.request.TokenRefreshRequest;
 import com.platform.projapp.dto.response.GeneralResponse;
 import com.platform.projapp.dto.response.body.JwtResponseBody;
@@ -54,9 +54,14 @@ public class AuthService {
         }
     }
 
-    public List<ErrorInfo> registerUser(RegisterRequest registerRequest, BindingResult bindingResult) {
+    public List<ErrorInfo> registerUser(RegisterOrUpdateUserRequest registerRequest, BindingResult bindingResult) {
 
         List<ErrorInfo> errors = new ArrayList<>();
+        if (registerRequest.getPassword()==null)
+        {
+            errors.add(ErrorConstants.PASSWORD_IS_EMPTY);
+        }
+
         if (userRepository.existsByLogin(registerRequest.getLogin())) {
             errors.add(ErrorConstants.LOGIN_IS_BUSY);
         }
