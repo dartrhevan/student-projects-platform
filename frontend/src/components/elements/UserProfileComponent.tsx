@@ -79,6 +79,18 @@ export default function UserProfileComponent({user, title}: UserProfileProps) {
     const [roles, setRoles] = useState([] as string[]);
     const [tags, setTags] = useState([] as Tag[]);
 
+    useEffect(() => {
+        if (user !== undefined) {
+            setUsername(user?.username);
+            setSurname(user?.surname);
+            setName(user?.name);
+            setTags(user?.skills);
+            setGroup(user?.group);
+            setComment(user?.comment);
+            setRoles(user?.roles);
+            setEmail(user?.email);
+        }
+    }, [user]);
     const passwordLabels = getPasswordLabel(user);
 
     console.log('name');

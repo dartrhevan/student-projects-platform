@@ -16,6 +16,7 @@ import WorkspaceSettings from "../components/elements/WorkspaceSettings";
 import {openDialog} from "../store/actions/dialog/dialog";
 import Invite from "../model/dto/Invite";
 import {getInviteForWorkspace} from "../api/workspaces";
+import {WorkspaceAssociation} from "../model/dto/ProjectsResponse";
 
 
 interface ProjectsParams {//TODO: remove
@@ -31,7 +32,7 @@ export default function Projects() {
     const classes = useStyles();
     const {workspaceId, workspaceTitle} = useParams<ProjectsParams>();
     const {totalCount, pageSize, pageNumber} = useSelector(getPaging, shallowEqual);
-    const [owner, setOwner] = useState(false);
+    const [role, setRole] = useState(WorkspaceAssociation.STUDENT);
     const [activeOnly, setActiveOnly] = useState(false);
 
     const [data, setData] = useState([] as Project[]);
@@ -43,7 +44,7 @@ export default function Projects() {
         getProjectsForWorkspace(new ProjectQuery([], new Pageable(pageNumber, pageSize), workspaceId, activeOnly))
             .then(r => {
                 setData(r.projects);
-                setOwner(r.owner);
+                setRole(r.role);
                 dispatch(initPaging(r.totalCount, pageSize, pageNumber));
             });
     }, [workspaceId, pageNumber, pageSize]);//TODO: call back here
@@ -68,7 +69,7 @@ export default function Projects() {
     return (<BadgePage checkBoxes={[new CheckBoxInfo('Показать только активные', setActiveOnly)]}
                        additionalButtons={(<>
                            <WorkspaceSettings workspaceId={workspaceId}/>
-                           {owner ?
+                           {role === WorkspaceAssociation.ORGANIZER ?
                                <>
                                    <Dialog open={openInvite} onClose={closeInvite}>
                                        <DialogTitle>Добавить в рабочее пространство</DialogTitle>
@@ -98,7 +99,17 @@ export default function Projects() {
                                            className={classes.button}>
                                        Настройки
                                    </Button>
-                               </> : <></>}
+                               </> : <>
+                                   <Button href={`/scores/${workspaceId}`} variant='outlined'
+                                           className={classes.button}>
+                                       Оценки
+                                   </Button>
+                                   {role === WorkspaceAssociation.MENTOR ?
+                                       <Button href={`/scores/${workspaceId}`} variant='outlined'
+                                               className={classes.button}>
+                                           Оценки
+                                       </Button> : <></>}
+                               </>}
                        </>)}
                        title={`Проекты из "${workspaceTitle}"`} badgeData={data} squared={false}
                        href={i => `/project?projectId=${i.id}&workspaceId=${workspaceId}`}

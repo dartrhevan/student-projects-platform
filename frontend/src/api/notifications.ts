@@ -1,4 +1,3 @@
-import GenericResponse from "../model/dto/GenericResponse";
 import Notification, {NotificationType} from "../model/Notification";
 import CommonResponse from "../model/dto/CommonResponse";
 import PagedResponse from "../model/dto/PagedResponse";

@@ -4,6 +4,7 @@ import com.platform.projapp.model.User;
 import com.platform.projapp.property.AppProperties;
 import com.platform.projapp.service.UserService;
 import io.jsonwebtoken.*;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Lazy;
@@ -16,10 +17,9 @@ import java.util.Date;
 /**
  * @author Yarullin Renat
  */
+@Slf4j
 @Component
 public class JwtUtils {
-    private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
-
     private final AppProperties appProperties;
 
     private final UserService userService;
@@ -68,13 +68,13 @@ public class JwtUtils {
                     .parseClaimsJws(authToken);
             return true;
         } catch (MalformedJwtException e) {
-            logger.error("Invalid JWT token: {}", e.getMessage());
+            log.warn("Invalid JWT token: {}", e.getMessage());
         } catch (ExpiredJwtException e) {
-            logger.error("JWT token is expired: {}", e.getMessage());
+            log.warn("JWT token is expired: {}", e.getMessage());
         } catch (UnsupportedJwtException e) {
-            logger.error("JWT token is unsupported: {}", e.getMessage());
+            log.warn("JWT token is unsupported: {}", e.getMessage());
         } catch (IllegalArgumentException e) {
-            logger.error("JWT claims string is empty: {}", e.getMessage());
+            log.warn("JWT claims string is empty: {}", e.getMessage());
         }
 
         return false;

@@ -81,7 +81,7 @@ export default function Workspaces() {
                             Введите код рабочего пространства
                         </Typography>
                     </DialogTitle>
-                    <DialogContent>
+                    <DialogContent dividers>
                         <TextField value={workspaceCode} onChange={getOnFieldChange(setWorkspaceCode)}/>
                     </DialogContent>
                     <DialogActions>

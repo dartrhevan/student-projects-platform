@@ -38,7 +38,10 @@ export default function Notifications() {
             title: 'Текст',
             field: "text",
             sorting: false,
-            filtering: false
+            filtering: false,
+            // cellStyle: {
+            //
+            // },
         }
     ];
 
