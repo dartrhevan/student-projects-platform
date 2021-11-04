@@ -7,20 +7,30 @@ const useStyles = makeStyles(theme => ({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: '5%',
-        flexDirection: 'column',
+        padding: '2%',
         flexGrow: 1
+    },
+    row: {
+        flexDirection: 'row'
+    },
+    column: {
+        flexDirection: 'column'
     }
 }));
 
 interface CenteredProps extends React.PropsWithChildren<any> {
-    additionalClasses?: string[]
+    additionalClasses?: string[],
+    row?: boolean
 }
 
-export default function Centered({children, additionalClasses}: CenteredProps) {
+export default function Centered({children, row, additionalClasses}: CenteredProps) {
     const classes = useStyles();
     return (
-        <Container className={clsx(classes.container, additionalClasses)}>
+        <Container className={clsx({
+            [clsx(classes.container, additionalClasses)]: true,
+            [classes.row]: row,
+            [classes.column]: !row
+        })}>
             {children}
         </Container>
     );

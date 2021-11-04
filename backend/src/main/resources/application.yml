@@ -1,0 +1,24 @@
+server:
+  port: ${PORT:8080}
+
+spring:
+  mvc:
+    static-path-pattern: /**
+  web:
+    resources:
+      static-locations: classpath:./static #frontend/build
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/project_platform}
+    username: ${DB_USERNAME:project_platform}
+    password: ${DB_PASS:12345}
+  jpa:
+    generate-ddl: true
+    show-sql: false
+    hibernate:
+      ddl-auto: update
+
+app:
+  jwt:
+    secret: ${JWT_SECRET:ProjAppRenSecretCode}
+    expirationMs: 30000000
+    refreshExpirationMs: 60000

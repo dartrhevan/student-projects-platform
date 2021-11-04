@@ -3,6 +3,11 @@ export enum ActionType {
     Logout,
     OpenMainMenu,
     CloseMainMenu,
-    OpenProjectMenu,
-    CloseProjectMenu
+    // OpenProjectMenu,
+    // CloseProjectMenu,
+    SetPage,
+    SetPageSize,
+    InitPaging,
+    OpenDialog,
+    CloseDialog
 }
