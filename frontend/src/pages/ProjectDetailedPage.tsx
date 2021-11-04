@@ -5,12 +5,13 @@ import {Button, makeStyles, Paper} from "@material-ui/core";
 import queryString from 'query-string';
 import {
     Divider,
+    IconButton, Link,
+    List,
     ListItemButton,
-    TextField,
-    Typography,
     ListItemText,
     ListSubheader,
-    List, IconButton
+    TextField,
+    Typography
 } from "@mui/material";
 import TagsPanel from "../components/util/TagsPanel";
 import Centered from "../components/util/Centered";
@@ -44,11 +45,11 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-interface ProjectParams {
-    workspaceId: string
-    projectId?: string
-    isNew?: string
-}
+// interface ProjectParams {
+//     workspaceId: string
+//     projectId?: string
+//     isNew?: string
+// }
 
 const RoleSpecificButton = ({project, onSubmit, enabled, isNew}:
                                 { isNew: boolean, enabled?: boolean, project?: DetailedProject, onSubmit: () => void }) => {
@@ -72,11 +73,6 @@ const RoleSpecificButton = ({project, onSubmit, enabled, isNew}:
                 <Button href={`/project_plan?projectId=${project.id}&workspaceId=${project.workSpaceId}`}>
                     Просмотр плана
                 </Button>);
-        // case ProjectRole.MENTOR:
-        //     return (
-        //         <Button href={`/project_plan?projectId=${project.id}&workspaceId=${project.workSpaceId}`}>
-        //             Просмотр плана
-        //         </Button>);
         case ProjectRole.STRANGER:
             return (<Button>Присоединиться</Button>);
         default:
@@ -91,6 +87,7 @@ const RoleSpecificButton = ({project, onSubmit, enabled, isNew}:
 interface EditableFieldProps {
     field: (project?: DetailedProject) => string | undefined,
     props?: object,
+    inputProps?: object,
     prefix?: string
     project?: DetailedProject
     multiline?: boolean
@@ -98,25 +95,26 @@ interface EditableFieldProps {
     label: string
     isNew?: boolean
     onChange: (s: string) => void
+    // inputComponent?: (props: EditableFieldProps) => JSX.Element
 }
 
 const EditableField = ({
                            project, props = {}, left = false, field, prefix = '', onChange,
-                           label, multiline = false, isNew = false
+                           label, multiline = false, isNew = false, inputProps
                        }: EditableFieldProps) =>
     project?.role === ProjectRole.OWNER || isNew
-        ? (
-            <div style={{
-                width: '100%',
-                display: 'flex',
-                flexDirection: 'row',
-                justifyContent: left ? 'start' : 'center'
-            }}>
-                <Typography {...props}>{prefix}</Typography>
-                <TextField label={label} sx={{margin: '10px'}} fullWidth={multiline} minRows={5}
-                           variant={multiline ? 'outlined' : 'standard'} multiline={multiline}
-                           defaultValue={field(project)} onChange={e => onChange((e.target as HTMLInputElement).value)}/>
-            </div>)
+        ? (<div style={{
+            width: '100%',
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: left ? 'start' : 'center'
+        }}>
+            {prefix ? <Typography {...props}>{prefix}</Typography> : <></>}
+            <TextField label={label} sx={{margin: '10px'}} fullWidth={multiline} minRows={5}
+                       variant={multiline ? 'outlined' : 'standard'} multiline={multiline}
+                       onChange={e => onChange((e.target as HTMLInputElement).value)}
+                       defaultValue={field(project)} {...inputProps}/>
+        </div>)
         : <Typography {...props}>{prefix + field(project)}</Typography>;
 
 export default function ProjectDetailedPage() {
@@ -124,7 +122,6 @@ export default function ProjectDetailedPage() {
     const params = queryString.parse(window.location.search);
     const workspaceId = params?.workspaceId, projectId = params?.projectId;
     const isNew = params?.isNew !== undefined;
-
     const classes = useStyles();
     const [project, setProject] = useState(isNew ? new DetailedProject(workspaceId as string) : undefined);
 
@@ -150,7 +147,7 @@ export default function ProjectDetailedPage() {
 
     function removeParticipant(participant: string) {
         const newProj = project?.removeParticipant(participant);
-        setProject(newProj as unknown as DetailedProject)
+        setProject(newProj as unknown as DetailedProject);
     }
 
     return (
@@ -178,6 +175,17 @@ export default function ProjectDetailedPage() {
                                project={project} field={p => p?.fullDescription} isNew={isNew}
                                onChange={t => setProject((project as DetailedProject).withFullDescription(t))}/>
                 <Divider flexItem/>
+                {project?.role !== ProjectRole.STRANGER ?
+                    <EditableField label='Ссылка на трекер' field={p => p?.trackerUrl} project={project}
+                                   inputProps={{variant: 'outlined', fullWidth: true}}
+                                   props={{
+                                       sx: {width: '100%', padding: '10px 5px'},
+                                       component(p: { children: string, className: string }) {
+                                           return <Link className={p.className} href={p.children}>Ссылка на трекер</Link>;
+                                       }
+                                   }}
+                                   onChange={t => setProject((project as DetailedProject).withTrackerUrl(t))}/> : <></>}
+
                 <List
                     sx={{width: '100%'}}
                     component="nav"

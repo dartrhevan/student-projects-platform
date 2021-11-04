@@ -12,18 +12,22 @@ export enum ProjectRole {
 export enum ProjectStatus {
     NEW = 'Новый',
     IN_PROGRESS = "В разработке",
-    ENDED = "Завершён"
+    ENDED = "Завершён",
+    CANCELLED = "Отклонён",
+    MODIFYING = "На доработке"
 }
 
-const labelColors = new Map<ProjectStatus, string>();
-labelColors.set(ProjectStatus.ENDED, 'red');
-labelColors.set(ProjectStatus.IN_PROGRESS, '#e7540c');
+export const labelColors = new Map<ProjectStatus, string>();
+labelColors.set(ProjectStatus.ENDED, 'brown');
+labelColors.set(ProjectStatus.IN_PROGRESS, 'orange');
 labelColors.set(ProjectStatus.NEW, 'green');
+labelColors.set(ProjectStatus.CANCELLED, 'red');
+labelColors.set(ProjectStatus.MODIFYING, 'purple');
 
 export default class Project implements IBadge {
     constructor(public id: string, public workSpaceId: string, public title: string, public description: string,
-                public tags: Tag[], public status = ProjectStatus.NEW, public label = status,
-                public labelColor = labelColors.get(status) as string) {
+                public tags: Tag[], public status = ProjectStatus.IN_PROGRESS,
+                public label = status, public labelColor = labelColors.get(status) as string) {
     }
 }
 
@@ -35,7 +39,7 @@ export class Participant {
 export class DetailedProject {
     constructor(public workSpaceId: string, public id: string = '', public title: string = '',
                 public shortDescription: string = '', public fullDescription: string = '',
-                public participantLogins: string[] = [], public tags: Tag[] = [],
+                public trackerUrl = '', public participants: Participant[] = [], public tags: Tag[] = [],
                 public role = ProjectRole.OWNER, public maxParticipantsCount = 5,
                 public status = ProjectStatus.NEW) {
     }
@@ -53,6 +57,12 @@ export class DetailedProject {
     public withFullDescription(descr: string) {
         const project: DetailedProject = this.clone();
         project.fullDescription = descr;
+        return project;
+    }
+
+    public withTrackerUrl(url: string) {
+        const project: DetailedProject = this.clone();
+        project.trackerUrl = url;
         return project;
     }
 

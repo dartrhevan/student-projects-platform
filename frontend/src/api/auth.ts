@@ -23,9 +23,12 @@ export function getCurrentUser() {
 /**
  * @return current user profile
  */
-export function getCurrentUserProfile() {
-    return new Promise<GenericResponse<UserProfile>>((res, rej) => res(new GenericResponse(new UserProfile(
-        'XXX', '', 'QWERTY', '', ['backend'], [])))); //TODO: implement
+export function getCurrentUserProfile(): Promise<GenericResponse<UserProfile>> {
+    return fetch('/api/auth/userprofile', {
+        headers: {
+            "Authorization": "Bearer " + sessionStorage.getItem(StorageKeys.AccessToken)
+        }
+    }).then(r => r.json()).catch(alert);//TODO: civil & universal error handling
 }
 
 /**

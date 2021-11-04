@@ -24,9 +24,13 @@ interface ProjectsParams {//TODO: remove
     workspaceTitle: string
 }
 
-interface ProjectProps {
-    user?: boolean
-}
+const useStyles = makeStyles(theme => ({
+    button: {
+        maxHeight: '70%',
+        minHeight: '50px',
+        margin: '10px'
+    }
+}));
 
 export default function Projects() {
     const classes = useStyles();

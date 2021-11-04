@@ -34,5 +34,7 @@ export function getProjectInfo(projectId: string, workspaceId: string) {
     //TODO: implement
     return new Promise<GenericResponse<DetailedProject>>((res, rej) => res(new GenericResponse(
         new DetailedProject(workspaceId, projectId, 'Project', ' Blabla', ' Blabla',
-            ['1', "12"], [new Tag('Java', 0xE94907), new Tag('React')]))));
+            'https://www.atlassian.com/ru/software/jira',
+            [new Participant('ren', 'back'), new Participant("VV", 'front')],
+            [new Tag('Java', 0xE94907), new Tag('React')]))));
 }

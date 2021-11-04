@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {useParams} from "react-router-dom";
-import {shallowEqual, useDispatch, useSelector} from "react-redux";
+import {useDispatch} from "react-redux";
 import ArrowForwardIosSharpIcon from '@mui/icons-material/ArrowForwardIosSharp';
 import {Button, makeStyles, Typography} from "@material-ui/core";
 import Sprint, {ProjectPlan} from "../model/Sprint";
@@ -13,13 +13,14 @@ import {
     Accordion,
     AccordionDetails,
     AccordionSummary,
-    Button,
-    Card, CardActionArea, CardContent,
-    FormControlLabel,
+    Card,
+    CardActionArea,
+    CardContent, Link,
     Paper,
     TextField
 } from "@mui/material";
-import {toDateString} from "../utils/utils";
+import {getOnFieldChange, toDateString} from "../utils/utils";
+import {ProjectRole} from "../model/Project";
 
 const useStyles = makeStyles(theme => ({
     score: {
@@ -42,7 +43,7 @@ const useStyles = makeStyles(theme => ({
         }
     },
     label: {
-        margin: '10px'
+        margin: '10px',
     },
     card: {
         display: "flex",
@@ -67,10 +68,11 @@ interface ProjectParams {
 interface SprintProps extends ListItemProps {
     sprint: Sprint
     number: number
-    editable: boolean
+    role: ProjectRole
+    onSprintUpdate: (s: Sprint, pr?: File) => void
 }
 
-const SprintComponent = ({sprint, number, editable}: SprintProps) => {
+const SprintComponent = ({sprint, number, role, onSprintUpdate}: SprintProps) => {
     const classes = useStyles();
     const editable = true;//role === ProjectRole.OWNER;
 
@@ -104,15 +106,68 @@ const SprintComponent = ({sprint, number, editable}: SprintProps) => {
             <AccordionDetails>
                 <Typography paragraph variant='h6'>Цели спринта</Typography>
                 <TextField disabled={!editable} multiline minRows={5} variant='outlined' fullWidth
-                           defaultValue={sprint.goalsDescription} className={classes.label}/>
-                <Typography className={classes.label}>Начало спринта</Typography>
-                <TextField disabled={!editable} type='date' defaultValue={toDateString(sprint.endDate)}/>
+                           value={goalsDescription} onChange={getOnFieldChange(setGoalsDescription)}
+                           className={classes.label}/>
+                <div style={{
+                    display: 'flex',
+                    justifyContent: 'start',
+                    alignItems: 'vaseline',
+                    flexDirection: 'row',
+                    marginTop: '15px'
+                }}>
+                    <Typography className={classes.label}>Начало спринта</Typography>
+                    <TextField disabled={!editable} type='date' defaultValue={toDateString(sprint.startDate)}
+                               onChange={getOnFieldChange(s => setStartDate(new Date(s)))}/>
+                    <Typography className={classes.label}>Окончание спринта</Typography>
+                    <TextField disabled={!editable} type='date' defaultValue={toDateString(sprint.endDate)}
+                               onChange={getOnFieldChange(s => setEndDate(new Date(s)))}/>
+                </div>
+                <div style={{margin: '15px 5px 0 5px'}}>
+                    <Link href={sprint.presentationUrl} className={classes.label} variant='body1'
+                          sx={{margin: '10px', fontSize: '18px'}}>
+                        Презентация
+                    </Link>
+                    <Button className={classes.dropzone} variant='outlined'>
+                        <Dropzone maxFiles={1} onDrop={(acceptedFiles: File[]) =>
+                            setPresentationFile(acceptedFiles[acceptedFiles.length - 1])}>
+                            {({getRootProps, getInputProps}) => (
+                                <section {...getRootProps()} style={{width: '100%'}}>
+                                    <input {...getInputProps()} />
+                                    <FileUploadIcon fontSize='large'/>
+                                    Для загрузки нажмите и перетащите сюда
+                                    <FileUploadIcon fontSize='large'/>
+                                </section>
+                            )}
+                        </Dropzone>
+                    </Button>
+                    <Typography className={classes.label}>
+                        {presentationFile ? `Загружен файл: ${presentationFile.name}` : ''}
+                    </Typography>
+                </div>
                 <br/>
-                <Typography className={classes.label}>Окончание спринта</Typography>
-                <TextField disabled={!editable} type='date' defaultValue={toDateString(sprint.endDate)}/>
-                <div className={classes.label}>
+                <Typography variant='h6' paragraph className={classes.label}>Оценки</Typography>
+                <div className={classes.scores}>
+                    {sprint.scores.map((s, i) => (
+                        <div className={classes.scores} key={i}>
+                            <span className={classes.criterion}>Критерий {i + 1}</span>
+                            <TextField disabled={!editable} type='number' defaultValue={sprint.scores[i]}
+                                       className={classes.score} size='small'
+                                       onChange={getOnFieldChange(s => onSetScore(i, s))}
+                            />
+                        </div>))}
+                </div>
+
+                <Typography paragraph variant='h6'>Комментарий результатов</Typography>
+                <TextField disabled={!editable} multiline minRows={5} variant='outlined' fullWidth
+                           value={resultComment} onChange={getOnFieldChange(setResultComment)}
+                           className={classes.label}/>
+                <div style={{
+                    display: 'flex',
+                    justifyContent: 'end'
+                }} className={classes.label}>
+                    {editable ?
+                        <Button onClick={onChangesSubmit}>Подтвердить изменения</Button> : <></>}
                     <Button>Удалить</Button>
-                    {editable ? <Button>Подтвердить изменения</Button> : <></>}
                 </div>
             </AccordionDetails>
         </Accordion>);
@@ -158,7 +213,9 @@ export default function ProjectPlanComponent() {
         <Paper className={classes.paper}>
             <Typography align='center' paragraph variant='h4'>План проекта {}</Typography>
             <br/>
-            {projectPlan?.plan.map((s, i) => <SprintComponent editable={projectPlan.owner} sprint={s} number={i} key={s.goalsDescription}/>)}
+            {projectPlan?.plan.map((s, i) =>
+                <SprintComponent role={projectPlan.role} sprint={s} number={i}
+                                 key={s.goalsDescription} onSprintUpdate={onSprintUpdate}/>)}
             <Card sx={{margin: '30px 0'}} onClick={addNewSprint}>
                 <CardActionArea>
                     <CardContent sx={{padding: '5px'}} className={classes.card}>
