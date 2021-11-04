@@ -18,6 +18,7 @@ import TagsPanel from "../../components/util/TagsPanel";
 import clsx from 'clsx';
 import Card from "@material-ui/core/Card";
 import Autocomplete from "@mui/material/Autocomplete";
+import Tag from "../../model/Tag";
 
 const useStyles = makeStyles(theme => ({
     def: {
@@ -62,28 +63,35 @@ export default function UserProfileComponent({user, title}: UserProfileProps) {
     const [username, setUsername] = useState('');
     const [surname, setSurname] = useState('');
     const [name, setName] = useState('');
-    useEffect(() => {
-        if (user !== undefined) {
-            setUsername(user?.username)
-            setSurname(user?.surname)
-            setName(user?.name)
-        }
-    }, [user]);
     const [password, setPassword] = useState('');
+    const [email, setEmail] = useState('');
     const [passwordConfirm, setPasswordConfirm] = useState('');
     const [comment, setComment] = useState('');
+    const [group, setGroup] = useState('');
     const passwordConfirmed = password === passwordConfirm;
     const rolesReference = ['front', 'back', 'devops', 'test', 'analytic']; //TODO: get from backend
     const [roles, setRoles] = useState([] as string[]);
+    const [tags, setTags] = useState([] as Tag[]);
 
+    useEffect(() => {
+        if (user !== undefined) {
+            setUsername(user?.username);
+            setSurname(user?.surname);
+            setName(user?.name);
+            setTags(user?.skills);
+            setGroup(user?.group);
+            setComment(user?.comment);
+            setRoles(user?.roles);
+            setEmail(user?.email);
+        }
+    }, [user]);
     const passwordLabels = getPasswordLabel(user);
 
     console.log('name');
 
     console.log(name);
     const dispatch = useDispatch();
-    const onRegister = () => register(new UserProfile(name as string, surname as string,
-        username as string, comment, roles, []), password as string)
+    const onRegister = () => register(new UserProfile(name, surname, username, email, comment, group, roles, tags), password)
         .then(r => {//TODO: extract common part from login
             dispatch(setLoginAction(r));
             window.location.href = '/';
@@ -106,17 +114,19 @@ export default function UserProfileComponent({user, title}: UserProfileProps) {
                 <TextField label="Имя" value={name} className={classes.def} onChange={getOnFieldChange(setName)}
                            fullWidth={true}/>
                 <TextField label="Фамилия" value={surname} className={classes.def}
-                           onChange={getOnFieldChange(setSurname)}
-                           fullWidth={true}/>
+                           onChange={getOnFieldChange(setSurname)} fullWidth={true}/>
                 <TextField label="Логин" value={username} className={classes.def}
-                           onChange={getOnFieldChange(setUsername)}
-                           fullWidth={true}/>
-                <TextField label='Кратко опишите ваши интерересы' multiline={true}
-                           className={classes.def} onChange={getOnFieldChange(setComment)} fullWidth={true}/>
+                           onChange={getOnFieldChange(setUsername)} fullWidth={true}/>
+                <TextField label="Email" value={email} className={classes.def}
+                           onChange={getOnFieldChange(setEmail)} fullWidth={true}/>
+                <TextField label="Группа" value={group} className={classes.def}
+                           onChange={getOnFieldChange(setGroup)} fullWidth={true}/>
+                <TextField label='Кратко опишите ваши интерересы' multiline={true} focused className={classes.def}
+                           onChange={getOnFieldChange(setComment)} fullWidth={true} value={comment}/>
                 <CssBaseline/>
                 <div className={clsx(classes.def, classes.skills)}>
                     <Typography className={classes.def} align='center'>Введи ваши навыки</Typography>
-                    <TagsPanel label='skill' tagInputClasses={[classes.tagInput]} onSetTag={console.log}/>
+                    <TagsPanel label='skill' tagInputClasses={[classes.tagInput]} onSetTag={setTags}/>
                 </div>
                 <Autocomplete
                     multiple
@@ -146,8 +156,10 @@ export default function UserProfileComponent({user, title}: UserProfileProps) {
                 <ErrorMessage message='*Не все обязательные поля заполнены' condition={!(passwordConfirmed && allFilled)}/>
 
                 <Aligned endAlign={true}>
-                    <Button disabled={!(passwordConfirmed && allFilled)} className={classes.def}
-                            onClick={user ? onUpdate : onRegister}>Подтвердить</Button>
+                    <Button disabled={!(passwordConfirmed && allFilled)}
+                            className={classes.def} onClick={user ? onUpdate : onRegister}>
+                        Подтвердить
+                    </Button>
                 </Aligned>
             </Card>
         </Centered>);

@@ -43,7 +43,7 @@ export default function TagsPanel({onSetTag, label = 'тэг', tagInputClasses =
     const v = values.map(t => t.text)[0]; //TODO: rewrite
     useEffect(() => {
         setTags(values);
-        getTagsReference().then(r => setTagsReference(r.payload));
+        getTagsReference().then(r => setTagsReference(r.data));
     }, [v]);
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => setTag(event.target.value);

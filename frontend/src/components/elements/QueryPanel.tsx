@@ -1,7 +1,7 @@
 import React from 'react';
 import {Button, makeStyles, Paper} from "@material-ui/core";
 import {Add} from "@material-ui/icons";
-import AddWorkspace from "./AddWorkspace";
+import WorkspaceSettings from "./WorkspaceSettings";
 import TagsPanel from "../util/TagsPanel";
 import clsx from "clsx";
 import isMobile from "../../hooks/isMobile";
@@ -14,7 +14,7 @@ const useStyles = makeStyles(theme => ({
         width: '100%',
         maxWidth: '80vw',
         display: 'flex',
-        alignItems: 'baseline'
+        alignItems: 'center'
     },
     mobilePanel: {
         flexDirection: 'column',
@@ -22,7 +22,8 @@ const useStyles = makeStyles(theme => ({
     },
     addButton: {
         maxHeight: '70%',
-        width: '200px',
+        minHeight: '50px',
+        width: '100px',
         flexShrink: 0
     },
     typ: {
@@ -35,9 +36,10 @@ interface QueryProps {
     buttonOnClick: () => void
     showDialog: boolean
     showTags: boolean
+    additionalButtons?: JSX.Element
 }
 
-export default function QueryPanel({buttonTitle, buttonOnClick, showDialog, showTags}: QueryProps) {
+export default function QueryPanel({additionalButtons, buttonTitle, buttonOnClick, showDialog, showTags}: QueryProps) {
     const classes = useStyles();
     const mobile = isMobile();
 
@@ -47,7 +49,8 @@ export default function QueryPanel({buttonTitle, buttonOnClick, showDialog, show
             <TagsPanel onSetTag={s => {
             }}/>
         </> : <div className={clsx({[classes.queryPanel]: true, [classes.mobilePanel]: mobile})}></div>}
-        {showDialog ? <AddWorkspace/> : <></>}
+        {showDialog ? <WorkspaceSettings/> : <></>}
+        {additionalButtons}
         <Button className={classes.addButton} variant='outlined'
                 onClick={buttonOnClick}>
             <Add/> {buttonTitle}

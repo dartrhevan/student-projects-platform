@@ -36,7 +36,6 @@ public class User implements UserDetails {
     private String interests;
     private Integer reputation;
     private String email;
-    private String comment;
     @ElementCollection
     private List<String> roles;
     private String groupp;
@@ -47,16 +46,15 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Set<AccessRole> accessRoles;
 
-    public User(String login, String passwordHash, String name, String surname, String middleName,String email,List<String> roles, String comment, String group, Set<AccessRole> accessRoles) {
+    public User(String login, String passwordHash, String name, String surname, String email, List<String> roles, String interests, String groupp, Set<AccessRole> accessRoles) {
         this.login = login;
         this.passwordHash = passwordHash;
         this.name = name;
         this.surname = surname;
-        this.middleName = middleName;
-        this.email=email;
-        this.roles=roles;
-        this.comment=comment;
-        this.groupp=group;
+        this.email = email;
+        this.roles = roles;
+        this.interests = interests;
+        this.groupp = groupp;
 
         this.accessRoles = accessRoles;
 
@@ -69,7 +67,9 @@ public class User implements UserDetails {
     }
 
     @Override
-    public String getPassword() {return passwordHash;}
+    public String getPassword() {
+        return passwordHash;
+    }
 
     @Override
     public String getUsername() {
