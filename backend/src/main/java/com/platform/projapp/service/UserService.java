@@ -1,11 +1,11 @@
 package com.platform.projapp.service;
 
+import com.platform.projapp.configuration.jwt.JwtHelper;
 import com.platform.projapp.dto.request.RegisterRequest;
 import com.platform.projapp.enumarate.AccessRole;
 import com.platform.projapp.model.User;
 import com.platform.projapp.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -19,10 +19,22 @@ import java.util.Set;
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtHelper jwtHelper;
 
+    public User findById(Long id) {
+        return userRepository.findById(id).orElse(null);
+    }
 
-    public UserDetails findByUserName(String username) {
+    public User findByUserName(String username) {
         return userRepository.findByLogin(username);
+    }
+
+    public User findByJwt(String jwt) {
+        return findByUserName(jwtHelper.getUserNameFromJwtToken(jwt));
+    }
+
+    public User parseAndFindByJwt(String jwt) {
+        return findByJwt(jwtHelper.parseJwt(jwt));
     }
 
     public void addUser(RegisterRequest registerRequest) {

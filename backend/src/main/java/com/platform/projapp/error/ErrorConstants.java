@@ -9,4 +9,8 @@ public class ErrorConstants {
     public static ErrorInfo USERNAME_NOT_FOUND = ErrorInfo.of("UserNameNotFound", "Пользователь не найден");
     public static ErrorInfo USER_NOT_AUTH = ErrorInfo.of("UserNotAuth", "Пользователь не авторизован");
     public static ErrorInfo LOGIN_IS_BUSY = ErrorInfo.of("LoginIsBusy", "Пользователь с таким логином уже зарегистрирован");
+    public static ErrorInfo WORKSPACE_NOT_FOUND = ErrorInfo.of("WorkspaceNotFound", "Workspace не найден");
+    public static ErrorInfo PROJECT_NOT_FOUND = ErrorInfo.of("ProjectNotFound", "Проект не найден");
+    public static ErrorInfo USER_NOT_WORKSPACE_OWNER = ErrorInfo.of("UserNotWorkspaceOwner", "Пользователь не является владельцем workspace");
+    public static ErrorInfo USER_NOT_WORKSPACE_PARTICIPANT = ErrorInfo.of("UserNotWorkspaceParticipant", "Пользователь не является участником workspace");
 }

@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.util.Date;
 
@@ -17,14 +18,14 @@ import java.util.Date;
  * @author Yarullin Renat
  */
 @Component
-public class JwtUtils {
-    private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
+public class JwtHelper {
+    private static final Logger logger = LoggerFactory.getLogger(JwtHelper.class);
 
     private final AppProperties appProperties;
 
     private final UserService userService;
 
-    public JwtUtils(AppProperties appProperties, @Lazy UserService userService) {
+    public JwtHelper(AppProperties appProperties, @Lazy UserService userService) {
         this.appProperties = appProperties;
         this.userService = userService;
     }
@@ -78,5 +79,13 @@ public class JwtUtils {
         }
 
         return false;
+    }
+
+    public String parseJwt(String token) {
+        if (StringUtils.hasText(token) && token.startsWith("Bearer ")) {
+            return token.substring(7);
+        }
+
+        throw new RuntimeException("incorrect token");
     }
 }

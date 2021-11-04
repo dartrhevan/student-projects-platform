@@ -1,6 +1,6 @@
 package com.platform.projapp.service;
 
-import com.platform.projapp.configuration.jwt.JwtUtils;
+import com.platform.projapp.configuration.jwt.JwtHelper;
 import com.platform.projapp.dto.request.RegisterRequest;
 import com.platform.projapp.dto.request.TokenRefreshRequest;
 import com.platform.projapp.dto.response.GeneralResponse;
@@ -31,18 +31,18 @@ public class AuthService {
     private final UserRepository userRepository;
     private final UserService userService;
     private final RefreshTokenService tokenService;
-    private final JwtUtils jwtUtils;
+    private final JwtHelper jwtHelper;
     private final AuthenticationManager authenticationManager;
 
     public GeneralResponse<JwtResponseBody> authUser(String login, String password) {
-        GeneralResponse<JwtResponseBody> response = new GeneralResponse<JwtResponseBody>();
+        GeneralResponse<JwtResponseBody> response = new GeneralResponse<>();
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(login, password));
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            String jwt = jwtUtils.generateJwtToken(authentication);
+            String jwt = jwtHelper.generateJwtToken(authentication);
 
             User user = (User) authentication.getPrincipal();
 
@@ -75,11 +75,11 @@ public class AuthService {
                         .findByToken(requestRefreshToken)).map(tokenService::verifyExpiration)
                 .map(RefreshToken::getUser)
                 .map(user -> {
-                    String accessToken = jwtUtils.generateJwtTokenFromUsername(user.getUsername());
+                    String accessToken = jwtHelper.generateJwtTokenFromUsername(user.getUsername());
                     String refreshToken = tokenService.createRefreshToken(user).getToken();
                     response.withPayload(new TokenRefreshResponseBody(accessToken, refreshToken));
                     return (response);
                 }).orElse(new GeneralResponse<TokenRefreshResponseBody>()
-                                .withErrors(List.of(ErrorConstants.RT_NOT_IN_BD)));
+                        .withErrors(List.of(ErrorConstants.RT_NOT_IN_BD)));
     }
 }

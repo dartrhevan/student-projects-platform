@@ -1,4 +1,4 @@
-package com.platform.projapp.dto.response.body;
+package com.platform.projapp.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class MessageResponseBody implements ResponseBody {
-    private String message;
+public class ParticipantRequest {
+    private Long userId;
+    private Long projectRoleId;
 }
