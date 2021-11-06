@@ -153,24 +153,21 @@ export default function ProjectDetailedPage() {
     return (
         <Paper className={classes.paper}>
             <Centered additionalClasses={[classes.inner]}>
-                <EditableField isNew={isNew} label='' props={{variant: 'h4'}} project={project}
-                               prefix={'Проект '} field={p => p?.title}
+                <EditableField isNew={isNew} label='(название)' props={{variant: 'h4'}} project={project}
+                               prefix={'Проект '} field={p => p?.title} inputProps={{required: true}}
                                onChange={t => setProject((project as DetailedProject).withTitle(t))}/>
-                <EditableField isNew={isNew} left label='Краткое описание'
+                <EditableField isNew={isNew} left label='Краткое описание' inputProps={{required: true}}
                                project={project} field={p => p?.shortDescription}
                                onChange={t => setProject((project as DetailedProject).withShortDescription(t))}/>
                 <div style={{
-                    width: '100%',
-                    display: 'flex',
-                    flexDirection: 'row',
-                    justifyContent: 'center',
-                    flexWrap: 'wrap'
+                    width: '100%', display: 'flex', flexDirection: 'row',
+                    justifyContent: 'center', flexWrap: 'wrap'
                 }}>
                     <TagsPanel onSetTag={tags => setProject(project?.withTags(tags))}
                                editable={project?.role === ProjectRole.OWNER} values={project?.tags}/>
                 </div>
                 <Divider flexItem/>
-                <EditableField label='Описание' multiline
+                <EditableField label='Описание' multiline inputProps={{required: true}}
                                props={{className: classes.descr, sx: {width: '100%', padding: '15px'}}}
                                project={project} field={p => p?.fullDescription} isNew={isNew}
                                onChange={t => setProject((project as DetailedProject).withFullDescription(t))}/>
@@ -181,7 +178,8 @@ export default function ProjectDetailedPage() {
                                    props={{
                                        sx: {width: '100%', padding: '10px 5px'},
                                        component(p: { children: string, className: string }) {
-                                           return <Link className={p.className} href={p.children}>Ссылка на трекер</Link>;
+                                           return <Link className={p.className} href={p.children}>Ссылка на
+                                               трекер</Link>;
                                        }
                                    }}
                                    onChange={t => setProject((project as DetailedProject).withTrackerUrl(t))}/> : <></>}

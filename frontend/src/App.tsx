@@ -19,6 +19,7 @@ import Scores from "./pages/Scores";
 import {getCurrentUser} from "./api/auth";
 import setLoginAction from "./store/actions/auth/setLoginAction";
 import logoutAction from "./store/actions/auth/logoutAction";
+import Scoring from "./pages/Scoring";
 
 function App() {
     // const dispatch = useDispatch();
@@ -49,6 +50,7 @@ function App() {
                         <Route component={UserProfilePage} path='/profile'/>
                         <Route component={Scores} path='/scores/:workspaceId'/>
                         <Route component={Portfolio} path='/portfolio/:login'/>
+                        <Route component={Scoring} path='/scoring/:workspaceId'/>
                         <Route component={Workspaces} path='/'/>
                     </Switch>
                 </BrowserRouter>

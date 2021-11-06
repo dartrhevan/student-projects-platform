@@ -58,6 +58,8 @@ function getPasswordLabel(user: any | undefined) {
     };
 }
 
+const emailPattern = /\w+@\w+/;
+
 export default function UserProfileComponent({user, title}: UserProfileProps) {
     const classes = useStyles();
     const [username, setUsername] = useState('');
@@ -97,7 +99,7 @@ export default function UserProfileComponent({user, title}: UserProfileProps) {
             window.location.href = '/';
         }).catch(alert); //TODO: implement correct catch;
 
-    const allFilled = allNotEmpty(username, password, passwordConfirm);
+    const allFilledAndValid = allNotEmpty(username, password, passwordConfirm) && email.match(emailPattern) && username.length >= 6 && password.length >= 6;
 
     function onUpdate() {
 
@@ -112,12 +114,12 @@ export default function UserProfileComponent({user, title}: UserProfileProps) {
                 <CssBaseline/>
 
                 <TextField label="Имя" value={name} className={classes.def} onChange={getOnFieldChange(setName)}
-                           fullWidth={true}/>
-                <TextField label="Фамилия" value={surname} className={classes.def}
+                           fullWidth={true} required/>
+                <TextField label="Фамилия" value={surname} className={classes.def} required
                            onChange={getOnFieldChange(setSurname)} fullWidth={true}/>
-                <TextField label="Логин" value={username} className={classes.def}
+                <TextField label="Логин" value={username} className={classes.def} required
                            onChange={getOnFieldChange(setUsername)} fullWidth={true}/>
-                <TextField label="Email" value={email} className={classes.def}
+                <TextField label="Email" value={email} className={classes.def} required
                            onChange={getOnFieldChange(setEmail)} fullWidth={true}/>
                 <TextField label="Группа" value={group} className={classes.def}
                            onChange={getOnFieldChange(setGroup)} fullWidth={true}/>
@@ -128,35 +130,30 @@ export default function UserProfileComponent({user, title}: UserProfileProps) {
                     <Typography className={classes.def} align='center'>Введи ваши навыки</Typography>
                     <TagsPanel label='skill' tagInputClasses={[classes.tagInput]} onSetTag={setTags}/>
                 </div>
-                <Autocomplete
-                    multiple
-                    freeSolo
-                    onChange={(a, b: string[]) => setRoles(b)}
-                    id="tags-standard"
-                    options={rolesReference}
-                    // getOptionLabel={(option) => option.title}
-                    defaultValue={user?.roles}
-                    fullWidth={true}
-                    renderInput={(params) => (
-                        <TextField
-                            {...params}
-                            variant="standard"
-                            label="Ваша роль"
-                            placeholder="Введите роль, которую вы готовы выполнять"/>)}
-                />
-                {user ? <TextField label="Текущий пароль" className={classes.def} onChange={getOnFieldChange(setPassword)}
-                           type="password" fullWidth={true}/> : <></>}
+                <Autocomplete multiple freeSolo onChange={(a, b: string[]) => setRoles(b)}
+                              id="tags-standard" options={rolesReference} defaultValue={user?.roles}
+                              fullWidth={true} renderInput={(params) => (
+                    <TextField {...params} variant="standard" label="Ваша роль"
+                               placeholder="Введите роль, которую вы готовы выполнять"/>)}/>
+                {user ?
+                    <TextField label="Текущий пароль" className={classes.def} onChange={getOnFieldChange(setPassword)}
+                               type="password" fullWidth={true} required/> : <></>}
                 <TextField label={passwordLabels.input} className={classes.def} onChange={getOnFieldChange(setPassword)}
-                           type="password" fullWidth={true}/>
+                           type="password" fullWidth={true} required/>
                 <TextField label={passwordLabels.confirmation} className={classes.def} type="password"
-                           onChange={getOnFieldChange(setPasswordConfirm)} fullWidth={true}/>
+                           onChange={getOnFieldChange(setPasswordConfirm)} fullWidth={true} required/>
 
                 <CssBaseline/>
                 <ErrorMessage message='*Пароль и подтверждение не совпадают' condition={!passwordConfirmed}/>
-                <ErrorMessage message='*Не все обязательные поля заполнены' condition={!(passwordConfirmed && allFilled)}/>
+                <ErrorMessage message='*Не все обязательные поля заполнены корректно'
+                              condition={!(passwordConfirmed && allFilledAndValid)}/>
+                <ErrorMessage message='*Логин и пароль должны содержать не меньше 6 символов'
+                              condition={!(username.length >= 6 && password.length >= 6)}/>
+                <ErrorMessage message='*Некорректный емайл'
+                              condition={!(email.match(emailPattern))}/>
 
                 <Aligned endAlign={true}>
-                    <Button disabled={!(passwordConfirmed && allFilled)}
+                    <Button disabled={!(passwordConfirmed && allFilledAndValid)}
                             className={classes.def} onClick={user ? onUpdate : onRegister}>
                         Подтвердить
                     </Button>

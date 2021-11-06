@@ -38,10 +38,10 @@ export default function Login() {
                 Вход
             </Typography>
             <CssBaseline/>
-            <TextField label="Логин" className={classes.def} onChange={getOnFieldChange(setUsername)} fullWidth={true}/>
+            <TextField required label="Логин" className={classes.def} onChange={getOnFieldChange(setUsername)} fullWidth={true}/>
             <CssBaseline/>
             <TextField label="Пароль" className={classes.def} onChange={getOnFieldChange(setPassword)}
-                       type="password" fullWidth={true}/>
+                       type="password" fullWidth={true} required/>
             <CssBaseline/>
             <Aligned endAlign={true}>
                 <Button href='/registration' className={classes.def}>Регистрация</Button>

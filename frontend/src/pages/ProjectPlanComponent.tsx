@@ -78,24 +78,25 @@ const SprintComponent = ({sprint, number, role, onSprintUpdate}: SprintProps) =>
 
     const [presentationFile, setPresentationFile] = useState(undefined as File | undefined);
     const [goalsDescription, setGoalsDescription] = useState(sprint.goalsDescription);
-    const [scores, setScores] = useState(sprint.scores);
+    // const [scores, setScores] = useState(sprint.scores);
     const [startDate, setStartDate] = useState(sprint.startDate);
     const [endDate, setEndDate] = useState(sprint.endDate);
-    const [resultComment, setResultComment] = useState(sprint.resultComment);
+
+    // const [resultComment, setResultComment] = useState(sprint.comments);
 
     function onChangesSubmit() {
         sprint.goalsDescription = goalsDescription;
-        sprint.scores = scores;
+        // sprint.scores = scores;
         sprint.startDate = startDate;
         sprint.endDate = endDate;
-        sprint.resultComment = resultComment;
+        // sprint.comments = resultComment;
         onSprintUpdate(sprint, presentationFile);
     }
 
-    function onSetScore(index: number, value: string) {
-        scores[index] = Number.parseInt(value);
-        setScores(scores);
-    }
+    // function onSetScore(index: number, value: string) {
+    //     scores[index] = Number.parseInt(value);
+    //     setScores(scores);
+    // }
 
     return (
         <Accordion>
@@ -145,22 +146,31 @@ const SprintComponent = ({sprint, number, role, onSprintUpdate}: SprintProps) =>
                     </Typography>
                 </div>
                 <br/>
-                <Typography variant='h6' paragraph className={classes.label}>Оценки</Typography>
-                <div className={classes.scores}>
-                    {sprint.scores.map((s, i) => (
-                        <div className={classes.scores} key={i}>
-                            <span className={classes.criterion}>Критерий {i + 1}</span>
-                            <TextField disabled={!editable} type='number' defaultValue={sprint.scores[i]}
-                                       className={classes.score} size='small'
-                                       onChange={getOnFieldChange(s => onSetScore(i, s))}
-                            />
-                        </div>))}
-                </div>
+                {/*<Typography variant='h6' paragraph className={classes.label}>Оценки</Typography>*/}
+                {/*<div className={classes.scores}>*/}
+                {/*    {sprint.scores.map((s, i) => (*/}
+                {/*        <div className={classes.scores} key={i}>*/}
+                {/*            <span className={classes.criterion}>Критерий {i + 1}</span>*/}
+                {/*            <TextField disabled={!editable} type='number' defaultValue={sprint.scores[i]}*/}
+                {/*                       className={classes.score} size='small'*/}
+                {/*                       onChange={getOnFieldChange(s => onSetScore(i, s))}*/}
+                {/*            />*/}
+                {/*        </div>))}*/}
+                {/*</div>*/}
 
-                <Typography paragraph variant='h6'>Комментарий результатов</Typography>
-                <TextField disabled={!editable} multiline minRows={5} variant='outlined' fullWidth
-                           value={resultComment} onChange={getOnFieldChange(setResultComment)}
-                           className={classes.label}/>
+                <Typography paragraph variant='h6'>Комментарии результатов</Typography>
+                {sprint.comments.map((c, i) => (
+                    <Card sx={{padding: '5px'}}>
+                        <Typography variant='body2'>
+                            {c.mentorName}
+                        </Typography>
+                        <Typography variant='body1'>
+                            {c.comment}
+                        </Typography>
+                    </Card>))}
+                {/*<TextField disabled={!editable} multiline minRows={5} variant='outlined' fullWidth*/}
+                {/*           value={resultComment} onChange={getOnFieldChange(setResultComment)}*/}
+                {/*           className={classes.label}/>*/}
                 <div style={{
                     display: 'flex',
                     justifyContent: 'end'

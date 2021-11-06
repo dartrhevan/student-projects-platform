@@ -1,5 +1,5 @@
 import GenericResponse from "../model/dto/GenericResponse";
-import Sprint, {ProjectPlan} from "../model/Sprint";
+import Sprint, {ProjectPlan, ResultComment} from "../model/Sprint";
 import CommonResponse from "../model/dto/CommonResponse";
 
 /**
@@ -11,8 +11,8 @@ import CommonResponse from "../model/dto/CommonResponse";
 export function getProjectPlan(projectId: string, workspaceId: string) {//TODO: implement
     return new Promise<GenericResponse<ProjectPlan>>((res, rej) => res(
         new GenericResponse(new ProjectPlan(
-            [new Sprint('1', [5, 4, 7], new Date(), new Date(2021, 12, 19),
-                'To start', 'http://ya.ru', 'Excellent')], 'My project'))));
+            [new Sprint('1', new Date(), new Date(2021, 12, 19), 'To start',
+                'http://ya.ru', [new ResultComment('1', 'WERTYUI', 'YYY')])], 'My project'))));
 }
 
 /**

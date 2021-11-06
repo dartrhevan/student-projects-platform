@@ -24,9 +24,9 @@ export function getUsersWorkspaces(pageable: Pageable) {
  * @param startDate - date of start of the first sprint
  */
 export function addNewWorkspace(title: string, sprintsCount: number, sprintsLength: number,
-                                startDate: Date,  endDate: Date) {
+                                startDate: Date) {
     //TODO: implement
-    console.log(title, sprintsLength, sprintsCount, startDate, endDate);
+    console.log(title, sprintsLength, sprintsCount, startDate);
     return new Promise<CommonResponse>((res, rej) => res(new CommonResponse()));
 }
 
@@ -38,9 +38,9 @@ export function addNewWorkspace(title: string, sprintsCount: number, sprintsLeng
  * @param startDate - date of start of the first sprint
  */
 export function updateWorkspace(id: string, title: string, sprintsCount: number, sprintsLength: number,
-                                startDate: Date, endDate: Date) {
+                                startDate: Date) {
     //TODO: implement
-    console.log(id, title, sprintsLength, sprintsCount, startDate, endDate);
+    console.log(id, title, sprintsLength, sprintsCount, startDate);
     return new Promise<CommonResponse>((res, rej) => res(new CommonResponse()));
 }
 
@@ -61,7 +61,7 @@ export function getWorkspaceById(id: string) {
     //TODO: implement
     return new Promise<GenericResponse<WorkspaceSettings>>(res =>
         res(new GenericResponse(new WorkspaceSettings(
-            '0', 'Standard', 2, 6, new Date(), new Date())))); //TODO: change workspace class
+            '0', 'Standard', 2, 6, new Date())))); //TODO: change workspace class
 }
 
 export function getInviteForWorkspace(id: string) {

@@ -7,6 +7,6 @@ export default class Workspace {
 
 export class WorkspaceSettings {
     constructor(public id: string, public title: string, public sprintsCount: number,
-                public sprintsLength: number, public startDate: Date, public endDate: Date) {
+                public sprintsLength: number, public startDate: Date) {
     }
 }
