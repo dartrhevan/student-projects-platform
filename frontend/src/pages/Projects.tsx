@@ -109,9 +109,9 @@ export default function Projects() {
                                        Оценки
                                    </Button>
                                    {role === WorkspaceAssociation.MENTOR ?
-                                       <Button href={`/scores/${workspaceId}`} variant='outlined'
+                                       <Button href={`/scoring/${workspaceId}`} variant='outlined'
                                                className={classes.button}>
-                                           Оценки
+                                           Оценить
                                        </Button> : <></>}
                                </>}
                        </>)}
