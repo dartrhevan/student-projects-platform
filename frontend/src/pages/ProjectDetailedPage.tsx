@@ -138,11 +138,9 @@ export default function ProjectDetailedPage() {
     const allFilled = project?.isNewFilled;//allNotEmpty(username, password);
 
     function onSubmit() {
-        if (isNew) {
-            addProject(project as DetailedProject);
-        } else {
-            editProject(project as DetailedProject);
-        }
+        (isNew ? addProject(project as DetailedProject) : editProject(project as DetailedProject))
+            .then(r => alert(r.success ? 'Success' : r.message))
+            .catch(r => alert(`Error ${r}`));
     }
 
     function removeParticipant(participant: string) {

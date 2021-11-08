@@ -28,6 +28,7 @@ const useStyles = makeStyles(theme => ({
     button: {
         maxHeight: '70%',
         minHeight: '50px',
+        maxWidth: '90px',
         margin: '10px'
     }
 }));
@@ -94,6 +95,10 @@ export default function Projects() {
                                    <Button href={`/scores/${workspaceId}`} variant='outlined'
                                            className={classes.button}>
                                        Оценки
+                                   </Button>
+                                   <Button href={`/users?workspaceId=${workspaceId}`} variant='outlined'
+                                           className={classes.button}>
+                                       Участники
                                    </Button>
                                    <Button onClick={onInviteOpen} variant='outlined'
                                            className={classes.button}>

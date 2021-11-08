@@ -6,7 +6,6 @@ import TagsPanel from "../util/TagsPanel";
 import clsx from "clsx";
 import isMobile from "../../hooks/isMobile";
 import Typography from "@material-ui/core/Typography";
-import Tag from "../../model/Tag";
 
 const useStyles = makeStyles(theme => ({
     queryPanel: {
@@ -17,8 +16,9 @@ const useStyles = makeStyles(theme => ({
         alignItems: 'center'
     },
     mobilePanel: {
-        flexDirection: 'column',
-        alignItems: 'center'
+        // flexDirection: 'column',
+        alignItems: 'center',
+        flexWrap: "wrap"
     },
     addButton: {
         maxHeight: '70%',
@@ -48,7 +48,7 @@ export default function QueryPanel({additionalButtons, buttonTitle, buttonOnClic
             <Typography className={classes.typ}>Введите тэги для поиска:</Typography>
             <TagsPanel onSetTag={s => {
             }}/>
-        </> : <div className={clsx({[classes.queryPanel]: true, [classes.mobilePanel]: mobile})}></div>}
+        </> : <div className={clsx({[classes.queryPanel]: true, [classes.mobilePanel]: mobile})}/>}
         {showDialog ? <WorkspaceSettings/> : <></>}
         {additionalButtons}
         <Button className={classes.addButton} variant='outlined'

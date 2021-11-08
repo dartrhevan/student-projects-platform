@@ -12,6 +12,7 @@ const useStyles = makeStyles(theme => ({
         alignItems: "center",
         flexWrap: 'wrap',
         margin: "10px",
+        minWidth: '100px'
     },
     input: {
         margin: "10px",

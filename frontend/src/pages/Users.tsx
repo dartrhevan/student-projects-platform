@@ -7,8 +7,9 @@ import queryString from "query-string";
 import {allNotEmpty, getOnFieldChange} from "../utils/utils";
 import ViewableText from "../components/elements/ViewableText";
 import {Dialog, DialogActions, DialogTitle, TextField} from "@mui/material";
-import Centered from "../components/util/Centered";
 import {invitePerson} from "../api/workspaces";
+import {getUsers} from "../api/users";
+import Pageable from "../model/Pageable";
 
 interface Row {
     name: string,
@@ -64,12 +65,14 @@ const tableColumns = [
     {
         title: 'Текущий проект',
         field: "project",
-        sorting: true,
+        sorting: false,
+        filtering: false,
     },
     {
         title: 'Репутация',
         field: "reputation",
-        sorting: true,
+        sorting: false,
+        filtering: false,
     }
 ];
 
@@ -80,22 +83,12 @@ export default function Users() {
     const invite = allNotEmpty(workspaceId, projectId);
 
     const classes = useStyles();
-    const data = (query: Query<Row>) => new Promise<QueryResult<Row>>((res, rej) => {
+    const data = (query: Query<Row>) => {
         console.log(`query`);
         console.log(query);
-        res({
-            data: [{
-                name: 'Vova',
-                surname: 'Satunkin',
-                roles: 'backend',
-                skills: 'Java',
-                reputation: '5',
-                username: 'me',
-                project: 'Project Activity',
-                interests: 'Programming Programming Programming Programming Programming Programming\nProgramming Programming Programming\nProgramming Programming Programming Programming'
-            }], page: 0, totalCount: 1
-        });
-    });
+        return getUsers(workspaceId as string, new Pageable(0, 0));
+            // .then(r => ({data: r.data, page: r.page, totalCount: r.totalCount}));
+    };
     const tableActions: Action<Row>[] = [
         {
             icon: () => <Person/>,
