@@ -27,16 +27,12 @@ public class RegisterOrUpdateUserRequest {
     private String name;
     @NotBlank(message = "Поле surname обязательно для заполнения")
     private String surname;
-    private String middleName;
     private String interests;
     private String email;
     private List<String> roles;
-    private String comment;
     private String group;
     private Set<Tags> skills;
     @Size(min = 6, message = "Поле newPassword должно содержать не менее {min}")
     private String newPassword; //only for update
-    @Size(min = 6, message = "Поле newPassword должно содержать не менее {min}")
-    private String oldPassword; //only for update
     private Long id; //only for update
 }

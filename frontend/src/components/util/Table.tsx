@@ -28,9 +28,10 @@ interface ITableProps<T extends object> {
     tableActions?: Action<T>[]
     filtering?: boolean
     paging?: boolean
+    tableRef?: React.Ref<MaterialTable<T>>
 }
 
-export default function Table<T extends object>({title, data, tableColumns, tableActions, paging = true, filtering = true}: ITableProps<T>) {
+export default function Table<T extends object>({tableRef, title, data, tableColumns, tableActions, paging = true, filtering = true}: ITableProps<T>) {
     const classes = useStyles();
     const icons: Icons = {
         FirstPage: forwardRef((props, ref) => <FirstPage ref={ref}/>),
@@ -51,6 +52,7 @@ export default function Table<T extends object>({title, data, tableColumns, tabl
             <Typography className={classes.title} variant='h3'>{title}</Typography>
 
             <MaterialTable
+                tableRef={tableRef}
                 title={<Typography
                     variant="h6"
                     gutterBottom>

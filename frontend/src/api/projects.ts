@@ -1,4 +1,4 @@
-import Project, {DetailedProject} from "../model/Project";
+import Project, {DetailedProject, Participant} from "../model/Project";
 import CommonResponse from "../model/dto/CommonResponse";
 import ProjectQuery from "../model/dto/ProjectQuery";
 import ProjectsResponse from "../model/dto/ProjectsResponse";
@@ -27,11 +27,14 @@ export function getProjectsForWorkspace(query: ProjectQuery) {
         res(new ProjectsResponse(['AAAAAA', 'B', 'C', 'D', 'E', 'F', 'A1', '1B', 'C1', 'D1', 'E1', '1F']
             .map(s => new Project(s, query.workspaceId, s, s, [new Tag('Java', 0xE94907)])), 12)));
 }
+
 //TODO: change all!!!
 
 export function getProjectInfo(projectId: string, workspaceId: string) {
     //TODO: implement
     return new Promise<GenericResponse<DetailedProject>>((res, rej) => res(new GenericResponse(
         new DetailedProject(workspaceId, projectId, 'Project', ' Blabla', ' Blabla',
-            ['1', "12"], [new Tag('Java', 0xE94907), new Tag('React')]))));
+            'https://www.atlassian.com/ru/software/jira',
+            [new Participant('ren', 'back'), new Participant("VV", 'front')],
+            [new Tag('Java', 0xE94907), new Tag('React')]))));
 }

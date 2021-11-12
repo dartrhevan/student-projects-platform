@@ -18,6 +18,7 @@ import TagsPanel from "../../components/util/TagsPanel";
 import clsx from 'clsx';
 import Card from "@material-ui/core/Card";
 import Autocomplete from "@mui/material/Autocomplete";
+import Tag from "../../model/Tag";
 
 const useStyles = makeStyles(theme => ({
     def: {
@@ -57,39 +58,48 @@ function getPasswordLabel(user: any | undefined) {
     };
 }
 
+const emailPattern = /\w+@\w+/;
+
 export default function UserProfileComponent({user, title}: UserProfileProps) {
     const classes = useStyles();
     const [username, setUsername] = useState('');
     const [surname, setSurname] = useState('');
     const [name, setName] = useState('');
-    useEffect(() => {
-        if (user !== undefined) {
-            setUsername(user?.username)
-            setSurname(user?.surname)
-            setName(user?.name)
-        }
-    }, [user]);
     const [password, setPassword] = useState('');
+    const [email, setEmail] = useState('');
     const [passwordConfirm, setPasswordConfirm] = useState('');
     const [comment, setComment] = useState('');
+    const [group, setGroup] = useState('');
     const passwordConfirmed = password === passwordConfirm;
     const rolesReference = ['front', 'back', 'devops', 'test', 'analytic']; //TODO: get from backend
     const [roles, setRoles] = useState([] as string[]);
+    const [tags, setTags] = useState([] as Tag[]);
 
+    useEffect(() => {
+        if (user !== undefined) {
+            setUsername(user?.username);
+            setSurname(user?.surname);
+            setName(user?.name);
+            setTags(user?.skills);
+            setGroup(user?.group);
+            setComment(user?.comment);
+            setRoles(user?.roles);
+            setEmail(user?.email);
+        }
+    }, [user]);
     const passwordLabels = getPasswordLabel(user);
 
     console.log('name');
 
     console.log(name);
     const dispatch = useDispatch();
-    const onRegister = () => register(new UserProfile(name as string, surname as string,
-        username as string, comment, roles, []), password as string)
+    const onRegister = () => register(new UserProfile(name, surname, username, email, comment, group, roles, tags), password)
         .then(r => {//TODO: extract common part from login
             dispatch(setLoginAction(r));
             window.location.href = '/';
         }).catch(alert); //TODO: implement correct catch;
 
-    const allFilled = allNotEmpty(username, password, passwordConfirm);
+    const allFilledAndValid = allNotEmpty(username, password, passwordConfirm) && email.match(emailPattern) && username.length >= 6 && password.length >= 6;
 
     function onUpdate() {
 
@@ -104,50 +114,49 @@ export default function UserProfileComponent({user, title}: UserProfileProps) {
                 <CssBaseline/>
 
                 <TextField label="Имя" value={name} className={classes.def} onChange={getOnFieldChange(setName)}
-                           fullWidth={true}/>
-                <TextField label="Фамилия" value={surname} className={classes.def}
-                           onChange={getOnFieldChange(setSurname)}
-                           fullWidth={true}/>
-                <TextField label="Логин" value={username} className={classes.def}
-                           onChange={getOnFieldChange(setUsername)}
-                           fullWidth={true}/>
-                <TextField label='Кратко опишите ваши интерересы' multiline={true}
-                           className={classes.def} onChange={getOnFieldChange(setComment)} fullWidth={true}/>
+                           fullWidth={true} required/>
+                <TextField label="Фамилия" value={surname} className={classes.def} required
+                           onChange={getOnFieldChange(setSurname)} fullWidth={true}/>
+                <TextField label="Логин" value={username} className={classes.def} required
+                           onChange={getOnFieldChange(setUsername)} fullWidth={true}/>
+                <TextField label="Email" value={email} className={classes.def} required
+                           onChange={getOnFieldChange(setEmail)} fullWidth={true}/>
+                <TextField label="Группа" value={group} className={classes.def}
+                           onChange={getOnFieldChange(setGroup)} fullWidth={true}/>
+                <TextField label='Кратко опишите ваши интерересы' multiline={true} focused className={classes.def}
+                           onChange={getOnFieldChange(setComment)} fullWidth={true} value={comment}/>
                 <CssBaseline/>
                 <div className={clsx(classes.def, classes.skills)}>
                     <Typography className={classes.def} align='center'>Введи ваши навыки</Typography>
-                    <TagsPanel label='skill' tagInputClasses={[classes.tagInput]} onSetTag={console.log}/>
+                    <TagsPanel label='skill' tagInputClasses={[classes.tagInput]} onSetTag={setTags}/>
                 </div>
-                <Autocomplete
-                    multiple
-                    freeSolo
-                    onChange={(a, b: string[]) => setRoles(b)}
-                    id="tags-standard"
-                    options={rolesReference}
-                    // getOptionLabel={(option) => option.title}
-                    defaultValue={user?.roles}
-                    fullWidth={true}
-                    renderInput={(params) => (
-                        <TextField
-                            {...params}
-                            variant="standard"
-                            label="Ваша роль"
-                            placeholder="Введите роль, которую вы готовы выполнять"/>)}
-                />
-                {user ? <TextField label="Текущий пароль" className={classes.def} onChange={getOnFieldChange(setPassword)}
-                           type="password" fullWidth={true}/> : <></>}
+                <Autocomplete multiple freeSolo onChange={(a, b: string[]) => setRoles(b)}
+                              id="tags-standard" options={rolesReference} defaultValue={user?.roles}
+                              fullWidth={true} renderInput={(params) => (
+                    <TextField {...params} variant="standard" label="Ваша роль"
+                               placeholder="Введите роль, которую вы готовы выполнять"/>)}/>
+                {user ?
+                    <TextField label="Текущий пароль" className={classes.def} onChange={getOnFieldChange(setPassword)}
+                               type="password" fullWidth={true} required/> : <></>}
                 <TextField label={passwordLabels.input} className={classes.def} onChange={getOnFieldChange(setPassword)}
-                           type="password" fullWidth={true}/>
+                           type="password" fullWidth={true} required/>
                 <TextField label={passwordLabels.confirmation} className={classes.def} type="password"
-                           onChange={getOnFieldChange(setPasswordConfirm)} fullWidth={true}/>
+                           onChange={getOnFieldChange(setPasswordConfirm)} fullWidth={true} required/>
 
                 <CssBaseline/>
                 <ErrorMessage message='*Пароль и подтверждение не совпадают' condition={!passwordConfirmed}/>
-                <ErrorMessage message='*Не все обязательные поля заполнены' condition={!(passwordConfirmed && allFilled)}/>
+                <ErrorMessage message='*Не все обязательные поля заполнены корректно'
+                              condition={!(passwordConfirmed && allFilledAndValid)}/>
+                <ErrorMessage message='*Логин и пароль должны содержать не меньше 6 символов'
+                              condition={!(username.length >= 6 && password.length >= 6)}/>
+                <ErrorMessage message='*Некорректный емайл'
+                              condition={!(email.match(emailPattern))}/>
 
                 <Aligned endAlign={true}>
-                    <Button disabled={!(passwordConfirmed && allFilled)} className={classes.def}
-                            onClick={user ? onUpdate : onRegister}>Подтвердить</Button>
+                    <Button disabled={!(passwordConfirmed && allFilledAndValid)}
+                            className={classes.def} onClick={user ? onUpdate : onRegister}>
+                        Подтвердить
+                    </Button>
                 </Aligned>
             </Card>
         </Centered>);

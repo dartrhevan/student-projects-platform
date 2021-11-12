@@ -10,9 +10,7 @@ import com.platform.projapp.dto.response.body.MessageResponseBody;
 import com.platform.projapp.enumarate.AccessRole;
 import com.platform.projapp.error.ErrorConstants;
 import com.platform.projapp.error.ErrorInfo;
-import com.platform.projapp.model.Tags;
 import com.platform.projapp.model.User;
-import com.platform.projapp.repository.TagsRepository;
 import com.platform.projapp.repository.UserRepository;
 import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +23,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * @author Yarullin Renat
@@ -34,7 +31,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
-    private final TagsRepository tagsRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenFilter jwtTokenFilter;
     private final JwtUtils jwtUtils;
@@ -50,19 +46,10 @@ public class UserService {
                     passwordEncoder.encode(registerRequest.getPassword()),
                     registerRequest.getName(),
                     registerRequest.getSurname(),
-                    registerRequest.getMiddleName(),
                     registerRequest.getEmail(),
                     registerRequest.getRoles(),
-                    registerRequest.getComment(),
+                    registerRequest.getInterests(),
                     registerRequest.getGroup(),
-                    registerRequest.getSkills()
-                            .stream()
-                            .map(tags -> {
-                                Tags tgs = tags;
-                                tgs = tagsRepository.getById(tgs.getId());
-                                return tgs;
-                            }).collect(Collectors.toSet()),
-
                     Set.of(AccessRole.ROLE_USER));
             userRepository.save(user);
         }
@@ -84,9 +71,12 @@ public class UserService {
         GeneralResponse<CurrentUserProfileResponseBody> response = new GeneralResponse<>();
         try {
             String token = jwtTokenFilter.parseJwt(req);
+            if (token == null || token.isEmpty()) {
+                return response.withErrors(List.of(ErrorInfo.of("401", "Jwt is not provided")));
+            }
             String login = jwtUtils.getUserNameFromJwtToken(token);
             User user = userRepository.findByLogin(login);
-            return response.withPayload(new CurrentUserProfileResponseBody(user.getLogin(), user.getName(), user.getSurname(), user.getInterests(), user.getEmail(), user.getComment(), user.getRoles(), user.getGroupp(), user.getId()));
+            return response.withPayload(new CurrentUserProfileResponseBody(user.getLogin(), user.getName(), user.getSurname(), user.getInterests(), user.getEmail(), user.getRoles(), user.getGroupp(), user.getId()));
         } catch (ExpiredJwtException e) {
             return response.withErrors(List.of(ErrorInfo.of("Jwt is Expired", "Срок использования токена истек")));
         }
@@ -103,21 +93,14 @@ public class UserService {
             user.setLogin(req.getLogin());
             user.setInterests(req.getInterests());
             user.setEmail(req.getEmail());
-            user.setComment(req.getComment());
             user.setRoles(req.getRoles());
             user.setGroupp(req.getGroup());
-            user.setSkills(req.getSkills().stream()
-                    .map(tags -> {
-                        Tags tgs = tags;
-                        tgs = tagsRepository.getById(tgs.getId());
-                        return tgs;
-                    }).collect(Collectors.toSet()));
-            if (req.getOldPassword() != null && req.getNewPassword() != null && !passwordEncoder.matches(req.getOldPassword(), user.getPasswordHash())) {
+            if (req.getPassword() != null && req.getNewPassword() != null && !passwordEncoder.matches(req.getPassword(), user.getPasswordHash())) {
                 errors.add(ErrorConstants.WRONG_PASSWORD);
                 return response.withErrors(errors);
-            } else if (req.getOldPassword() == null && req.getNewPassword() != null)
+            } else if (req.getPassword() == null && req.getNewPassword() != null)
                 return response.withErrors(List.of(ErrorInfo.of("Old Password Not Confirmed", "Необходимо ввести текущий пароль")));
-            else if (req.getNewPassword() != null && passwordEncoder.matches(req.getOldPassword(), user.getPasswordHash()))
+            else if (req.getNewPassword() != null && passwordEncoder.matches(req.getPassword(), user.getPasswordHash()))
                 user.setPasswordHash(passwordEncoder.encode(req.getNewPassword()));
 
             userRepository.save(user);

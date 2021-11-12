@@ -1,20 +1,34 @@
 import UserProfile from "../model/UserProfile";
 import GenericResponse from "../model/dto/GenericResponse";
 import {Login, LoginState} from "../store/state/LoginState";
+import {StorageKeys} from "../utils/StorageKeys";
 
 /**
  * @return current username
  */
 export function getCurrentUser() {
-    return new Promise<string>((res, rej) => rej('Not implemented yet')); //TODO: implement
+    if (sessionStorage.getItem(StorageKeys.AccessToken))
+        return fetch('/api/auth/currentuser', {
+            headers: {
+                "Authorization": "Bearer " + sessionStorage.getItem(StorageKeys.AccessToken)
+            }
+        }).then(r => {
+            if (!r.ok) {
+                throw new Error("Not authorized");
+            }
+            return r.json();
+        })//TODO: civil & universal error handling
 }
 
 /**
  * @return current user profile
  */
-export function getCurrentUserProfile() {
-    return new Promise<GenericResponse<UserProfile>>((res, rej) => res(new GenericResponse(new UserProfile(
-        'XXX', '', 'QWERTY', '', ['backend'], [])))); //TODO: implement
+export function getCurrentUserProfile(): Promise<GenericResponse<UserProfile>> {
+    return fetch('/api/auth/userprofile', {
+        headers: {
+            "Authorization": "Bearer " + sessionStorage.getItem(StorageKeys.AccessToken)
+        }
+    }).then(r => r.json()).catch(alert);//TODO: civil & universal error handling
 }
 
 /**
@@ -33,10 +47,10 @@ export function login(login: string, password: string) {
             return r.json();
         } else {
             // const obj = (r.json() as any);
-            throw "Error auth";
+            throw "Error auth"; //TODO: error catch
         }
     }).then((r: GenericResponse<Login>) => {
-        return r.success ? (alert(r.message), null) : r.payload;
+        return r.success ? (alert(r.message), null) : r.data;
     }).catch(r => (alert(r), null));
     // return new Promise<GenericResponse<LoginState>>((res, rej) => res("vovan")); //TODO: implement
 }
@@ -66,6 +80,11 @@ export function register(user: UserProfile, password: string) {
             login: user.username,
             name: user.name,
             surname: user.surname,
+            group: user.group,
+            interests: user.comment,
+            email: user.email,
+            roles: user.roles,
+            skills: user.skills,
             password
         })
     }).then(r => {
@@ -76,7 +95,7 @@ export function register(user: UserProfile, password: string) {
             throw "Error auth";
         }
     }).then((r: GenericResponse<Login>) => {
-        return r.success ? (alert(r.message), null) : r.payload;
+        return r.success ? (alert(r.message), null) : r.data;
     }).catch(r => (alert(r), null));//new Promise<string>((res, rej) => res("vovan")); //TODO: implement
 }
 
