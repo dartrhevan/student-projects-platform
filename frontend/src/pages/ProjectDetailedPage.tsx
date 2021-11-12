@@ -1,15 +1,15 @@
 import React, {useEffect, useState} from 'react';
 import {addProject, editProject, getProjectInfo} from "../api/projects";
-import {DetailedProject, ProjectRole} from "../model/Project";
+import {DetailedProject, ProjectRole, ProjectStatus} from "../model/Project";
 import {Button, makeStyles, Paper} from "@material-ui/core";
 import queryString from 'query-string';
 import {
     Divider,
-    IconButton, Link,
+    IconButton, InputLabel, Link,
     List,
     ListItemButton,
     ListItemText,
-    ListSubheader,
+    ListSubheader, MenuItem, Select,
     TextField,
     Typography
 } from "@mui/material";
@@ -113,7 +113,7 @@ const EditableField = ({
             <TextField label={label} sx={{margin: '10px'}} fullWidth={multiline} minRows={5}
                        variant={multiline ? 'outlined' : 'standard'} multiline={multiline}
                        onChange={e => onChange((e.target as HTMLInputElement).value)}
-                       defaultValue={field(project)} {...inputProps}/>
+                       value={field(project)} {...inputProps}/>
         </div>)
         : <Typography {...props}>{prefix + field(project)}</Typography>;
 
@@ -123,7 +123,7 @@ export default function ProjectDetailedPage() {
     const workspaceId = params?.workspaceId, projectId = params?.projectId;
     const isNew = params?.isNew !== undefined;
     const classes = useStyles();
-    const [project, setProject] = useState(isNew ? new DetailedProject(workspaceId as string) : undefined);
+    const [project, setProject] = useState(new DetailedProject(workspaceId as string));
 
     useEffect(() => {
             if (!isNew) {
@@ -157,10 +157,7 @@ export default function ProjectDetailedPage() {
                 <EditableField isNew={isNew} left label='Краткое описание' inputProps={{required: true}}
                                project={project} field={p => p?.shortDescription}
                                onChange={t => setProject((project as DetailedProject).withShortDescription(t))}/>
-                <div style={{
-                    width: '100%', display: 'flex', flexDirection: 'row',
-                    justifyContent: 'center', flexWrap: 'wrap'
-                }}>
+                <div style={{width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'center', flexWrap: 'wrap'}}>
                     <TagsPanel onSetTag={tags => setProject(project?.withTags(tags))}
                                editable={project?.role === ProjectRole.OWNER} values={project?.tags}/>
                 </div>
@@ -203,6 +200,18 @@ export default function ProjectDetailedPage() {
                 <div className={classes.butGr} style={{justifyContent: 'start'}}>
                     <Typography sx={{margin: '10px'}}>Максимальное кол-во участников</Typography>
                     <TextField sx={{width: '40px'}} type='number' variant='standard'/>
+                </div>
+                <div className={classes.butGr} style={{justifyContent: 'start'}}>
+                    <Typography sx={{margin: '10px'}}>Статус проекта</Typography>
+                    <Select
+                        value={project?.status}
+                        onChange={s => setProject(project?.withStatus(s.target.value as ProjectStatus))}>
+                        <MenuItem value={ProjectStatus.NEW}>Новый</MenuItem>
+                        <MenuItem value={ProjectStatus.IN_PROGRESS}>В разработке</MenuItem>
+                        <MenuItem value={ProjectStatus.ENDED}>Завершён</MenuItem>
+                        <MenuItem value={ProjectStatus.CANCELLED}>Отклонён</MenuItem>
+                        <MenuItem value={ProjectStatus.MODIFYING}>На доработке</MenuItem>
+                    </Select>
                 </div>
                 <ErrorMessage message='*Не все обязательные поля заполнены' condition={!allFilled}/>
                 <div className={classes.butGr}>

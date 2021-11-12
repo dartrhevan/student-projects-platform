@@ -26,7 +26,6 @@ export function getUsers(workspaceId: string, pageable: Pageable,
             surname: 'Satunkin',
             roles: 'backend',
             skills: 'Java',
-            reputation: '5',
             username: 'me',
             project: 'Project Activity',
             interests: 'Programming Programming Programming Programming Programming Programming\nProgramming Programming Programming\nProgramming Programming Programming Programming'

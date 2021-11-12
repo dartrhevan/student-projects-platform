@@ -10,17 +10,18 @@ import {Dialog, DialogActions, DialogTitle, TextField} from "@mui/material";
 import {invitePerson} from "../api/workspaces";
 import {getUsers} from "../api/users";
 import Pageable from "../model/Pageable";
+import UserRow from "../model/UserRow";
 
-interface Row {
-    name: string,
-    surname: string,
-    roles: string,
-    skills: string,
-    username: string,
-    reputation: string,
-    interests: string,
-    project: string
-}
+// interface Row {
+//     name: string,
+//     surname: string,
+//     roles: string,
+//     skills: string,
+//     username: string,
+//     // reputation: string,
+//     interests: string,
+//     project: string
+// }
 
 const useStyles = makeStyles(theme => ({
     main: {
@@ -56,24 +57,24 @@ const tableColumns = [
         sorting: false,
     },
     {
+        title: 'Текущий проект',
+        field: "project",
+        sorting: false,
+        filtering: true,
+    },
+    {
         title: 'Интересы',
         field: "interests",
         sorting: false,
         filtering: false,
-        render: (row: Row) => <ViewableText maxWidth={200}>{row.interests}</ViewableText>
+        render: (row: UserRow) => <ViewableText maxWidth={200}>{row.interests}</ViewableText>
     },
-    {
-        title: 'Текущий проект',
-        field: "project",
-        sorting: false,
-        filtering: false,
-    },
-    {
-        title: 'Репутация',
-        field: "reputation",
-        sorting: false,
-        filtering: false,
-    }
+    // {
+    //     title: 'Репутация',
+    //     field: "reputation",
+    //     sorting: false,
+    //     filtering: false,
+    // }
 ];
 
 export default function Users() {
@@ -83,17 +84,17 @@ export default function Users() {
     const invite = allNotEmpty(workspaceId, projectId);
 
     const classes = useStyles();
-    const data = (query: Query<Row>) => {
+    const data = (query: Query<UserRow>) => {
         console.log(`query`);
         console.log(query);
         return getUsers(workspaceId as string, new Pageable(0, 0));
             // .then(r => ({data: r.data, page: r.page, totalCount: r.totalCount}));
     };
-    const tableActions: Action<Row>[] = [
+    const tableActions: Action<UserRow>[] = [
         {
             icon: () => <Person/>,
-            onClick: (event: React.EventHandler<any>, objectData: Row | Row[]) =>
-                window.location.href = `/portfolio/${(objectData as Row).username}`,
+            onClick: (event: React.EventHandler<any>, objectData: UserRow | UserRow[]) =>
+                window.location.href = `/portfolio/${(objectData as UserRow).username}`,
             tooltip: 'Просмотр портфолио',
         }
     ];
@@ -101,10 +102,10 @@ export default function Users() {
     if (invite)
         tableActions.push({
             icon: () => <PersonAdd/>,
-            onClick: (event: React.EventHandler<any>, objectData: Row | Row[]) => {
+            onClick: (event: React.EventHandler<any>, objectData: UserRow | UserRow[]) => {
                 // console.log(objectData);
 
-                setOpenInviteUsername((objectData as Row).username);
+                setOpenInviteUsername((objectData as UserRow).username);
             },
             tooltip: 'Пригласить',
         });
