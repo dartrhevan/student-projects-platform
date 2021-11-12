@@ -10,7 +10,9 @@ import com.platform.projapp.dto.response.body.MessageResponseBody;
 import com.platform.projapp.enumarate.AccessRole;
 import com.platform.projapp.error.ErrorConstants;
 import com.platform.projapp.error.ErrorInfo;
+import com.platform.projapp.model.Tags;
 import com.platform.projapp.model.User;
+import com.platform.projapp.repository.TagsRepository;
 import com.platform.projapp.repository.UserRepository;
 import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author Yarullin Renat
@@ -31,6 +34,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
+    private final TagsRepository tagsRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenFilter jwtTokenFilter;
     private final JwtUtils jwtUtils;
@@ -50,6 +54,13 @@ public class UserService {
                     registerRequest.getRoles(),
                     registerRequest.getInterests(),
                     registerRequest.getGroup(),
+                    registerRequest.getSkills()
+                            .stream()
+                            .map(tags -> {
+                                Tags tgs = tags;
+                                tgs = tagsRepository.getById(tgs.getId());
+                                return tgs;
+                            }).collect(Collectors.toSet()),
                     Set.of(AccessRole.ROLE_USER));
             userRepository.save(user);
         }
@@ -95,6 +106,12 @@ public class UserService {
             user.setEmail(req.getEmail());
             user.setRoles(req.getRoles());
             user.setGroupp(req.getGroup());
+            user.setSkills(req.getSkills().stream()
+                    .map(tags -> {
+                        Tags tgs = tags;
+                        tgs = tagsRepository.getById(tgs.getId());
+                        return tgs;
+                    }).collect(Collectors.toSet()));
             if (req.getPassword() != null && req.getNewPassword() != null && !passwordEncoder.matches(req.getPassword(), user.getPasswordHash())) {
                 errors.add(ErrorConstants.WRONG_PASSWORD);
                 return response.withErrors(errors);
