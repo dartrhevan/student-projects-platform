@@ -4,6 +4,7 @@ import com.platform.projapp.configuration.jwt.JwtHelper;
 import com.platform.projapp.dto.request.RegisterRequest;
 import com.platform.projapp.enumarate.AccessRole;
 import com.platform.projapp.model.User;
+import com.platform.projapp.model.Workspace;
 import com.platform.projapp.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -47,5 +48,9 @@ public class UserService {
                     Set.of(AccessRole.ROLE_USER));
             userRepository.save(user);
         }
+    }
+
+    public void getWorkspaceRole(User user, Workspace workspace) {
+
     }
 }

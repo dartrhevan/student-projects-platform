@@ -1,12 +1,12 @@
 package com.platform.projapp.dto.response.body;
 
 import com.platform.projapp.enumarate.ProjectStatus;
-import com.platform.projapp.model.Participant;
 import com.platform.projapp.model.Project;
-import com.platform.projapp.model.User;
+import com.platform.projapp.model.Tag;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -16,34 +16,38 @@ import java.util.stream.Collectors;
 @Data
 @AllArgsConstructor
 public class ProjectResponseBody implements ResponseBody {
-    private Long id;
-    private Long workspaceId;
-    private String name;
+    private String title;
     private String shortDescription;
     private String fullDescription;
-    private Set<String> participantLogins;
-    private Set<TagResponseBody> tags;
+    private String trackerLink;
+    private Set<Long> tags;
     private Integer maxParticipantsCount;
+    private Set<ParticipantResponseBody> participants;
     private ProjectStatus status;
 
     public static ProjectResponseBody fromProject(Project project) {
-        Set<String> participantLogins = project.getParticipants()
-                .stream()
-                .map(Participant::getUser)
-                .map(User::getLogin)
-                .collect(Collectors.toSet());
+        Set<ParticipantResponseBody> participantsResponseBody = new HashSet<>();
+        if (!project.getParticipants().isEmpty()) {
+            participantsResponseBody = project.getParticipants()
+                    .stream()
+                    .map(ParticipantResponseBody::fromWorkspaceParticipant)
+                    .collect(Collectors.toSet());
+        }
 
-        Set<TagResponseBody> tagResponseBodies = project.getTags().stream()
-                .map(TagResponseBody::fromTag)
-                .collect(Collectors.toSet());
+        Set<Long> tagsId = new HashSet<>();
+        if (!project.getTags().isEmpty()) {
+            tagsId = project.getTags().stream()
+                    .map(Tag::getId)
+                    .collect(Collectors.toSet());
+        }
 
-        return new ProjectResponseBody(project.getId(),
-                project.getWorkspace().getId(),
-                project.getName(), project.getShortDescription(),
+        return new ProjectResponseBody(project.getName(),
+                project.getShortDescription(),
                 project.getFullDescription(),
-                participantLogins,
-                tagResponseBodies,
+                project.getTrackerLink(),
+                tagsId,
                 project.getMaxParticipantsCount(),
+                participantsResponseBody,
                 project.getStatus());
     }
 }

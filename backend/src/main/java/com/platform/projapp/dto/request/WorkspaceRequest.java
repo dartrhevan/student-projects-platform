@@ -5,6 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
 import java.time.LocalDate;
 
 /**
@@ -14,10 +17,17 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class WorkspaceRequest {
-    private String name;
+    @NotBlank(message = "Поле title обязательно для заполнения")
+    private String title;
+
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
-    private LocalDate zeroSprintDate;
-    private Integer frequencyOfSprints;
+    @NotNull(message = "Поле startDate обязательно для заполнения")
+    private LocalDate startDate;
+    @NotNull(message = "Поле sprintLength обязательно для заполнения")
+    @Positive(message = "Поле sprintLength должно быть больше 0")
+    private Integer sprintLength;
+    @NotNull(message = "Поле sprintCount обязательно для заполнения")
+    @Positive(message = "Поле sprintCount должно быть больше 0")
     private Integer sprintCount;
 
 }

@@ -12,5 +12,7 @@ import java.util.Set;
  */
 @Repository
 public interface TagRepository extends JpaRepository<Tag, Long> {
-    Set<Tag> findByNameIn(Collection<String> names);
+    Set<Tag> findAllByIdIn(Collection<Long> ids);
+
+    Set<Tag> findAllByNameIn(Collection<String> name);
 }

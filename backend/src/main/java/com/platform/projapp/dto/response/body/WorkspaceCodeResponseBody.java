@@ -1,7 +1,7 @@
 package com.platform.projapp.dto.response.body;
 
 import com.platform.projapp.enumarate.WorkspaceRole;
-import com.platform.projapp.model.WorkspaceCode;
+import com.platform.projapp.model.Workspace;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -11,13 +11,11 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class WorkspaceCodeResponseBody implements ResponseBody {
-    private Long id;
-    private String code;
-    private WorkspaceRole type;
+    private String userInvite;
+    private String mentorInvite;
 
-    public static WorkspaceCodeResponseBody fromWorkspaceCode(WorkspaceCode workspaceCode) {
-        return new WorkspaceCodeResponseBody(workspaceCode.getId(),
-                workspaceCode.getCode(),
-                workspaceCode.getType());
+    public static WorkspaceCodeResponseBody fromWorkspace(Workspace workspace) {
+        return new WorkspaceCodeResponseBody(workspace.getCodeByWorkspaceRole(WorkspaceRole.STUDENT),
+                workspace.getCodeByWorkspaceRole(WorkspaceRole.MENTOR));
     }
 }

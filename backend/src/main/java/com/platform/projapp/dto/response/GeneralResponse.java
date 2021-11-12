@@ -15,19 +15,19 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class GeneralResponse<T> {
     private List<ErrorInfo> errors;
-    private T payload;
+    private T data;
 
     public GeneralResponse<T> withErrors(List<ErrorInfo> errors) {
         this.errors = errors;
         return this;
     }
 
-    public GeneralResponse<T> withPayload(T payload) {
-        this.payload = payload;
+    public GeneralResponse<T> withData(T data) {
+        this.data = data;
         return this;
     }
 
     public boolean success() {
-        return payload != null;
+        return data != null;
     }
 }

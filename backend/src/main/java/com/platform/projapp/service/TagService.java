@@ -18,12 +18,19 @@ import java.util.stream.Collectors;
 public class TagService {
     private final TagRepository tagRepository;
 
-    public Set<Tag> parseTagParam(String tagParam) {
-        List<String> names = Arrays.stream(tagParam.split(",")).collect(Collectors.toList());
-        return findByNameIn(names);
+    public Set<Tag> findByTagParam(String tagParam) {
+        return findAllByNameIn(parseTagParam(tagParam));
     }
 
-    public Set<Tag> findByNameIn(List<String> names) {
-        return tagRepository.findByNameIn(names);
+    public List<String> parseTagParam(String tagParam) {
+        return Arrays.stream(tagParam.split(",")).collect(Collectors.toList());
+    }
+
+    public Set<Tag> findAllByNameIn(List<String> names) {
+        return tagRepository.findAllByNameIn(names);
+    }
+
+    public Set<Tag> findAllByIdIn(List<Long> ids) {
+        return tagRepository.findAllByIdIn(ids);
     }
 }

@@ -1,21 +1,21 @@
 package com.platform.projapp.service;
 
 import com.platform.projapp.dto.request.WorkspaceRequest;
+import com.platform.projapp.dto.response.body.MessageResponseBody;
 import com.platform.projapp.enumarate.WorkspaceRole;
 import com.platform.projapp.error.ErrorConstants;
 import com.platform.projapp.error.ErrorInfo;
 import com.platform.projapp.model.User;
 import com.platform.projapp.model.Workspace;
-import com.platform.projapp.model.WorkspaceCode;
 import com.platform.projapp.model.WorkspaceParticipant;
 import com.platform.projapp.repository.WorkspaceRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * @author Yarullin Renat
@@ -24,38 +24,33 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class WorkspaceService {
     private final WorkspaceRepository workspaceRepository;
-    private final WorkspaceCodeService workspaceCodeService;
     private final WorkspaceParticipantService workspaceParticipantService;
+
+    public Page<Workspace> findAllByUser(User user, Pageable pageable) {
+        return workspaceRepository.findAllByUser(user, pageable);
+    }
 
     public Workspace findById(Long id) {
         return workspaceRepository.findById(id).orElse(null);
     }
 
-    public List<Workspace> findAll() {
-        return workspaceRepository.findAll();
-    }
-
-    public Set<Workspace> findAllByUser(User user) {
-        return findAll().stream()
-                .filter(workspace -> workspace.hasUser(user))
-                .collect(Collectors.toSet());
+    public Workspace findByCode(String code) {
+        return workspaceRepository.findByCode(code);
     }
 
     public void createWorkspace(User user, WorkspaceRequest workspaceRequest) {
-        Workspace workspace = new Workspace(workspaceRequest.getName(),
-                workspaceRequest.getZeroSprintDate(),
-                workspaceRequest.getFrequencyOfSprints(),
-                workspaceRequest.getSprintCount(),
-                user);
-        Set<WorkspaceCode> workspaceCodes = workspaceCodeService.createWorkspaceCodes(WorkspaceRole.values());
-        workspace.setCodes(workspaceCodes);
+        Workspace workspace = new Workspace(workspaceRequest.getTitle(),
+                workspaceRequest.getStartDate(),
+                workspaceRequest.getSprintLength(),
+                workspaceRequest.getSprintCount());
+        workspace.getParticipants().add(new WorkspaceParticipant(user, workspace, WorkspaceRole.ORGANIZER));
         workspaceRepository.save(workspace);
     }
 
     public void updateWorkspace(Workspace workspace, WorkspaceRequest workspaceRequest) {
-        workspace.setName(workspaceRequest.getName());
-        workspace.setZeroSprintDate(workspaceRequest.getZeroSprintDate());
-        workspace.setFrequencyOfSprints(workspaceRequest.getFrequencyOfSprints());
+        workspace.setName(workspaceRequest.getTitle());
+        workspace.setZeroSprintDate(workspaceRequest.getStartDate());
+        workspace.setFrequencyOfSprints(workspaceRequest.getSprintLength());
         workspace.setSprintCount(workspaceRequest.getSprintCount());
         workspaceRepository.save(workspace);
     }
@@ -64,25 +59,29 @@ public class WorkspaceService {
         workspaceRepository.delete(workspace);
     }
 
-    public void addWorkspaceParticipant(User user, Workspace workspace, WorkspaceCode workspaceCode) {
-        WorkspaceParticipant workspaceParticipant = workspaceParticipantService.createWorkspaceParticipant(user, workspace, workspaceCode.getType());
+    public void addWorkspaceParticipant(User user, Workspace workspace, String code) {
+        WorkspaceParticipant workspaceParticipant = workspaceParticipantService.createWorkspaceParticipant(user,
+                workspace,
+                workspace.getWorkspaceRoleByCode(code));
         workspace.getParticipants().add(workspaceParticipant);
         workspaceRepository.save(workspace);
     }
 
-    public List<ErrorInfo> getWorkspaceParticipantErrors(Workspace workspace, User user) {
-        List<ErrorInfo> workspaceErrors = getWorkspaceErrors(workspace);
-        if (!workspaceErrors.isEmpty()) return workspaceErrors;
-        return workspace.hasUser(user) ? Collections.emptyList() : List.of(ErrorConstants.USER_NOT_WORKSPACE_PARTICIPANT);
-    }
+    public ResponseEntity<?> getWorkspaceErrorResponseEntity(Workspace workspace, Long userId, List<ErrorInfo> errorsInfo) {
+        if (workspace == null)
+            return ResponseEntity.badRequest()
+                    .body(MessageResponseBody.of(ErrorConstants.WORKSPACE_NOT_FOUND.getMessage()));
+        if (errorsInfo.contains(ErrorConstants.USER_NOT_WORKSPACE_PARTICIPANT) && !workspace.hasUser(userId))
+            return ResponseEntity.badRequest()
+                    .body(MessageResponseBody.of(ErrorConstants.USER_NOT_WORKSPACE_PARTICIPANT.getMessage()));
+        if (errorsInfo.contains(ErrorConstants.USER_NOT_WORKSPACE_OWNER) && !workspace.ownerIs(userId))
+            return ResponseEntity.badRequest()
+                    .body(MessageResponseBody.of(ErrorConstants.USER_NOT_WORKSPACE_OWNER.getMessage()));
+        if (errorsInfo.contains(ErrorConstants.USER_IN_WORKSPACE) && workspace.hasUser(userId)) {
+            return ResponseEntity.badRequest()
+                    .body(MessageResponseBody.of(ErrorConstants.USER_IN_WORKSPACE.getMessage()));
+        }
 
-    public List<ErrorInfo> getWorkspaceOwnerErrors(Workspace workspace, User user) {
-        List<ErrorInfo> workspaceErrors = getWorkspaceErrors(workspace);
-        if (!workspaceErrors.isEmpty()) return workspaceErrors;
-        return workspace.ownerIs(user) ? Collections.emptyList() : List.of(ErrorConstants.USER_NOT_WORKSPACE_OWNER);
-    }
-
-    public List<ErrorInfo> getWorkspaceErrors(Workspace workspace) {
-        return workspace == null ? List.of(ErrorConstants.WORKSPACE_NOT_FOUND) : Collections.emptyList();
+        return null;
     }
 }

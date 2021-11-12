@@ -8,6 +8,8 @@ import com.platform.projapp.repository.WorkspaceParticipantRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Set;
+
 /**
  * @author Yarullin Renat
  */
@@ -15,6 +17,14 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class WorkspaceParticipantService {
     private final WorkspaceParticipantRepository workspaceParticipantRepository;
+
+    public Set<WorkspaceParticipant> findAllByUser(User user) {
+        return workspaceParticipantRepository.findAllByUser(user);
+    }
+
+    public WorkspaceParticipant findByUserAndWorkspace(User user, Workspace workspace) {
+        return workspaceParticipantRepository.findByUserAndWorkspace(user, workspace);
+    }
 
     public WorkspaceParticipant createWorkspaceParticipant(User user, Workspace workspace, WorkspaceRole workspaceRole) {
         WorkspaceParticipant workspaceParticipant = new WorkspaceParticipant(user, workspace, workspaceRole);

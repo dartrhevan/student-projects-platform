@@ -19,7 +19,7 @@ public class ParticipantService {
 
     public Participant createParticipant(Project project, ParticipantRequest participantRequest) {
         var user = userService.findById(participantRequest.getUserId());
-        var participant = new Participant(project, user, projectRoleService.findById(participantRequest.getProjectRoleId()));
+        var participant = new Participant(project, false, user, projectRoleService.findById(participantRequest.getProjectRoleId()));
         participantRepository.save(participant);
         return participant;
     }

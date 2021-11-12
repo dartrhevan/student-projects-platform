@@ -21,16 +21,18 @@ public class Participant {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(unique = true)
     private Long id;
+    private Boolean isOwner;
     @ManyToOne
     private Project project;
     @ManyToOne
-    private User User;
+    private User user;
     @ManyToOne
     private ProjectRole projectRole;
 
-    public Participant(Project project, User user, ProjectRole projectRole) {
+    public Participant(Project project, Boolean isOwner, User user, ProjectRole projectRole) {
         this.project = project;
-        User = user;
+        this.isOwner = isOwner;
+        this.user = user;
         this.projectRole = projectRole;
     }
 }

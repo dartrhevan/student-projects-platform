@@ -27,10 +27,9 @@ public class Project {
     private String name;
     private String shortDescription;
     private String fullDescription;
+    private String trackerLink;
     private ProjectStatus status;
     private Integer maxParticipantsCount;
-    @ManyToOne
-    private User owner;
     @ManyToOne
     private Workspace workspace;
 
@@ -40,15 +39,20 @@ public class Project {
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Participant> participants;
 
-    public Project(String name, String shortDescription, String fullDescription, ProjectStatus status, Integer maxParticipantsCount, User owner, Workspace workspace, Set<Tag> tags) {
+    public Project(String name, String shortDescription, String fullDescription, String trackerLink, ProjectStatus status, Integer maxParticipantsCount, Workspace workspace, Set<Tag> tags) {
         this.name = name;
         this.shortDescription = shortDescription;
         this.fullDescription = fullDescription;
+        this.trackerLink = trackerLink;
         this.status = status;
         this.maxParticipantsCount = maxParticipantsCount;
-        this.owner = owner;
         this.workspace = workspace;
         this.tags = tags;
         this.participants = new HashSet<>();
+    }
+
+    public boolean hasUser(Long userId) {
+        return participants.stream()
+                .anyMatch(workspaceParticipant -> workspaceParticipant.getUser().getId().equals(userId));
     }
 }

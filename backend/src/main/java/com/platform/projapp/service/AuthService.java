@@ -48,7 +48,7 @@ public class AuthService {
 
             RefreshToken refreshToken = tokenService.createRefreshToken(user);
 
-            return response.withPayload(new JwtResponseBody(jwt, refreshToken.getToken(), user));
+            return response.withData(new JwtResponseBody(jwt, refreshToken.getToken(), user));
         } catch (UsernameNotFoundException e) {
             return response.withErrors(List.of(ErrorConstants.USERNAME_NOT_FOUND));
         }
@@ -77,7 +77,7 @@ public class AuthService {
                 .map(user -> {
                     String accessToken = jwtHelper.generateJwtTokenFromUsername(user.getUsername());
                     String refreshToken = tokenService.createRefreshToken(user).getToken();
-                    response.withPayload(new TokenRefreshResponseBody(accessToken, refreshToken));
+                    response.withData(new TokenRefreshResponseBody(accessToken, refreshToken));
                     return (response);
                 }).orElse(new GeneralResponse<TokenRefreshResponseBody>()
                         .withErrors(List.of(ErrorConstants.RT_NOT_IN_BD)));
