@@ -11,4 +11,5 @@ public class ErrorConstants {
     public static ErrorInfo LOGIN_IS_BUSY = ErrorInfo.of("LoginIsBusy", "Пользователь с таким логином уже зарегистрирован");
     public static ErrorInfo WRONG_PASSWORD = ErrorInfo.of("WrongPassword", "Неправильный пароль");
     public static ErrorInfo PASSWORD_IS_EMPTY = ErrorInfo.of("PasswordIsEmpty", "Поле пароль обязательно для заполнения");
+    public static ErrorInfo TAG_IS_BUSY = ErrorInfo.of("TagIsBusy", "Тэг с таким именем уже существует");
 }

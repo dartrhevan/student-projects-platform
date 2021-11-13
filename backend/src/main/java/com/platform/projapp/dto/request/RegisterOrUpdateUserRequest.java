@@ -1,5 +1,6 @@
 package com.platform.projapp.dto.request;
 
+import com.platform.projapp.model.Tags;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -7,6 +8,7 @@ import lombok.NoArgsConstructor;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Yarullin Renat
@@ -29,6 +31,7 @@ public class RegisterOrUpdateUserRequest {
     private String email;
     private List<String> roles;
     private String group;
+    private Set<Tags> skills;
     @Size(min = 6, message = "Поле newPassword должно содержать не менее {min}")
     private String newPassword; //only for update
     private Long id; //only for update
