@@ -1,7 +1,7 @@
 package com.platform.projapp.controller;
 
 import com.platform.projapp.dto.request.CreateTagRequest;
-import com.platform.projapp.service.TagsServise;
+import com.platform.projapp.service.TagsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 //@RequestMapping("/api/tags")
 @RequiredArgsConstructor
 public class TagsController {
-    private final TagsServise tagsService;
+    private final TagsService tagsService;
 
     @PostMapping("/api/tags")
     public ResponseEntity<?> createTag(@RequestBody CreateTagRequest req) {

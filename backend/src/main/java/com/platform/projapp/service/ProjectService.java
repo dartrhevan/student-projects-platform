@@ -27,7 +27,7 @@ public class ProjectService {
     private final ProjectRepository projectRepository;
     private final ParticipantService participantService;
     private final WorkspaceService workspaceService;
-    private final TagService tagService;
+    private final TagsService tagsService;
     private final ProjectRoleRepository projectRoleRepository;
 
     public Project findById(Long id) {
@@ -43,7 +43,7 @@ public class ProjectService {
         return projectRepository.findAllByWorkspace(workspace, pageable);
     }
 
-    public Page<Project> findAllByWorkspaceAndTagsInTags(Workspace workspace, Set<Tag> tags, Pageable pageable) {
+    public Page<Project> findAllByWorkspaceAndTagsInTags(Workspace workspace, Set<Tags> tags, Pageable pageable) {
         return projectRepository.findAllByWorkspaceAndTagsInTags(workspace, tags, pageable);
     }
 
@@ -55,7 +55,7 @@ public class ProjectService {
                 ProjectStatus.NEW,
                 projectRequest.getMaxParticipantsCount(),
                 workspace,
-                tagService.findAllByIdIn(projectRequest.getTags()));
+                tagsService.findAllByIdIn(projectRequest.getTags()));
         ProjectRole projectRole = new ProjectRole("создатель", 1);
         projectRoleRepository.save(projectRole);
         project.getParticipants().add(new Participant(project, true, user, projectRole));
@@ -68,7 +68,7 @@ public class ProjectService {
         project.setFullDescription(projectRequest.getFullDescription());
         project.setTrackerLink(projectRequest.getTrackerLink());
         project.setMaxParticipantsCount(projectRequest.getMaxParticipantsCount());
-        project.setTags(tagService.findAllByIdIn(projectRequest.getTags()));
+        project.setTags(tagsService.findAllByIdIn(projectRequest.getTags()));
         projectRepository.save(project);
     }
 

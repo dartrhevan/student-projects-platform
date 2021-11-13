@@ -1,6 +1,6 @@
 package com.platform.projapp.dto.response.body;
 
-import com.platform.projapp.model.Tag;
+import com.platform.projapp.model.Tags;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -14,7 +14,7 @@ public class TagResponseBody implements ResponseBody {
     private String name;
     private Integer color;
 
-    public static TagResponseBody fromTag(Tag tag) {
+    public static TagResponseBody fromTag(Tags tag) {
         return new TagResponseBody(tag.getId(), tag.getName(), tag.getColor());
     }
 }

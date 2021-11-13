@@ -1,16 +1,18 @@
 package com.platform.projapp.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.platform.projapp.enumarate.AccessRole;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.Hibernate;
+import org.hibernate.annotations.Cascade;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import java.util.Collection;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Yarullin Renat
@@ -41,7 +43,11 @@ public class User implements UserDetails {
     private String groupp;
 
     @ManyToMany
-    @Cascade({ CascadeType.PERSIST,CascadeType.MERGE,CascadeType.DETACH,CascadeType.REFRESH})
+    @Cascade({ org.hibernate.annotations.CascadeType.PERSIST,
+            org.hibernate.annotations.CascadeType.MERGE,
+            org.hibernate.annotations.CascadeType.DETACH,
+            org.hibernate.annotations.CascadeType.REFRESH,
+            org.hibernate.annotations.CascadeType.PERSIST})
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @JoinTable(
             name = "user_skills",
@@ -54,7 +60,7 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Set<AccessRole> accessRoles;
 
-    public User(String login, String passwordHash, String name, String surname, String email, List<String> roles, String interests, String groupp,Set<Tags> skills, Set<AccessRole> accessRoles) {
+    public User(String login, String passwordHash, String name, String surname, String email, List<String> roles, String interests, String groupp, Set<Tags> skills, Set<AccessRole> accessRoles) {
         this.login = login;
         this.passwordHash = passwordHash;
         this.name = name;

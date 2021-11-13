@@ -10,7 +10,7 @@ import com.platform.projapp.error.ErrorConstants;
 import com.platform.projapp.error.ErrorUtils;
 import com.platform.projapp.model.Project;
 import com.platform.projapp.service.ProjectService;
-import com.platform.projapp.service.TagService;
+import com.platform.projapp.service.TagsService;
 import com.platform.projapp.service.UserService;
 import com.platform.projapp.service.WorkspaceService;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 public class ProjectController {
     private final ProjectService projectService;
     private final UserService userService;
-    private final TagService tagService;
+    private final TagsService tagsService;
     private final WorkspaceService workspaceService;
 
     @GetMapping
@@ -56,7 +56,7 @@ public class ProjectController {
 
         Page<Project> page;
         if (tagsParam != null && !tagsParam.isBlank()) {
-            var tags = tagService.findByTagParam(tagsParam);
+            var tags = tagsService.findByTagParam(tagsParam);
             page = projectService.findAllByWorkspaceAndTagsInTags(workspace, tags, pageable);
         } else page = projectService.findAllByWorkspace(workspace, pageable);
 

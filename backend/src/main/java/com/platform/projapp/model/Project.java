@@ -34,12 +34,12 @@ public class Project {
     private Workspace workspace;
 
     @ManyToMany(cascade = CascadeType.ALL)
-    private Set<Tag> tags;
+    private Set<Tags> tags;
 
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Participant> participants;
 
-    public Project(String name, String shortDescription, String fullDescription, String trackerLink, ProjectStatus status, Integer maxParticipantsCount, Workspace workspace, Set<Tag> tags) {
+    public Project(String name, String shortDescription, String fullDescription, String trackerLink, ProjectStatus status, Integer maxParticipantsCount, Workspace workspace, Set<Tags> tags) {
         this.name = name;
         this.shortDescription = shortDescription;
         this.fullDescription = fullDescription;

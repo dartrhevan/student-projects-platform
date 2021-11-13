@@ -2,7 +2,7 @@ package com.platform.projapp.dto.response.body;
 
 import com.platform.projapp.enumarate.ProjectStatus;
 import com.platform.projapp.model.Project;
-import com.platform.projapp.model.Tag;
+import com.platform.projapp.model.Tags;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -37,7 +37,7 @@ public class ProjectResponseBody implements ResponseBody {
         Set<Long> tagsId = new HashSet<>();
         if (!project.getTags().isEmpty()) {
             tagsId = project.getTags().stream()
-                    .map(Tag::getId)
+                    .map(Tags::getId)
                     .collect(Collectors.toSet());
         }
 
