@@ -2,14 +2,15 @@ package com.platform.projapp.dto.response.body;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+
+import java.util.Set;
 
 /**
  * @author Yarullin Renat
  */
 @Data
-@NoArgsConstructor
 @AllArgsConstructor(staticName = "of")
-public class MessageResponseBody implements ResponseBody {
-    private String message;
+public class WorkspacesResponseBody implements ResponseBody {
+    private Long totalCount;
+    private Set<WorkspaceResponseBody> workspaces;
 }

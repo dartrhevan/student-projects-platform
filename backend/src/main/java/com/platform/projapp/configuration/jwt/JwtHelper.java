@@ -4,7 +4,6 @@ import com.platform.projapp.model.User;
 import com.platform.projapp.property.AppProperties;
 import com.platform.projapp.service.UserService;
 import io.jsonwebtoken.*;
-import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Lazy;
@@ -19,12 +18,13 @@ import java.util.Date;
  */
 @Slf4j
 @Component
-public class JwtUtils {
+public class JwtHelper {
+
     private final AppProperties appProperties;
 
     private final UserService userService;
 
-    public JwtUtils(AppProperties appProperties, @Lazy UserService userService) {
+    public JwtHelper(AppProperties appProperties, @Lazy UserService userService) {
         this.appProperties = appProperties;
         this.userService = userService;
     }
@@ -78,5 +78,13 @@ public class JwtUtils {
         }
 
         return false;
+    }
+
+    public String parseJwt(String token) {
+        if (StringUtils.hasText(token) && token.startsWith("Bearer ")) {
+            return token.substring(7);
+        }
+
+        throw new RuntimeException("incorrect token");
     }
 }

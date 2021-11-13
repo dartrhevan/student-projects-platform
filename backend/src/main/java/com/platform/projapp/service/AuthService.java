@@ -1,7 +1,7 @@
 package com.platform.projapp.service;
 
 import com.platform.projapp.configuration.jwt.JwtUtils;
-import com.platform.projapp.dto.request.RegisterOrUpdateUserRequest;
+import com.platform.projapp.dto.request.RegisterRequest;
 import com.platform.projapp.dto.request.TokenRefreshRequest;
 import com.platform.projapp.dto.response.GeneralResponse;
 import com.platform.projapp.dto.response.body.JwtResponseBody;
@@ -31,24 +31,24 @@ public class AuthService {
     private final UserRepository userRepository;
     private final UserService userService;
     private final RefreshTokenService tokenService;
-    private final JwtUtils jwtUtils;
+    private final JwtHelper jwtHelper;
     private final AuthenticationManager authenticationManager;
 
     public GeneralResponse<JwtResponseBody> authUser(String login, String password) {
-        GeneralResponse<JwtResponseBody> response = new GeneralResponse<JwtResponseBody>();
+        GeneralResponse<JwtResponseBody> response = new GeneralResponse<>();
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(login, password));
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            String jwt = jwtUtils.generateJwtToken(authentication);
+            String jwt = jwtHelper.generateJwtToken(authentication);
 
             User user = (User) authentication.getPrincipal();
 
             RefreshToken refreshToken = tokenService.createRefreshToken(user);
 
-            return response.withPayload(new JwtResponseBody(jwt, refreshToken.getToken(), user));
+            return response.withData(new JwtResponseBody(jwt, refreshToken.getToken(), user));
         } catch (UsernameNotFoundException e) {
             return response.withErrors(List.of(ErrorConstants.USERNAME_NOT_FOUND));
         }
@@ -80,11 +80,11 @@ public class AuthService {
                         .findByToken(requestRefreshToken)).map(tokenService::verifyExpiration)
                 .map(RefreshToken::getUser)
                 .map(user -> {
-                    String accessToken = jwtUtils.generateJwtTokenFromUsername(user.getUsername());
+                    String accessToken = jwtHelper.generateJwtTokenFromUsername(user.getUsername());
                     String refreshToken = tokenService.createRefreshToken(user).getToken();
-                    response.withPayload(new TokenRefreshResponseBody(accessToken, refreshToken));
+                    response.withData(new TokenRefreshResponseBody(accessToken, refreshToken));
                     return (response);
                 }).orElse(new GeneralResponse<TokenRefreshResponseBody>()
-                                .withErrors(List.of(ErrorConstants.RT_NOT_IN_BD)));
+                        .withErrors(List.of(ErrorConstants.RT_NOT_IN_BD)));
     }
 }
