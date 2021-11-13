@@ -9,7 +9,7 @@ import lombok.Data;
  */
 @Data
 @AllArgsConstructor
-public class JwtResponseBody {
+public class JwtResponseBody implements ResponseBody {
     private String accessToken;
     private String refreshToken;
     private User user;
