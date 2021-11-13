@@ -9,5 +9,7 @@ export enum ActionType {
     SetPageSize,
     InitPaging,
     OpenDialog,
-    CloseDialog
+    CloseDialog,
+    ShowMessage,
+    HideMessage
 }
