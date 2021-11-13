@@ -5,10 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 /**
  * @author Yarullin Renat
@@ -21,12 +18,12 @@ import javax.persistence.Id;
 public class ProjectRole {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @Column(unique = true)
     private Long id;
+    @Column(unique = true)
     private String name;
-    private Integer color;
 
-    public ProjectRole(String name, Integer color) {
+    public ProjectRole(String name) {
         this.name = name;
-        this.color = color;
     }
 }

@@ -9,4 +9,5 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface ProjectRoleRepository extends JpaRepository<ProjectRole, Long> {
+    ProjectRole findByName(String name);
 }

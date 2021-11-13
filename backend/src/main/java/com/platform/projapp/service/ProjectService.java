@@ -8,7 +8,6 @@ import com.platform.projapp.error.ErrorConstants;
 import com.platform.projapp.error.ErrorInfo;
 import com.platform.projapp.model.*;
 import com.platform.projapp.repository.ProjectRepository;
-import com.platform.projapp.repository.ProjectRoleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,7 +27,7 @@ public class ProjectService {
     private final ParticipantService participantService;
     private final WorkspaceService workspaceService;
     private final TagsService tagsService;
-    private final ProjectRoleRepository projectRoleRepository;
+    private final ProjectRoleService projectRoleService;
 
     public Project findById(Long id) {
         return projectRepository.findById(id).orElse(null);
@@ -56,9 +55,7 @@ public class ProjectService {
                 projectRequest.getMaxParticipantsCount(),
                 workspace,
                 tagsService.findAllByIdIn(projectRequest.getTags()));
-        ProjectRole projectRole = new ProjectRole("создатель", 1);
-        projectRoleRepository.save(projectRole);
-        project.getParticipants().add(new Participant(project, true, user, projectRole));
+        project.getParticipants().add(new Participant(project, true, user, projectRoleService.createProjectRole("тимлид")));
         projectRepository.save(project);
     }
 
