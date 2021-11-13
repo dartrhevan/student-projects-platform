@@ -10,6 +10,6 @@ import lombok.Data;
 @Data
 @AllArgsConstructor(staticName = "of")
 public class ErrorInfo {
-    private String code;
-    private String message;
+    //private String code;
+    public String message;
 }

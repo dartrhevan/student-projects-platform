@@ -51,6 +51,7 @@ public class UserService {
                     registerRequest.getName(),
                     registerRequest.getSurname(),
                     registerRequest.getEmail(),
+                    registerRequest.getMessenger(),
                     registerRequest.getRoles(),
                     registerRequest.getInterests(),
                     registerRequest.getGroup(),
@@ -72,9 +73,9 @@ public class UserService {
             String token = jwtTokenFilter.parseJwt(req);
             String login = jwtUtils.getUserNameFromJwtToken(token);
             User user = userRepository.findByLogin(login);
-            return response.withPayload(new CurrentUserResponseBody(user.getName(), user.getSurname(), user.getLogin()));
+            return response.withPayload(new CurrentUserResponseBody(user.getLogin(), user.getName(), user.getSurname()));
         } catch (ExpiredJwtException e) {
-            return response.withErrors(List.of(ErrorInfo.of("Jwt is Expired", "Срок использования токена истек")));
+            return response.withErrors("Срок использования токена истек");
         }
     }
 
@@ -83,22 +84,23 @@ public class UserService {
         try {
             String token = jwtTokenFilter.parseJwt(req);
             if (token == null || token.isEmpty()) {
-                return response.withErrors(List.of(ErrorInfo.of("401", "Jwt is not provided")));
+                return response.withErrors("Jwt is not provided");
             }
             String login = jwtUtils.getUserNameFromJwtToken(token);
             User user = userRepository.findByLogin(login);
-            return response.withPayload(new CurrentUserProfileResponseBody(user.getLogin(), user.getName(), user.getSurname(), user.getInterests(), user.getEmail(), user.getRoles(), user.getGroupp(), user.getId()));
+            return response.withPayload(new CurrentUserProfileResponseBody(user.getLogin(), user.getName(), user.getSurname(), user.getInterests(), user.getEmail(), user.getMessenger(), user.getRoles(), user.getGroupp(), user.getSkills()));
         } catch (ExpiredJwtException e) {
-            return response.withErrors(List.of(ErrorInfo.of("Jwt is Expired", "Срок использования токена истек")));
+            return response.withErrors("Срок использования токена истек");
         }
     }
 
-    public GeneralResponse<MessageResponseBody> changeUserProfile(RegisterOrUpdateUserRequest req) {
-        List<ErrorInfo> errors = new ArrayList<>();
+    public GeneralResponse<MessageResponseBody> changeUserProfile(RegisterOrUpdateUserRequest req, HttpServletRequest request) {
+        //List<ErrorInfo> errors = new ArrayList<>();
         GeneralResponse<MessageResponseBody> response = new GeneralResponse<>();
         try {
-            Long Id = req.getId();
-            User user = userRepository.getById(Id);
+            String token = jwtTokenFilter.parseJwt(request);
+            String login = jwtUtils.getUserNameFromJwtToken(token);
+            User user = userRepository.findByLogin(login);
             user.setName(req.getName());
             user.setSurname(req.getSurname());
             user.setLogin(req.getLogin());
@@ -113,20 +115,21 @@ public class UserService {
                         return tgs;
                     }).collect(Collectors.toSet()));
             if (req.getPassword() != null && req.getNewPassword() != null && !passwordEncoder.matches(req.getPassword(), user.getPasswordHash())) {
-                errors.add(ErrorConstants.WRONG_PASSWORD);
-                return response.withErrors(errors);
+                //errors.add(ErrorConstants.WRONG_PASSWORD);
+                return response.withErrors(ErrorConstants.WRONG_PASSWORD);
             } else if (req.getPassword() == null && req.getNewPassword() != null)
-                return response.withErrors(List.of(ErrorInfo.of("Old Password Not Confirmed", "Необходимо ввести текущий пароль")));
+                return response.withErrors("Необходимо ввести текущий пароль");
             else if (req.getNewPassword() != null && passwordEncoder.matches(req.getPassword(), user.getPasswordHash()))
                 user.setPasswordHash(passwordEncoder.encode(req.getNewPassword()));
 
             userRepository.save(user);
             return response.withPayload(new MessageResponseBody("Информация о пользователе обновлена"));
         } catch (DataIntegrityViolationException e) {
-            if (e.getMostSpecificCause().getClass().getName().equals("org.postgresql.util.PSQLException"))
-                errors.add(ErrorConstants.LOGIN_IS_BUSY);
-
-            return response.withErrors(errors);
+            //if (e.getMostSpecificCause().getClass().getName().equals("org.postgresql.util.PSQLException"))
+            // errors.add(ErrorConstants.LOGIN_IS_BUSY);
+            return response.withErrors(ErrorConstants.LOGIN_IS_BUSY);
+        } catch (ExpiredJwtException e) {
+            return response.withErrors("Срок использования токена истек");
         }
     }
 }

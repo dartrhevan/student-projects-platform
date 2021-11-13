@@ -4,6 +4,7 @@ import org.springframework.validation.BindingResult;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Yarullin Renat
@@ -14,10 +15,10 @@ public class ErrorUtils {
         if (bindingResult.hasErrors()) {
             errors = bindingResult.getFieldErrors().stream()
                     .map(fieldError -> ErrorInfo.of(
-                            fieldError.getField() + "Error",
+                            //fieldError.getField() + "Error",
                             fieldError.getDefaultMessage()
                     ))
-                    .toList();
+                    .collect(Collectors.toList());
         }
         return errors;
     }
