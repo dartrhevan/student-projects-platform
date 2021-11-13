@@ -102,7 +102,7 @@ export function register(user: UserProfile, password: string) {
 /**
  * @return current username
  */
-export function update(userId: string, user: UserProfile, password?: string, newPassword?: string) {
+export function update(user: UserProfile, password?: string, newPassword?: string) {
     console.log(user);
     return new Promise<string>((res, rej) => res("vovan")); //TODO: implement
 }

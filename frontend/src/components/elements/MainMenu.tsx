@@ -107,10 +107,10 @@ export default function MiniDrawer() {
                     <ListItemIcon><Person/></ListItemIcon>
                     <ListItemText primary={'Мой профиль'}/>
                 </ListItem>
-                <ListItem button key={'Пользователи'} onClick={() => window.location.href = '/users'}>
-                    <ListItemIcon><GroupIcon/></ListItemIcon>
-                    <ListItemText primary={'Пользователи'}/>
-                </ListItem>
+                {/*<ListItem button key={'Пользователи'} onClick={() => window.location.href = '/users'}>*/}
+                {/*    <ListItemIcon><GroupIcon/></ListItemIcon>*/}
+                {/*    <ListItemText primary={'Пользователи'}/>*/}
+                {/*</ListItem>*/}
                 <ListItem button key={'Уведомления'} onClick={() => window.location.href = '/notifications'}>
                     <ListItemIcon><EmailIcon/></ListItemIcon>
                     <ListItemText primary={'Уведомления'}/>

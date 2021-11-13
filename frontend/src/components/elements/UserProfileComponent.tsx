@@ -6,7 +6,7 @@ import {
     TextField,
     Typography
 } from "@material-ui/core";
-import {register} from "../../api/auth";
+import {register, update} from "../../api/auth";
 import Centered from "../../components/util/Centered";
 import {allNotEmpty, getOnFieldChange} from "../../utils/utils";
 import Aligned from "../../components/util/Aligned";
@@ -65,7 +65,9 @@ export default function UserProfileComponent({user, title}: UserProfileProps) {
     const [username, setUsername] = useState('');
     const [surname, setSurname] = useState('');
     const [name, setName] = useState('');
+    const [messenger, setMessenger] = useState('');
     const [password, setPassword] = useState('');
+    const [oldPassword, setOldPassword] = useState('');
     const [email, setEmail] = useState('');
     const [passwordConfirm, setPasswordConfirm] = useState('');
     const [comment, setComment] = useState('');
@@ -77,6 +79,7 @@ export default function UserProfileComponent({user, title}: UserProfileProps) {
 
     useEffect(() => {
         if (user !== undefined) {
+            setMessenger(user?.messenger);
             setUsername(user?.username);
             setSurname(user?.surname);
             setName(user?.name);
@@ -93,7 +96,7 @@ export default function UserProfileComponent({user, title}: UserProfileProps) {
 
     console.log(name);
     const dispatch = useDispatch();
-    const onRegister = () => register(new UserProfile(name, surname, username, email, comment, group, roles, tags), password)
+    const onRegister = () => register(new UserProfile(name, surname, username, email, messenger, comment, group, roles, tags), password)
         .then(r => {//TODO: extract common part from login
             dispatch(setLoginAction(r));
             window.location.href = '/';
@@ -102,7 +105,12 @@ export default function UserProfileComponent({user, title}: UserProfileProps) {
     const allFilledAndValid = allNotEmpty(username, password, passwordConfirm) && email.match(emailPattern) && username.length >= 6 && password.length >= 6;
 
     function onUpdate() {
-
+        update(new UserProfile(name, surname, username, email, messenger, comment, group, roles, tags), password, oldPassword)
+            .then(r => {//TODO: extract common part from login
+                // dispatch(setLoginAction(r));
+                alert('Success');
+                window.location.href = '/';
+            }).catch(alert); //TODO: implement correct catch;
     }
 
     return (
@@ -119,8 +127,10 @@ export default function UserProfileComponent({user, title}: UserProfileProps) {
                            onChange={getOnFieldChange(setSurname)} fullWidth={true}/>
                 <TextField label="Логин" value={username} className={classes.def} required
                            onChange={getOnFieldChange(setUsername)} fullWidth={true}/>
-                <TextField label="Email" value={email} className={classes.def} required
+                <TextField label="Email" value={email} className={classes.def}
                            onChange={getOnFieldChange(setEmail)} fullWidth={true}/>
+                <TextField label="Мэсэнджер" value={messenger} className={classes.def}
+                           onChange={getOnFieldChange(setMessenger)} fullWidth={true}/>
                 <TextField label="Группа" value={group} className={classes.def}
                            onChange={getOnFieldChange(setGroup)} fullWidth={true}/>
                 <TextField label='Кратко опишите ваши интерересы' multiline={true} focused className={classes.def}
@@ -136,7 +146,7 @@ export default function UserProfileComponent({user, title}: UserProfileProps) {
                     <TextField {...params} variant="standard" label="Ваша роль"
                                placeholder="Введите роль, которую вы готовы выполнять"/>)}/>
                 {user ?
-                    <TextField label="Текущий пароль" className={classes.def} onChange={getOnFieldChange(setPassword)}
+                    <TextField label="Текущий пароль" className={classes.def} onChange={getOnFieldChange(setOldPassword)}
                                type="password" fullWidth={true} required/> : <></>}
                 <TextField label={passwordLabels.input} className={classes.def} onChange={getOnFieldChange(setPassword)}
                            type="password" fullWidth={true} required/>

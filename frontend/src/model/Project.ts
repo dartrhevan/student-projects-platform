@@ -78,6 +78,12 @@ export class DetailedProject {
         return project;
     }
 
+    public withStatus(status: ProjectStatus) {
+        const project: DetailedProject = this.clone();
+        project.status = status;
+        return project;
+    }
+
     public removeParticipant(participant: string) {
         const project: DetailedProject = this.clone();
         project.participants = project.participants.filter(p => p.login !== participant);

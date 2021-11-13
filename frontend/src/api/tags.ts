@@ -7,6 +7,6 @@ export function getTagsReference() {
         resolve(new GenericResponse([new Tag('Java', 0xE94907)]))));
 }
 
-export function addTagToReference(tag: Tag) {
+export function addTagToReference(text: string, color: number) {
     return new Promise<CommonResponse>((resolve, reject) => resolve(new CommonResponse()));
 }
