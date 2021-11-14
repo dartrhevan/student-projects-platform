@@ -8,7 +8,7 @@ import lombok.Data;
  */
 @Data
 @AllArgsConstructor
-public class TokenRefreshResponseBody {
+public class TokenRefreshResponseBody implements ResponseBody {
     private String accessToken;
     private String refreshToken;
 }
