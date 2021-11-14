@@ -14,7 +14,7 @@ public class AppProperties {
     @Data
     public static class Jwt {
         private String secret;
-        private Integer expirationMs;
-        private Integer refreshExpirationMs;
+        private Long expirationMs;
+        private Long refreshExpirationMs;
     }
 }

@@ -6,16 +6,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.Hibernate;
 import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author Yarullin Renat
@@ -46,20 +43,24 @@ public class User implements UserDetails {
     private String groupp;
 
     @ManyToMany
-    @Cascade({ CascadeType.PERSIST,CascadeType.MERGE,CascadeType.DETACH,CascadeType.REFRESH})
+    @Cascade({ org.hibernate.annotations.CascadeType.PERSIST,
+            org.hibernate.annotations.CascadeType.MERGE,
+            org.hibernate.annotations.CascadeType.DETACH,
+            org.hibernate.annotations.CascadeType.REFRESH,
+            org.hibernate.annotations.CascadeType.PERSIST})
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @JoinTable(
             name = "user_skills",
             joinColumns = @JoinColumn(name = "user_login"),
             inverseJoinColumns = @JoinColumn(name = "tag_id"))
     private Set<Tags> skills=new HashSet<>();
-    
+
     @ElementCollection(targetClass = AccessRole.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"))
     @Enumerated(EnumType.STRING)
     private Set<AccessRole> accessRoles;
 
-    public User(String login, String passwordHash, String name, String surname, String email, List<String> roles, String interests, String groupp,Set<Tags> skills, Set<AccessRole> accessRoles) {
+    public User(String login, String passwordHash, String name, String surname, String email, List<String> roles, String interests, String groupp, Set<Tags> skills, Set<AccessRole> accessRoles) {
         this.login = login;
         this.passwordHash = passwordHash;
         this.name = name;
@@ -108,5 +109,18 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        User user = (User) o;
+        return Objects.equals(id, user.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return 0;
     }
 }
