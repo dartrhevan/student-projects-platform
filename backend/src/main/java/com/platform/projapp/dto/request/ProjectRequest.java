@@ -22,7 +22,7 @@ public class ProjectRequest {
     private String fullDescription;
     private String trackerLink;
     private List<Long> tags;
-    @NotNull(message = "Поле sprintCount обязательно для заполнения")
-    @Positive(message = "Поле sprintCount должно быть больше 0")
+//    @NotNull(message = "Поле sprintCount обязательно для заполнения")
+//    @Positive(message = "Поле sprintCount должно быть больше 0")
     private Integer maxParticipantsCount;
 }

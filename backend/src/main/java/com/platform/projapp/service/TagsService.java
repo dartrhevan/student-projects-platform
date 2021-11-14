@@ -13,10 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -44,11 +41,17 @@ public class TagsService {
     }
 
     public Set<Tags> findByTagParam(String tagParam) {
-        return findAllByNameIn(parseTagParam(tagParam));
+        return findAllByIdIn(parseTagParam(tagParam).stream().map(s -> {
+            try {
+                return Long.parseLong(s);
+            } catch (Throwable t) {
+                return null;
+            }
+        }).filter(Objects::nonNull).collect(Collectors.toList()));
     }
 
     public List<String> parseTagParam(String tagParam) {
-        return Arrays.stream(tagParam.split(",")).collect(Collectors.toList());
+        return List.of(tagParam.split(","));
     }
 
     public Set<Tags> findAllByNameIn(List<String> names) {
