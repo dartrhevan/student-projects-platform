@@ -29,7 +29,6 @@ public class RegisterOrUpdateUserRequest {
     private String surname;
     private String interests;
     private String email;
-    private String messenger;
     private List<String> roles;
     private String group;
     private Set<Tags> skills;

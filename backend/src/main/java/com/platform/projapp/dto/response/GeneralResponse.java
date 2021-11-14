@@ -6,6 +6,8 @@ import com.platform.projapp.error.ErrorInfo;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 /**
  * @author Yarullin Renat
  */
@@ -13,13 +15,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class GeneralResponse<T> {
-    //private List<ErrorInfo> errors;
-    public String message;
+    private List<ErrorInfo> errors;
     @JsonProperty("data")
     private T payload;
 
-    public GeneralResponse<T> withErrors(String message) {
-        this.message = message;
+    public GeneralResponse<T> withErrors(List<ErrorInfo> errors) {
+        this.errors = errors;
         return this;
     }
 

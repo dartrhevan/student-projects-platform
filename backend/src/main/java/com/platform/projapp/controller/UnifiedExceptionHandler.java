@@ -15,6 +15,6 @@ public class UnifiedExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(Throwable.class)
     public ResponseEntity<?> catchUnexpectedError(Throwable t) {
         return ResponseEntity.internalServerError().body(
-                new GeneralResponse<Void>().withErrors(t.getMessage()));
+                new GeneralResponse<Void>().withErrors(List.of(ErrorInfo.of("500", t.getMessage()))));
     }
 }

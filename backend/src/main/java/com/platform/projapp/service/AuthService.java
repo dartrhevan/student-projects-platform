@@ -5,7 +5,6 @@ import com.platform.projapp.dto.request.RegisterOrUpdateUserRequest;
 import com.platform.projapp.dto.request.TokenRefreshRequest;
 import com.platform.projapp.dto.response.GeneralResponse;
 import com.platform.projapp.dto.response.body.JwtResponseBody;
-import com.platform.projapp.dto.response.body.MessageResponseBody;
 import com.platform.projapp.dto.response.body.TokenRefreshResponseBody;
 import com.platform.projapp.error.ErrorConstants;
 import com.platform.projapp.error.ErrorInfo;
@@ -19,7 +18,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 
@@ -39,11 +37,6 @@ public class AuthService {
     public GeneralResponse<JwtResponseBody> authUser(String login, String password) {
         GeneralResponse<JwtResponseBody> response = new GeneralResponse<JwtResponseBody>();
         try {
-            User user1 = userRepository.findByLogin(login);
-            if(user1==null)
-                return response.withErrors(ErrorConstants.USERNAME_NOT_FOUND);
-            else{
-
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(login, password));
 
@@ -56,31 +49,28 @@ public class AuthService {
             RefreshToken refreshToken = tokenService.createRefreshToken(user);
 
             return response.withPayload(new JwtResponseBody(jwt, refreshToken.getToken(), user));
-            }
-        } catch (BadCredentialsException e) {
-            return response.withErrors(ErrorConstants.WRONG_PASSWORD);
+        } catch (UsernameNotFoundException e) {
+            return response.withErrors(List.of(ErrorConstants.USERNAME_NOT_FOUND));
         }
     }
 
-    public GeneralResponse<MessageResponseBody> registerUser(RegisterOrUpdateUserRequest registerRequest, BindingResult bindingResult) {
+    public List<ErrorInfo> registerUser(RegisterOrUpdateUserRequest registerRequest, BindingResult bindingResult) {
 
-        GeneralResponse<MessageResponseBody> response = new GeneralResponse<>();
-        ArrayList errors = new ArrayList<>();
+        List<ErrorInfo> errors = new ArrayList<>();
         if (registerRequest.getPassword()==null)
         {
-            return response.withErrors(ErrorConstants.PASSWORD_IS_EMPTY);
+            errors.add(ErrorConstants.PASSWORD_IS_EMPTY);
         }
-        else if (userRepository.existsByLogin(registerRequest.getLogin())) {
-            return response.withErrors(ErrorConstants.LOGIN_IS_BUSY);
+
+        if (userRepository.existsByLogin(registerRequest.getLogin())) {
+            errors.add(ErrorConstants.LOGIN_IS_BUSY);
         }
-        else {
-            errors.addAll(ErrorUtils.getErrorInfoFromBindingResult(bindingResult));
-            if (errors.isEmpty()) {
-                userService.addUser(registerRequest);
-                response.withPayload(new MessageResponseBody("Пользователь успешно зарегистрирован"));
-            }
-            return response;
+        errors.addAll(ErrorUtils.getErrorInfoFromBindingResult(bindingResult));
+
+        if (errors.isEmpty()) {
+            userService.addUser(registerRequest);
         }
+        return errors;
     }
 
     public GeneralResponse<TokenRefreshResponseBody> refreshToken(TokenRefreshRequest token) {
@@ -95,6 +85,6 @@ public class AuthService {
                     response.withPayload(new TokenRefreshResponseBody(accessToken, refreshToken));
                     return (response);
                 }).orElse(new GeneralResponse<TokenRefreshResponseBody>()
-                                .withErrors(ErrorConstants.RT_NOT_IN_BD));
+                                .withErrors(List.of(ErrorConstants.RT_NOT_IN_BD)));
     }
 }
