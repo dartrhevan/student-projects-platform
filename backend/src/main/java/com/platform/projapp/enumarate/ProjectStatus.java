@@ -5,5 +5,10 @@ package com.platform.projapp.enumarate;
  */
 
 public enum ProjectStatus {
-    NEW
+    NEW,
+    IN_PROGRESS,
+    ENDED,
+    CANCELLED,
+    MODIFYING
+
 }
