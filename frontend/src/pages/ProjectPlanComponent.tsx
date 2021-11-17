@@ -1,10 +1,9 @@
 import React, {useEffect, useState} from 'react';
 import {useParams} from "react-router-dom";
-import {useDispatch} from "react-redux";
 import ArrowForwardIosSharpIcon from '@mui/icons-material/ArrowForwardIosSharp';
 import {Button, makeStyles, Typography} from "@material-ui/core";
 import Sprint, {ProjectPlan} from "../model/Sprint";
-import {addSprint, getProjectPlan, updateSprint, uploadPresentation} from "../api/projectPlan";
+import {addSprint, dropPlan, getProjectPlan, updateSprint, uploadPresentation} from "../api/projectPlan";
 import AddIcon from '@mui/icons-material/Add';
 import ListItemProps from "../props.common/ListItemProps";
 import FileUploadIcon from '@mui/icons-material/FileUpload';
@@ -15,7 +14,7 @@ import {
     AccordionSummary,
     Card,
     CardActionArea,
-    CardContent, Link,
+    CardContent, Dialog, DialogActions, DialogTitle, Link,
     Paper,
     TextField
 } from "@mui/material";
@@ -112,7 +111,7 @@ const SprintComponent = ({sprint, number, role, onSprintUpdate}: SprintProps) =>
                 <div style={{
                     display: 'flex',
                     justifyContent: 'start',
-                    alignItems: 'vaseline',
+                    // alignItems: 'vaseline',
                     flexDirection: 'row',
                     marginTop: '15px'
                 }}>
@@ -146,18 +145,6 @@ const SprintComponent = ({sprint, number, role, onSprintUpdate}: SprintProps) =>
                     </Typography>
                 </div>
                 <br/>
-                {/*<Typography variant='h6' paragraph className={classes.label}>Оценки</Typography>*/}
-                {/*<div className={classes.scores}>*/}
-                {/*    {sprint.scores.map((s, i) => (*/}
-                {/*        <div className={classes.scores} key={i}>*/}
-                {/*            <span className={classes.criterion}>Критерий {i + 1}</span>*/}
-                {/*            <TextField disabled={!editable} type='number' defaultValue={sprint.scores[i]}*/}
-                {/*                       className={classes.score} size='small'*/}
-                {/*                       onChange={getOnFieldChange(s => onSetScore(i, s))}*/}
-                {/*            />*/}
-                {/*        </div>))}*/}
-                {/*</div>*/}
-
                 <Typography paragraph variant='h6'>Комментарии результатов</Typography>
                 {sprint.comments.map((c, i) => (
                     <Card sx={{padding: '5px'}}>
@@ -168,9 +155,6 @@ const SprintComponent = ({sprint, number, role, onSprintUpdate}: SprintProps) =>
                             {c.comment}
                         </Typography>
                     </Card>))}
-                {/*<TextField disabled={!editable} multiline minRows={5} variant='outlined' fullWidth*/}
-                {/*           value={resultComment} onChange={getOnFieldChange(setResultComment)}*/}
-                {/*           className={classes.label}/>*/}
                 <div style={{
                     display: 'flex',
                     justifyContent: 'end'
@@ -219,6 +203,15 @@ export default function ProjectPlanComponent() {
         });
     }
 
+    const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+
+    function onDropPlan() {
+        dropPlan(workspaceId, projectId).then(r => {
+            setShowConfirmDialog(false);
+            window.location.reload();
+        }).catch(console.log);
+    }
+
     return (
         <Paper className={classes.paper}>
             <Typography align='center' paragraph variant='h4'>План проекта {}</Typography>
@@ -233,5 +226,22 @@ export default function ProjectPlanComponent() {
                     </CardContent>
                 </CardActionArea>
             </Card>
+            <div style={{
+                display: 'flex',
+                justifyContent: 'end',
+                flexDirection: 'row',
+                marginTop: '15px'
+            }}>
+                <Button variant='outlined'>Сбросить график</Button>
+            </div>
+            <Dialog open={showConfirmDialog} onClose={() => setShowConfirmDialog(false)}>
+                <DialogTitle>
+                    Вы уверены?
+                </DialogTitle>
+                <DialogActions>
+                    <Button variant='outlined' onClick={onDropPlan}>Да</Button>
+                    <Button variant='outlined' onClick={() => setShowConfirmDialog(false)}>Нет</Button>
+                </DialogActions>
+            </Dialog>
         </Paper>);
 }

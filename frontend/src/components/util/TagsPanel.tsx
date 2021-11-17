@@ -3,7 +3,7 @@ import {makeStyles, TextField} from "@material-ui/core";
 import clsx from 'clsx';
 import {Chip} from "@mui/material";
 import Tag from "../../model/Tag";
-import {addTagToReference, getTagsReference} from "../../api/tags";
+import {addTagToReference, getTagsReference} from "../../api/reference";
 
 const useStyles = makeStyles(theme => ({
     chips: {

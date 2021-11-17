@@ -40,12 +40,9 @@ export default function Table<T extends object>({tableRef, title, data, tableCol
         PreviousPage: forwardRef((props, ref) => <KeyboardArrowLeft ref={ref}/>),
         Search: forwardRef((props, ref) => <Search ref={ref}/>),
         Filter: forwardRef((props, ref) => <Search ref={ref}/>),
-        // Delete,
-        // Clear,
-        // Check,
         SortArrow: forwardRef((props, ref) => <ArrowDownward ref={ref}/>),
         ResetSearch: forwardRef((props, ref) => <Close ref={ref}/>),
-        // Edit
+
     };
     return (
         <>

@@ -10,7 +10,6 @@ import Workspace from "../model/Workspace";
 import {attachToWorkspace, getUsersWorkspaces} from "../api/workspaces";
 import {Dialog, DialogActions, DialogContent, DialogTitle, TextField, Typography} from "@mui/material";
 import {Button, makeStyles} from "@material-ui/core";
-import Centered from "../components/util/Centered";
 import {allNotEmpty, getOnFieldChange} from "../utils/utils";
 
 
