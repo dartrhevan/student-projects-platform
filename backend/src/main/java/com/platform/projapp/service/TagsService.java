@@ -8,6 +8,7 @@ import com.platform.projapp.error.ErrorConstants;
 import com.platform.projapp.error.ErrorInfo;
 import com.platform.projapp.model.Tags;
 import com.platform.projapp.repository.TagsRepository;
+import com.platform.projapp.utils.StrUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,17 +42,13 @@ public class TagsService {
     }
 
     public Set<Tags> findByTagParam(String tagParam) {
-        return findAllByIdIn(parseTagParam(tagParam).stream().map(s -> {
+        return findAllByIdIn(StrUtils.parseStrByComma(tagParam).stream().map(s -> {
             try {
                 return Long.parseLong(s);
             } catch (Throwable t) {
                 return null;
             }
         }).filter(Objects::nonNull).collect(Collectors.toList()));
-    }
-
-    public List<String> parseTagParam(String tagParam) {
-        return List.of(tagParam.split(","));
     }
 
     public Set<Tags> findAllByNameIn(List<String> names) {
