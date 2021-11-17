@@ -10,6 +10,7 @@ import com.platform.projapp.dto.response.body.MessageResponseBody;
 import com.platform.projapp.enumarate.AccessRole;
 import com.platform.projapp.error.ErrorConstants;
 import com.platform.projapp.error.ErrorInfo;
+import com.platform.projapp.model.ProjectRole;
 import com.platform.projapp.model.Tags;
 import com.platform.projapp.model.User;
 import com.platform.projapp.repository.TagsRepository;
@@ -38,6 +39,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final JwtHelper jwtHelper;
     private final JwtTokenFilter jwtTokenFilter;
+    private final ProjectRoleService projectRoleService;
 
     public User findById(Long id) {
         return userRepository.findById(id).orElse(null);
@@ -58,16 +60,19 @@ public class UserService {
         }
 
         if (registerRequest.getPassword() != null) {
+            List<ProjectRole> projectRoles = registerRequest.getRoles().stream()
+                    .map(projectRoleService::createProjectRole)
+                    .collect(Collectors.toList());
             User user = new User(registerRequest.getLogin(),
                     passwordEncoder.encode(registerRequest.getPassword()),
                     registerRequest.getName(),
                     registerRequest.getSurname(),
                     registerRequest.getEmail(),
-                    registerRequest.getRoles(),
                     registerRequest.getInterests(),
                     registerRequest.getGroup(),
                     skills,
                     Set.of(AccessRole.ROLE_USER));
+            user.getRoles().addAll(projectRoles);
             userRepository.save(user);
         }
     }
@@ -101,7 +106,14 @@ public class UserService {
             }
             String login = jwtHelper.getUserNameFromJwtToken(token);
             User user = userRepository.findByLogin(login);
-            return response.withData(new CurrentUserProfileResponseBody(user.getLogin(), user.getName(), user.getSurname(), user.getInterests(), user.getEmail(), user.getRoles(), user.getGroupp(), user.getId()));
+            return response.withData(new CurrentUserProfileResponseBody(user.getLogin(),
+                    user.getName(),
+                    user.getSurname(),
+                    user.getInterests(),
+                    user.getEmail(),
+                    user.getRoles().stream().map(ProjectRole::getName).collect(Collectors.toList()),
+                    user.getGroupp(),
+                    user.getId()));
         } catch (ExpiredJwtException e) {
             return response.withErrors(List.of(ErrorInfo.of("Jwt is Expired", "Срок использования токена истек")));
         }
@@ -118,7 +130,7 @@ public class UserService {
             user.setLogin(req.getLogin());
             user.setInterests(req.getInterests());
             user.setEmail(req.getEmail());
-            user.setRoles(req.getRoles());
+            user.getRoles().addAll(req.getRoles().stream().map(projectRoleService::createProjectRole).collect(Collectors.toList()));
             user.setGroupp(req.getGroup());
             user.setSkills(req.getSkills().stream()
                     .map(tags -> {
