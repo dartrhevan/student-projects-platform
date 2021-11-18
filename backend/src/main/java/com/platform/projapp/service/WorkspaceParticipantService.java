@@ -6,6 +6,9 @@ import com.platform.projapp.model.Workspace;
 import com.platform.projapp.model.WorkspaceParticipant;
 import com.platform.projapp.repository.WorkspaceParticipantRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.Set;
@@ -20,6 +23,14 @@ public class WorkspaceParticipantService {
 
     public Set<WorkspaceParticipant> findAllByUser(User user) {
         return workspaceParticipantRepository.findAllByUser(user);
+    }
+
+    public Page<WorkspaceParticipant> findAll(Specification<WorkspaceParticipant> specification, Pageable pageable){
+        return workspaceParticipantRepository.findAll(specification,pageable);
+    }
+
+    public Page<WorkspaceParticipant> findAllByWorkspace(Workspace workspace, Pageable pageable){
+        return workspaceParticipantRepository.findAllByWorkspace(workspace, pageable);
     }
 
     public WorkspaceParticipant findByUserAndWorkspace(User user, Workspace workspace) {
