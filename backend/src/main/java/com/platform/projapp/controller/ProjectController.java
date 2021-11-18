@@ -6,9 +6,12 @@ import com.platform.projapp.dto.response.GeneralResponse;
 import com.platform.projapp.dto.response.body.ProjectResponseBody;
 import com.platform.projapp.dto.response.body.ProjectsResponseEntity;
 import com.platform.projapp.dto.response.body.ResponseBody;
+import com.platform.projapp.enumarate.ProjectRole;
+import com.platform.projapp.enumarate.WorkspaceRole;
 import com.platform.projapp.error.ErrorConstants;
 import com.platform.projapp.error.ErrorUtils;
 import com.platform.projapp.model.Project;
+import com.platform.projapp.model.User;
 import com.platform.projapp.service.ProjectService;
 import com.platform.projapp.service.TagsService;
 import com.platform.projapp.service.UserService;
@@ -84,12 +87,20 @@ public class ProjectController {
         GeneralResponse<ResponseBody> response = new GeneralResponse<>();
         var user = userService.parseAndFindByJwt(token);
         var project = projectService.findById(projectId);
+        var workspaceRole = project.getWorkspace().getWorkspaceRoleByUser(user);
+
         ResponseEntity<?> projectErrorResponseEntity = projectService.getProjectErrorResponseEntity(project,
-                user.getId(),
-                List.of(ErrorConstants.USER_NOT_WORKSPACE_PARTICIPANT));
-        return projectErrorResponseEntity != null ?
-                projectErrorResponseEntity :
-                ResponseEntity.ok(response.withData(ProjectResponseBody.fromProject(project)));
+                user.getId(), List.of(ErrorConstants.USER_NOT_WORKSPACE_PARTICIPANT));
+        return projectErrorResponseEntity != null ? projectErrorResponseEntity :
+                ResponseEntity.ok(response.withData(ProjectResponseBody.fromProject(project, toProjectRole(workspaceRole, project, user))));
+    }
+
+    private static ProjectRole toProjectRole(WorkspaceRole role, Project project, User user) {
+        if (project.getOwnerId() == user.getId()) return ProjectRole.OWNER;
+        return switch (role) {
+            case MENTOR, ORGANIZER -> ProjectRole.MENTOR;
+            case STUDENT -> !project.hasUser(user.getId()) ? ProjectRole.STRANGER : ProjectRole.PARTICIPANT;
+        };
     }
 
 

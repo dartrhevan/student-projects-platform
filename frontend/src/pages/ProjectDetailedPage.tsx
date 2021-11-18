@@ -53,7 +53,7 @@ const useStyles = makeStyles(theme => ({
 
 const RoleSpecificButton = ({project, onSubmit, enabled, isNew}:
                                 { isNew: boolean, enabled?: boolean, project?: DetailedProject, onSubmit: () => void }) => {
-    switch (project?.role) {
+    switch (project?.projectRole) {
         case ProjectRole.OWNER:
             return (
                 <>
@@ -102,7 +102,7 @@ const EditableField = ({
                            project, props = {}, left = false, field, prefix = '', onChange,
                            label, multiline = false, isNew = false, inputProps
                        }: EditableFieldProps) =>
-    project?.role === ProjectRole.OWNER || isNew
+    project?.projectRole === ProjectRole.OWNER || isNew
         ? (<div style={{
             width: '100%',
             display: 'flex',
@@ -128,18 +128,18 @@ export default function ProjectDetailedPage() {
     useEffect(() => {
             if (!isNew) {
                 getProjectInfo(projectId as string, workspaceId as string)
-                    .then(r => setProject(r.data)).catch(console.log)
+                    .then(r => setProject(DetailedProject.fromObject(r.data))).catch(console.log)
             }
         }, //TODO: catch
         [workspaceId, projectId, isNew]);
 
     console.log('render with')
     console.log(project)
-    const allFilled = project?.isNewFilled;//allNotEmpty(username, password);
+    const allFilled = !isNew || project?.isNewFilled;//allNotEmpty(username, password);
 
     function onSubmit() {
         (isNew ? addProject(project as DetailedProject) : editProject(project as DetailedProject))
-            .then(r => alert(r.success ? 'Success' : r.message))
+            .then(r => alert(!r.message ? 'Success' : r.message))
             .catch(r => alert(`Error ${r}`));
     }
 
@@ -159,7 +159,7 @@ export default function ProjectDetailedPage() {
                                onChange={t => setProject((project as DetailedProject).withShortDescription(t))}/>
                 <div style={{width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'center', flexWrap: 'wrap'}}>
                     <TagsPanel onSetTag={tags => setProject(project?.withTags(tags))}
-                               editable={project?.role === ProjectRole.OWNER} values={project?.tags}/>
+                               editable={project?.projectRole === ProjectRole.OWNER} values={project?.tags}/>
                 </div>
                 <Divider flexItem/>
                 <EditableField label='Описание' multiline inputProps={{required: true}}
@@ -167,7 +167,7 @@ export default function ProjectDetailedPage() {
                                project={project} field={p => p?.fullDescription} isNew={isNew}
                                onChange={t => setProject((project as DetailedProject).withFullDescription(t))}/>
                 <Divider flexItem/>
-                {project?.role !== ProjectRole.STRANGER ?
+                {project?.projectRole !== ProjectRole.STRANGER ?
                     <EditableField label='Ссылка на трекер' field={p => p?.trackerUrl} project={project}
                                    inputProps={{variant: 'outlined', fullWidth: true}}
                                    props={{
@@ -189,10 +189,10 @@ export default function ProjectDetailedPage() {
                         </ListSubheader>
                     }>
                     {project?.participants.map(p => (
-                        <ListItemButton disableRipple sx={{cursor: 'default'}} key={p.login}>
-                            <ListItemText primary={`${p.login} (${p.role})`}/>
-                            {project?.role === ProjectRole.OWNER ?
-                                <IconButton onClick={() => removeParticipant(p.login)}>
+                        <ListItemButton disableRipple sx={{cursor: 'default'}} key={p.username}>
+                            <ListItemText primary={`${p.name} (${p.role})`}/>
+                            {project?.projectRole === ProjectRole.OWNER ?
+                                <IconButton onClick={() => removeParticipant(p.username)}>
                                     <Clear/>
                                 </IconButton> : <></>}
                         </ListItemButton>))}

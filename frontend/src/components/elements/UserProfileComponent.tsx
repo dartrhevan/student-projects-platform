@@ -159,7 +159,7 @@ export default function UserProfileComponent({user, title}: UserProfileProps) {
                 <ErrorMessage message='*Логин и пароль должны содержать не меньше 6 символов'
                               condition={!(username.length >= 6 && password.length >= 6)}/>
                 <ErrorMessage message='*Некорректный емайл'
-                              condition={!(email.match(emailPattern))}/>
+                              condition={!(email?.match(emailPattern))}/>
 
                 <Aligned endAlign={true}>
                     <Button disabled={!(passwordConfirmed && allFilledAndValid)}

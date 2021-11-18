@@ -1,5 +1,6 @@
 package com.platform.projapp.dto.response.body;
 
+import com.platform.projapp.enumarate.ProjectRole;
 import com.platform.projapp.enumarate.ProjectStatus;
 import com.platform.projapp.model.Project;
 import com.platform.projapp.model.Tags;
@@ -16,6 +17,8 @@ import java.util.stream.Collectors;
 @Data
 @AllArgsConstructor
 public class ProjectResponseBody implements ResponseBody {
+
+    private String id;
     private String title;
     private String shortDescription;
     private String fullDescription;
@@ -24,8 +27,13 @@ public class ProjectResponseBody implements ResponseBody {
     private Integer maxParticipantsCount;
     private Set<ParticipantResponseBody> participants;
     private ProjectStatus status;
+    private ProjectRole projectRole;
 
     public static ProjectResponseBody fromProject(Project project) {
+        return fromProject(project, ProjectRole.STRANGER);
+    }
+
+    public static ProjectResponseBody fromProject(Project project, ProjectRole projectRole) {
         Set<ParticipantResponseBody> participantsResponseBody = new HashSet<>();
         if (!project.getParticipants().isEmpty()) {
             participantsResponseBody = project.getParticipants()
@@ -41,13 +49,14 @@ public class ProjectResponseBody implements ResponseBody {
                     .collect(Collectors.toSet());
         }
 
-        return new ProjectResponseBody(project.getName(),
+        return new ProjectResponseBody(project.getId().toString(),
+                project.getName(),
                 project.getShortDescription(),
                 project.getFullDescription(),
                 project.getTrackerLink(),
                 tagsId,
                 project.getMaxParticipantsCount(),
                 participantsResponseBody,
-                project.getStatus());
+                project.getStatus(), projectRole);
     }
 }

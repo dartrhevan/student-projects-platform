@@ -11,6 +11,7 @@ import {attachToWorkspace, getUsersWorkspaces} from "../api/workspaces";
 import {Dialog, DialogActions, DialogContent, DialogTitle, TextField, Typography} from "@mui/material";
 import {Button, makeStyles} from "@material-ui/core";
 import {allNotEmpty, getOnFieldChange} from "../utils/utils";
+import {useError} from "../hooks/logging";
 
 
 const useStyles = makeStyles(theme => ({
@@ -42,20 +43,28 @@ interface WorkspacesParams {
 
 export default function Workspaces() {
     const classes = useStyles();
-    const {workspaceId, workspaceTitle} = useParams<WorkspacesParams>();
+    // const {workspaceId, workspaceTitle} = useParams<WorkspacesParams>();
     const {totalCount, pageSize, pageNumber} = useSelector(getPaging, shallowEqual);
 
     const [data, setData] = useState([] as Workspace[]);
-    console.log("render Projects")
+    // console.log("render Projects")
 
     const dispatch = useDispatch();
 
+    const error = useError();
+
+
     useEffect(() => {
         getUsersWorkspaces(new Pageable(pageNumber, pageSize)).then(r => {
-            setData(r.data.w)
-            dispatch(initPaging(r.data.p.totalCount, r.data.p.pageSize, r.data.p.pageNumber))//TODO: call back here
-        })
-    }, [workspaceId, workspaceTitle]);
+            if (r.message) {
+                alert(r.message);
+                // setData([]);
+            } else {
+                setData(r.data.workspaces)
+                dispatch(initPaging(r.data.totalCount, pageSize, pageNumber))
+            }
+        }).catch(e => error(e))
+    }, [totalCount, pageSize, pageNumber]);
 
     const [openAttachDialog, setOpenAttachDialog] = useState(false);
     const [workspaceCode, setWorkspaceCode] = useState('');

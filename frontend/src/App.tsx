@@ -23,7 +23,7 @@ import Scoring from "./pages/Scoring";
 import {Snackbar} from "@mui/material";
 import {Alert} from "@mui/lab";
 import {hide} from "./store/actions/log/log";
-import {getLogState, useInfo, useSuccess} from "./hooks/logging";
+import {getLogState, useError, useInfo, useSuccess} from "./hooks/logging";
 import StartPage from "./pages/StartPage";
 
 function App() {
@@ -32,19 +32,20 @@ function App() {
     // const classes = useStyles();
     const dispatch = useDispatch();
 
-    const success = useSuccess();
+    const error = useError();
 
 
     useEffect(() => {
         getCurrentUser()?.then(r => {
             console.log(r);
-            success('Fine');
+            // success('Fine');
         }).catch(r => {
             console.log(r);
-            success('Not fine');
+            error('Auth not valid');
             dispatch(logoutAction());
+            // window.location.reload();
         }); // TODO: may be move somewhere
-    }, [success, dispatch]);
+    }, [error, dispatch]);
 
     const log = useSelector(getLogState);
 

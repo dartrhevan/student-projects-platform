@@ -3,10 +3,10 @@ import {IBadge} from "../props.common/ListItemProps";
 import {allNotEmpty} from "../utils/utils";
 
 export enum ProjectRole {
-    OWNER,
-    PARTICIPANT,
-    MENTOR,
-    STRANGER
+    OWNER = 'OWNER',
+    PARTICIPANT = 'PARTICIPANT',
+    MENTOR = 'MENTOR',
+    STRANGER = 'STRANGER'
 }
 
 export enum ProjectStatus {
@@ -32,7 +32,7 @@ export default class Project implements IBadge {
 }
 
 export class Participant {
-    constructor(public login: string, public role: string) {
+    constructor(public name: string, public username: string, public role: string) {
     }
 }
 
@@ -40,7 +40,7 @@ export class DetailedProject {
     constructor(public workSpaceId: string, public id: string = '', public title: string = '',
                 public shortDescription: string = '', public fullDescription: string = '',
                 public trackerUrl = '', public participants: Participant[] = [], public tags: Tag[] = [],
-                public role = ProjectRole.OWNER, public maxParticipantsCount = 5,
+                public projectRole = ProjectRole.OWNER, public maxParticipantsCount = 5,
                 public status = ProjectStatus.NEW) {
     }
 
@@ -86,7 +86,7 @@ export class DetailedProject {
 
     public removeParticipant(participant: string) {
         const project: DetailedProject = this.clone();
-        project.participants = project.participants.filter(p => p.login !== participant);
+        project.participants = project.participants.filter(p => p.username !== participant);
         return project;
     }
 
@@ -94,6 +94,14 @@ export class DetailedProject {
         const cloneObj = new (this.constructor as any)(this.workSpaceId);
         for (const attribute in this) {
             cloneObj[attribute] = this[attribute]
+        }
+        return cloneObj;
+    }
+
+    public static fromObject(o: any): any {
+        const cloneObj = new DetailedProject(o.workSpaceId);
+        for (const attribute in o) {
+            (cloneObj as any)[attribute] = o[attribute]
         }
         return cloneObj;
     }

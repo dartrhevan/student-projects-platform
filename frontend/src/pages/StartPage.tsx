@@ -22,6 +22,7 @@ export default function StartPage() {
                         <li>Взаимодействие с организаторами</li>
                         <li>И многое другое...</li>
                     </ul>
+                    <b>Для начала работы необходимо <a href='/authentication'>авторизоваться</a></b>
                 </Typography>
             </Centered>
         </Paper>);

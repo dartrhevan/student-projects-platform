@@ -14,6 +14,7 @@ import {addNewWorkspace, getWorkspaceById, updateWorkspace} from "../../api/work
 import {allNotEmpty, getOnFieldChange, toDateString} from "../../utils/utils";
 import ErrorMessage from "./ErrorMessage";
 import Workspace from "../../model/Workspace";
+import {useError, useSuccess, useWarn} from "../../hooks/logging";
 
 const useStyles = makeStyles(theme => ({
     main: {
@@ -72,16 +73,26 @@ export default function WorkspaceSettings({workspaceId = ''}: WorkspaceProps) {
         dispatch(closeDialog());
     }
 
+    const warn = useWarn();
+    const error = useError();
+    const success = useSuccess();
 
     function submit() {
-        const match = (/[^\w\s]/).exec(title);
-        if (match && match.length > 0) {
-            alert('incorrect title');
-            return;
-        }
+        // const match = (/[^\w\s]/).exec(title);
+        // if (match && match.length > 0) {
+        //     alert('incorrect title');
+        //     return;
+        // }
         (workspaceId !== '' ? updateWorkspace(workspaceId, title, sprintsCount, sprintsLength, startDate)
             : addNewWorkspace(title, sprintsCount, sprintsLength, startDate))
-            .then(r => onCloseDialog());
+            .then(r => {
+                if (r.message)
+                    warn(r.message)
+                else {
+                    // onCloseDialog();
+                    window.location.reload();
+                }
+            }).catch(r => error(r));
     }
 
     // const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => setTitle(event.target.value);
