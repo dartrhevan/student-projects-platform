@@ -5,15 +5,26 @@ import GenericResponse from "../model/dto/GenericResponse";
 import PagingState from "../store/state/PagingState";
 import Invite from "../model/dto/Invite";
 import ScoreDTO from "../model/dto/ScoreDTO";
+import {StorageKeys} from "../utils/StorageKeys";
 
 
-export function getUsersWorkspaces(pageable: Pageable) {
-    //TODO: implement
-    return new Promise<GenericResponse<{p: PagingState,w: Workspace[]}>>((res, rej) =>
-        res(new GenericResponse({w:[ new Workspace('0', 'PPP'),
-                new Workspace('0', 'Standard'), new Workspace('0', 'WERTYU'),
-                new Workspace('0', 'bnm'), new Workspace('0', 'xx')],
-            p: new PagingState(20, 10, 0)})))
+export function getUsersWorkspaces(pageable: Pageable): Promise<GenericResponse<{ totalCount: number, workspaces: Workspace[] }>> {
+    return fetch(`/api/workspaces?page=${pageable.pageNumber}&size=${pageable.pageSize}`, {
+        headers: {
+            "Authorization": "Bearer " + sessionStorage.getItem(StorageKeys.AccessToken)
+        }
+    }).then(r => {
+        console.log(`Status ${r.status}`)
+        if (r.ok)
+            return r.json()
+        else
+            throw new Error("error")
+    })
+    // return new Promise<GenericResponse<{p: PagingState,w: Workspace[]}>>((res, rej) =>
+    //     res(new GenericResponse({w:[ new Workspace('0', 'PPP'),
+    //             new Workspace('0', 'Standard'), new Workspace('0', 'WERTYU'),
+    //             new Workspace('0', 'bnm'), new Workspace('0', 'xx')],
+    //         p: new PagingState(20, 10, 0)})))
 }
 
 /**
@@ -24,10 +35,22 @@ export function getUsersWorkspaces(pageable: Pageable) {
  * @param startDate - date of start of the first sprint
  */
 export function addNewWorkspace(title: string, sprintsCount: number, sprintsLength: number,
-                                startDate: Date) {
-    //TODO: implement
-    console.log(title, sprintsLength, sprintsCount, startDate);
-    return new Promise<CommonResponse>((res, rej) => res(new CommonResponse()));
+                                startDate: Date): Promise<CommonResponse> {
+    return fetch("/api/workspaces", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            "Authorization": "Bearer " + sessionStorage.getItem(StorageKeys.AccessToken)
+        },
+        body: JSON.stringify({title, sprintLength: sprintsLength, sprintCount: sprintsCount, startDate: startDate.toLocaleDateString()})
+    }).then(res => {
+        if (res.ok) {
+            console.log(`Status ${res.status}`)
+            return {};
+        } else {
+            return res.json();
+        }
+    });
 }
 
 /**
@@ -38,14 +61,43 @@ export function addNewWorkspace(title: string, sprintsCount: number, sprintsLeng
  * @param startDate - date of start of the first sprint
  */
 export function updateWorkspace(id: string, title: string, sprintsCount: number, sprintsLength: number,
-                                startDate: Date) {
-    //TODO: implement
-    console.log(id, title, sprintsLength, sprintsCount, startDate);
-    return new Promise<CommonResponse>((res, rej) => res(new CommonResponse()));
+                                startDate: Date): Promise<CommonResponse> {
+    return fetch(`/api/workspaces/${id}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            "Authorization": "Bearer " + sessionStorage.getItem(StorageKeys.AccessToken)
+        },
+        body: JSON.stringify({title, sprintsLength, sprintsCount, startDate})
+    }).then(res => {
+        if (res.ok) {
+            return {}
+        } else {
+            return res.json();
+        }
+    });
 }
 
-//TODO: change all!!!
+export function deleteWorkspace(id: string) {
+    console.log("Delete workspace: ", id);
+    return fetch(`/api/workspaces/${id}`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+            "Authorization": "Bearer " + sessionStorage.getItem(StorageKeys.AccessToken)
+        }
+    }).then(res => {
+        if (res.ok) {
+            console.log(res.status)
+            return {}
+        } else {
+            return res.json();
+        }
+    });
+}
 
+
+//TODO: change all!!!
 export function invitePerson(username: string, role: string) {
     //TODO: implement
     return new Promise<CommonResponse>((res, rej) => res(new CommonResponse()));

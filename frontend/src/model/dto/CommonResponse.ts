@@ -4,8 +4,4 @@ export default class CommonResponse {
      */
     constructor(public message?: string) {
     }
-
-    public get success() {
-        return this.message === null || this.message === undefined || this.message === '';
-    }
 }

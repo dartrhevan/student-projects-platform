@@ -34,6 +34,7 @@ public class Project {
     private Integer maxParticipantsCount;
     @ManyToOne
     private Workspace workspace;
+    private long ownerId;
 
     @ManyToMany(cascade = {PERSIST, MERGE, DETACH, REFRESH, PERSIST})
     private Set<Tags> tags;
@@ -41,8 +42,9 @@ public class Project {
     @OneToMany(mappedBy = "project", cascade = ALL, orphanRemoval = true)
     private Set<Participant> participants;
 
-    public Project(String name, String shortDescription, String fullDescription, String trackerLink, ProjectStatus status, Integer maxParticipantsCount, Workspace workspace, Set<Tags> tags) {
+    public Project(long ownerId, String name, String shortDescription, String fullDescription, String trackerLink, ProjectStatus status, Integer maxParticipantsCount, Workspace workspace, Set<Tags> tags) {
         this.name = name;
+        this.ownerId = ownerId;
         this.shortDescription = shortDescription;
         this.fullDescription = fullDescription;
         this.trackerLink = trackerLink;

@@ -20,7 +20,7 @@ public class WorkspaceRequest {
     @NotBlank(message = "Поле title обязательно для заполнения")
     private String title;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd.MM.yyyy")
     @NotNull(message = "Поле startDate обязательно для заполнения")
     private LocalDate startDate;
     @NotNull(message = "Поле sprintLength обязательно для заполнения")

@@ -3,7 +3,7 @@ import ProjectParticipation from "../model/ProjectParticipation";
 import {ProjectStatus} from "../model/Project";
 import CommonResponse from "../model/dto/CommonResponse";
 import PagedResponse from "../model/dto/PagedResponse";
-import UserRow from "../model/UserRow";
+import UserRow, {UserType} from "../model/UserRow";
 import Pageable from "../model/Pageable";
 
 //TODO: implement
@@ -28,6 +28,9 @@ export function getUsers(workspaceId: string, pageable: Pageable,
             skills: 'Java',
             username: 'me',
             project: 'Project Activity',
+            email: 'mail@.ru',
+            messenger: '',
+            userType: UserType.STUDENT,
             interests: 'Programming Programming Programming Programming Programming Programming\nProgramming Programming Programming\nProgramming Programming Programming Programming'
         }],  0, 1)));
 }
