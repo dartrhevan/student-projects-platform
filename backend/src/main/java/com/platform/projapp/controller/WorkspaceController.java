@@ -70,7 +70,7 @@ public class WorkspaceController {
         var user = userService.parseAndFindByJwt(token);
         var workspace = workspaceService.findById(workspaceId);
         var errorResponseEntity = workspaceService.getWorkspaceErrorResponseEntity(workspace,
-                user.getId(),
+                user.getLogin(),
                 List.of(ErrorConstants.USER_NOT_WORKSPACE_OWNER));
         if (errorResponseEntity != null)
             return errorResponseEntity;
@@ -89,7 +89,7 @@ public class WorkspaceController {
         var user = userService.parseAndFindByJwt(token);
         var workspace = workspaceService.findById(workspaceId);
         var errorResponseEntity = workspaceService.getWorkspaceErrorResponseEntity(workspace,
-                user.getId(),
+                user.getLogin(),
                 List.of(ErrorConstants.USER_NOT_WORKSPACE_OWNER));
         return errorResponseEntity != null ?
                 errorResponseEntity :
@@ -102,7 +102,7 @@ public class WorkspaceController {
         var user = userService.parseAndFindByJwt(token);
         var workspace = workspaceService.findById(workspaceId);
         var errorResponseEntity = workspaceService.getWorkspaceErrorResponseEntity(workspace,
-                user.getId(),
+                user.getLogin(),
                 List.of(ErrorConstants.USER_NOT_WORKSPACE_OWNER));
         if (errorResponseEntity != null)
             return errorResponseEntity;
@@ -118,7 +118,7 @@ public class WorkspaceController {
         if (workspaceByCode == null)
             return ResponseEntity.badRequest().body(MessageResponseBody.of(ErrorConstants.INCORRECT_KEY.getMessage()));
         var errorResponseEntity = workspaceService.getWorkspaceErrorResponseEntity(workspaceByCode,
-                user.getId(),
+                user.getLogin(),
                 List.of(ErrorConstants.USER_IN_WORKSPACE));
         if (errorResponseEntity != null)
             return errorResponseEntity;

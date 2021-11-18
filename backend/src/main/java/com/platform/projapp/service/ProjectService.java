@@ -75,14 +75,14 @@ public class ProjectService {
         projectRepository.save(project);
     }
 
-    public ResponseEntity<?> getProjectErrorResponseEntity(Project project, Long userId, List<ErrorInfo> errorsInfo) {
+    public ResponseEntity<?> getProjectErrorResponseEntity(Project project, String userLogin, List<ErrorInfo> errorsInfo) {
         if (project == null) {
             return ResponseEntity.badRequest()
                     .body(MessageResponseBody.of(ErrorConstants.PROJECT_NOT_FOUND.getMessage()));
         }
-        if (errorsInfo.contains(ErrorConstants.USER_IN_PROJECT) && project.hasUser(userId))
+        if (errorsInfo.contains(ErrorConstants.USER_IN_PROJECT) && project.hasUser(userLogin))
             return ResponseEntity.badRequest()
                     .body(MessageResponseBody.of(ErrorConstants.USER_IN_PROJECT.getMessage()));
-        return workspaceService.getWorkspaceErrorResponseEntity(project.getWorkspace(), userId, errorsInfo);
+        return workspaceService.getWorkspaceErrorResponseEntity(project.getWorkspace(), userLogin, errorsInfo);
     }
 }

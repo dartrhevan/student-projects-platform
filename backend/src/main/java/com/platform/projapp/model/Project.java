@@ -51,8 +51,8 @@ public class Project {
         this.participants = new HashSet<>();
     }
 
-    public boolean hasUser(Long userId) {
+    public boolean hasUser(String userLogin) {
         return participants.stream()
-                .anyMatch(workspaceParticipant -> workspaceParticipant.getUser().getId().equals(userId));
+                .anyMatch(workspaceParticipant -> workspaceParticipant.getUser().getLogin().equals(userLogin));
     }
 }

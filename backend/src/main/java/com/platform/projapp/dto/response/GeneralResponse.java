@@ -16,6 +16,12 @@ import java.util.List;
 public class GeneralResponse<T> {
     private List<ErrorInfo> errors;
     private T data;
+    public String message;
+
+    public GeneralResponse<T> withError(String message) {
+        this.message = message;
+        return this;
+    }
 
     public GeneralResponse<T> withErrors(List<ErrorInfo> errors) {
         this.errors = errors;
