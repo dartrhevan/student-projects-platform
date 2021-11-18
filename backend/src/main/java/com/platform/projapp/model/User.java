@@ -12,7 +12,12 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
+
+import static javax.persistence.CascadeType.*;
 
 /**
  * @author Yarullin Renat
@@ -25,19 +30,24 @@ import java.util.*;
 @Table(name = "usr")
 public class User implements UserDetails {
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_generator")
+    @SequenceGenerator(name = "user_generator", sequenceName = "user_seq", allocationSize = 50)
+    @Column(unique = true)
+    private Long id;
     @Column(unique = true)
     private String login;
     private String passwordHash;
     private String name;
     private String surname;
+    private String messenger;
+    private String middleName;
     private String interests;
     private Integer reputation;
     private String email;
-    private String messenger;
-    @ElementCollection
-    private List<String> roles;
     private String groupp;
 
+    @ManyToMany(cascade = {PERSIST, MERGE, DETACH, REFRESH, PERSIST})
+    private Set<ProjectRole> roles;
     @ManyToMany
     @Cascade({org.hibernate.annotations.CascadeType.PERSIST,
             org.hibernate.annotations.CascadeType.MERGE,
@@ -56,14 +66,12 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Set<AccessRole> accessRoles;
 
-    public User(String login, String passwordHash, String name, String surname, String email,String messenger, List<String> roles, String interests, String groupp, Set<Tags> skills, Set<AccessRole> accessRoles) {
+    public User(String login, String passwordHash, String name, String surname, String email, String interests, String groupp, Set<Tags> skills, Set<AccessRole> accessRoles) {
         this.login = login;
         this.passwordHash = passwordHash;
         this.name = name;
         this.surname = surname;
         this.email = email;
-        this.messenger = messenger;
-        this.roles = roles;
         this.interests = interests;
         this.groupp = groupp;
         this.skills = skills;
@@ -71,6 +79,7 @@ public class User implements UserDetails {
         this.accessRoles = accessRoles;
 
         this.reputation = 100;
+        this.roles = new HashSet<>();
     }
 
     @Override
@@ -107,7 +116,7 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
-    /*
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -115,8 +124,6 @@ public class User implements UserDetails {
         User user = (User) o;
         return Objects.equals(id, user.id);
     }
-    *
-     */
 
     @Override
     public int hashCode() {

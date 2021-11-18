@@ -10,6 +10,8 @@ import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
+import static javax.persistence.CascadeType.*;
+
 /**
  * @author Yarullin Renat
  */
@@ -33,10 +35,10 @@ public class Project {
     @ManyToOne
     private Workspace workspace;
 
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany(cascade = {PERSIST, MERGE, DETACH, REFRESH, PERSIST})
     private Set<Tags> tags;
 
-    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "project", cascade = ALL, orphanRemoval = true)
     private Set<Participant> participants;
 
     public Project(String name, String shortDescription, String fullDescription, String trackerLink, ProjectStatus status, Integer maxParticipantsCount, Workspace workspace, Set<Tags> tags) {

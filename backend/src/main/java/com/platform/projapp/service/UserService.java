@@ -10,6 +10,7 @@ import com.platform.projapp.dto.response.body.MessageResponseBody;
 import com.platform.projapp.enumarate.AccessRole;
 import com.platform.projapp.error.ErrorConstants;
 import com.platform.projapp.error.ErrorInfo;
+import com.platform.projapp.model.ProjectRole;
 import com.platform.projapp.model.Tags;
 import com.platform.projapp.model.User;
 import com.platform.projapp.repository.TagsRepository;
@@ -38,6 +39,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final JwtHelper jwtHelper;
     private final JwtTokenFilter jwtTokenFilter;
+    private final ProjectRoleService projectRoleService;
 
     public User findById(Long id) {
         return userRepository.findById(id).orElse(null);
@@ -58,17 +60,19 @@ public class UserService {
         }
 
         if (registerRequest.getPassword() != null) {
+            List<ProjectRole> projectRoles = registerRequest.getRoles().stream()
+                    .map(projectRoleService::createProjectRole)
+                    .collect(Collectors.toList());
             User user = new User(registerRequest.getLogin(),
                     passwordEncoder.encode(registerRequest.getPassword()),
                     registerRequest.getName(),
                     registerRequest.getSurname(),
                     registerRequest.getEmail(),
-                    registerRequest.getMessenger(),
-                    registerRequest.getRoles(),
                     registerRequest.getInterests(),
                     registerRequest.getGroup(),
                     skills,
                     Set.of(AccessRole.ROLE_USER));
+            user.getRoles().addAll(projectRoles);
             userRepository.save(user);
         }
     }
@@ -87,9 +91,9 @@ public class UserService {
             String token = jwtTokenFilter.parseRequestJwt(req);
             String login = jwtHelper.getUserNameFromJwtToken(token);
             User user = userRepository.findByLogin(login);
-            return response.withData(new CurrentUserResponseBody(user.getLogin(), user.getName(), user.getSurname()));
+            return response.withData(new CurrentUserResponseBody(user.getName(), user.getSurname(), user.getLogin()));
         } catch (ExpiredJwtException e) {
-            return response.withError("Срок использования токена истек");
+            return response.withErrors(List.of(ErrorInfo.of("Jwt is Expired", "Срок использования токена истек")));
         }
     }
 
@@ -98,28 +102,35 @@ public class UserService {
         try {
             String token = jwtTokenFilter.parseRequestJwt(req);
             if (token == null || token.isEmpty()) {
-                return response.withError("Jwt is not provided");
+                return response.withErrors(List.of(ErrorInfo.of("401", "Jwt is not provided")));
             }
             String login = jwtHelper.getUserNameFromJwtToken(token);
             User user = userRepository.findByLogin(login);
-            return response.withData(new CurrentUserProfileResponseBody(user.getLogin(), user.getName(), user.getSurname(), user.getInterests(), user.getEmail(),user.getMessenger(), user.getRoles(), user.getGroupp(),user.getSkills()));
+            return response.withData(new CurrentUserProfileResponseBody(user.getLogin(),
+                    user.getName(),
+                    user.getSurname(),
+                    user.getInterests(),
+                    user.getEmail(),
+                    user.getRoles().stream().map(ProjectRole::getName).collect(Collectors.toList()),
+                    user.getGroupp(),
+                    user.getId()));
         } catch (ExpiredJwtException e) {
-            return response.withError( "Срок использования токена истек");
+            return response.withErrors(List.of(ErrorInfo.of("Jwt is Expired", "Срок использования токена истек")));
         }
     }
 
-    public GeneralResponse<MessageResponseBody> changeUserProfile(RegisterOrUpdateUserRequest req,HttpServletRequest request) {
+    public GeneralResponse<MessageResponseBody> changeUserProfile(RegisterOrUpdateUserRequest req) {
+        List<ErrorInfo> errors = new ArrayList<>();
         GeneralResponse<MessageResponseBody> response = new GeneralResponse<>();
         try {
-            String token = jwtTokenFilter.parseRequestJwt(request);
-            String login = jwtHelper.getUserNameFromJwtToken(token);
-            User user = userRepository.findByLogin(login);
+            Long Id = req.getId();
+            User user = userRepository.getById(Id);
             user.setName(req.getName());
             user.setSurname(req.getSurname());
             user.setLogin(req.getLogin());
             user.setInterests(req.getInterests());
             user.setEmail(req.getEmail());
-            user.setRoles(req.getRoles());
+            user.getRoles().addAll(req.getRoles().stream().map(projectRoleService::createProjectRole).collect(Collectors.toList()));
             user.setGroupp(req.getGroup());
             user.setSkills(req.getSkills().stream()
                     .map(tags -> {
@@ -128,16 +139,20 @@ public class UserService {
                         return tgs;
                     }).collect(Collectors.toSet()));
             if (req.getPassword() != null && req.getNewPassword() != null && !passwordEncoder.matches(req.getPassword(), user.getPasswordHash())) {
-                return response.withError(ErrorConstants.WRONG_PASSWORD);
+                errors.add(ErrorConstants.WRONG_PASSWORD);
+                return response.withErrors(errors);
             } else if (req.getPassword() == null && req.getNewPassword() != null)
-                return response.withError(ErrorConstants.PASSWORD_IS_EMPTY);
+                return response.withErrors(List.of(ErrorInfo.of("Old Password Not Confirmed", "Необходимо ввести текущий пароль")));
             else if (req.getNewPassword() != null && passwordEncoder.matches(req.getPassword(), user.getPasswordHash()))
                 user.setPasswordHash(passwordEncoder.encode(req.getNewPassword()));
 
             userRepository.save(user);
             return response.withData(MessageResponseBody.of("Информация о пользователе обновлена"));
         } catch (DataIntegrityViolationException e) {
-                return response.withError(ErrorConstants.USERNAME_NOT_FOUND);
+            if (e.getMostSpecificCause().getClass().getName().equals("org.postgresql.util.PSQLException"))
+                errors.add(ErrorConstants.LOGIN_IS_BUSY);
+
+            return response.withErrors(errors);
         }
     }
 }
