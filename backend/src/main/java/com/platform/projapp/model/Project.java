@@ -44,6 +44,7 @@ public class Project {
 
     public Project(long ownerId, String name, String shortDescription, String fullDescription, String trackerLink, ProjectStatus status, Integer maxParticipantsCount, Workspace workspace, Set<Tags> tags) {
         this.name = name;
+        this.ownerId = ownerId;
         this.shortDescription = shortDescription;
         this.fullDescription = fullDescription;
         this.trackerLink = trackerLink;
