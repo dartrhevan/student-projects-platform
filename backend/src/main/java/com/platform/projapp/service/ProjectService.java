@@ -47,7 +47,7 @@ public class ProjectService {
     }
 
     public void createProject(User user, Workspace workspace, ProjectRequest projectRequest) {
-        Project project = new Project(user.getId(),
+        Project project = new Project(user.getLogin(),
                 projectRequest.getName(),
                 projectRequest.getShortDescription(),
                 projectRequest.getFullDescription(),
