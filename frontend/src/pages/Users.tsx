@@ -1,36 +1,17 @@
-import React, {useState} from 'react';
-import {Button, DialogContent, makeStyles, Typography} from "@material-ui/core";
-import {Action, Query, QueryResult} from 'material-table';
+import React, {useEffect, useState} from 'react';
+import {Button, DialogContent} from "@material-ui/core";
+import {Action, Query} from 'material-table';
 import {Person, PersonAdd,} from "@material-ui/icons";
 import Table from "../components/util/Table";
 import queryString from "query-string";
-import {allNotEmpty, getOnFieldChange} from "../utils/utils";
+import {allNotEmpty} from "../utils/utils";
 import ViewableText from "../components/elements/ViewableText";
-import {Dialog, DialogActions, DialogTitle, TextField} from "@mui/material";
+import {Dialog, DialogActions, DialogTitle} from "@mui/material";
 import {invitePerson} from "../api/workspaces";
 import {getUsers} from "../api/users";
 import Pageable from "../model/Pageable";
 import UserRow from "../model/UserRow";
-
-// interface Row {
-//     name: string,
-//     surname: string,
-//     roles: string,
-//     skills: string,
-//     username: string,
-//     // reputation: string,
-//     interests: string,
-//     project: string
-// }
-
-const useStyles = makeStyles(theme => ({
-    main: {
-        // margin: "50px 0"
-    },
-    title: {
-        margin: '45px 0 10px 0'
-    }
-}));
+import RolesInput from "../components/elements/RolesInput";
 
 
 const tableColumns = [
@@ -38,13 +19,11 @@ const tableColumns = [
         title: 'Имя',
         field: "name",
         sorting: false,
-        // filtering: false
     },
     {
         title: 'Фамилимя',
         field: "surname",
         sorting: false,
-        // filtering: false
     },
     {
         title: 'Роли',
@@ -55,6 +34,24 @@ const tableColumns = [
         title: 'Навыки',
         field: "skills",
         sorting: false,
+    },
+    {
+        title: 'Месенджр',
+        field: "messenger",
+        sorting: false,
+        filtering: false
+    },
+    {
+        title: 'Email',
+        field: "email",
+        sorting: false,
+        filtering: false
+    },
+    {
+        title: 'Тип',
+        field: "userType",
+        sorting: false,
+        filtering: false
     },
     {
         title: 'Текущий проект',
@@ -68,27 +65,23 @@ const tableColumns = [
         sorting: false,
         filtering: false,
         render: (row: UserRow) => <ViewableText maxWidth={200}>{row.interests}</ViewableText>
-    },
-    // {
-    //     title: 'Репутация',
-    //     field: "reputation",
-    //     sorting: false,
-    //     filtering: false,
-    // }
+    }
 ];
 
 export default function Users() {
     const params = queryString.parse(window.location.search);
     const workspaceId = params?.workspaceId, projectId = params?.projectId;
 
+    const [openInviteUsername, setOpenInviteUsername] = useState('');
+    const [openInviteDialog, setOpenInviteDialog] = useState(false);
+    const [inviteRole, setInviteRole] = useState('');
+
     const invite = allNotEmpty(workspaceId, projectId);
 
-    const classes = useStyles();
     const data = (query: Query<UserRow>) => {
         console.log(`query`);
         console.log(query);
-        return getUsers(workspaceId as string, new Pageable(0, 0));
-            // .then(r => ({data: r.data, page: r.page, totalCount: r.totalCount}));
+        return getUsers(workspaceId as string, new Pageable(query.page, query.pageSize));
     };
     const tableActions: Action<UserRow>[] = [
         {
@@ -96,48 +89,38 @@ export default function Users() {
             onClick: (event: React.EventHandler<any>, objectData: UserRow | UserRow[]) =>
                 window.location.href = `/portfolio/${(objectData as UserRow).username}`,
             tooltip: 'Просмотр портфолио',
-        }
+        },
     ];
 
     if (invite)
         tableActions.push({
             icon: () => <PersonAdd/>,
             onClick: (event: React.EventHandler<any>, objectData: UserRow | UserRow[]) => {
-                // console.log(objectData);
-
                 setOpenInviteUsername((objectData as UserRow).username);
+                setOpenInviteDialog(true);
             },
             tooltip: 'Пригласить',
         });
 
-    const [openInviteUsername, setOpenInviteUsername] = useState(null as string | null);
-    const [inviteRole, setInviteRole] = useState(null as string | null);
 
     function onInvite() {
-        invitePerson(openInviteUsername as string, inviteRole as string).then(() => {
+        invitePerson(openInviteUsername, inviteRole).then(() => {
             alert('Invitation has been sent');
-            setOpenInviteUsername(null);
+            setOpenInviteDialog(false)
         })
     }
 
     return (<>
-        <Dialog open={openInviteUsername !== null} onClose={() => setOpenInviteUsername(null)}>
+        <Dialog open={openInviteDialog} onClose={() => setOpenInviteDialog(false)}>
             <DialogTitle>Пригласить участника</DialogTitle>
             <DialogContent dividers>
-                {/*<Select*/}
-                {/*    value={}*/}
-                {/*    label="Выберите роль"*/}
-                {/*    onChange={handleChange}>*/}
-                {/*    */}
-                {/*</Select>*/}
-                <TextField margin='normal' value={inviteRole} onChange={getOnFieldChange(setInviteRole)}
-                           label="Введите роль"/>
-
-                <DialogActions>
-                    <Button disabled={!inviteRole} onClick={onInvite}>Подтвердить</Button>
-                </DialogActions>
+                <RolesInput onChange={s => setInviteRole(s as string)} role={inviteRole} multiple={false}/>
             </DialogContent>
+            <DialogActions>
+                <Button disabled={inviteRole === ''} onClick={onInvite}>Подтвердить</Button>
+            </DialogActions>
         </Dialog>
+        {/*<Button onClick={() => setOpenInviteDialog(true)}>assasa</Button>*/}
         <Table title='Поиск учасников' data={data} tableColumns={tableColumns} tableActions={tableActions}/>
     </>);
 }

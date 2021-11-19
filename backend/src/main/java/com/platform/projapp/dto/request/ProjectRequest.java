@@ -1,5 +1,6 @@
 package com.platform.projapp.dto.request;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,6 +17,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProjectRequest {
+    @JsonAlias("title")
     @NotBlank(message = "Поле name обязательно для заполнения")
     private String name;
     private String shortDescription;

@@ -54,5 +54,10 @@ export function updateSprint(workspaceId: string, projectId: string, sprint: Spr
  */
 export function uploadPresentation(workspaceId: string, projectId: string, sprintId: string, presentation: File) {//TODO: implement
     console.log(presentation.name);
-    return new Promise<GenericResponse<string>>(resolve => resolve(new GenericResponse("")))
+    return new Promise<GenericResponse<string>>(resolve => resolve(new GenericResponse("")));
+}
+
+
+export function dropPlan(workspaceId: string, projectId: string) {
+    return new Promise<CommonResponse>(resolve => resolve(new CommonResponse()));
 }

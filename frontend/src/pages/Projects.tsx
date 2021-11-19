@@ -17,6 +17,7 @@ import {openDialog} from "../store/actions/dialog/dialog";
 import Invite from "../model/dto/Invite";
 import {getInviteForWorkspace} from "../api/workspaces";
 import {WorkspaceAssociation} from "../model/dto/ProjectsResponse";
+import getUsername from "../hooks/getUsername";
 
 
 interface ProjectsParams {//TODO: remove
@@ -40,18 +41,21 @@ export default function Projects() {
     const [role, setRole] = useState(WorkspaceAssociation.STUDENT);
     const [activeOnly, setActiveOnly] = useState(false);
 
+    const user = useSelector(getUsername);
+
     const [data, setData] = useState([] as Project[]);
     console.log("render Projects")
 
     const dispatch = useDispatch();
 
     useEffect(() => {
-        getProjectsForWorkspace(new ProjectQuery([], new Pageable(pageNumber, pageSize), workspaceId, activeOnly))
-            .then(r => {
-                setData(r.projects);
-                setRole(r.role);
-                dispatch(initPaging(r.totalCount, pageSize, pageNumber));
-            });
+        if (workspaceId)
+            getProjectsForWorkspace(new ProjectQuery([], new Pageable(pageNumber, pageSize), workspaceId, activeOnly))
+                .then(r => {
+                    setData(r.data.projects);
+                    setRole(r.data.role);
+                    dispatch(initPaging(r.data.totalCount, pageSize, pageNumber));
+                });
     }, [workspaceId, pageNumber, pageSize]);//TODO: call back here
 
     const [openInvite, setOpenInvite] = useState(false);
@@ -120,7 +124,8 @@ export default function Projects() {
                                        </Button> : <></>}
                                </>}
                        </>)}
-                       title={`Проекты из "${workspaceTitle}"`} badgeData={data} squared={false}
+                       title={workspaceTitle ? `Проекты из "${workspaceTitle}"` : `Проекты "${user?.user.username}"`}
+                       badgeData={data} squared={false}
                        href={i => `/project?projectId=${i.id}&workspaceId=${workspaceId}`}
                        addTitle='Создать'
                        addOnClick={() => window.location.href = `/project?isNew&workspaceId=${workspaceId}`}/>);

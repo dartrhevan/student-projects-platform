@@ -14,7 +14,7 @@ import isMobile from "../../hooks/isMobile";
 import FormatAlignJustifyIcon from '@mui/icons-material/FormatAlignJustify';
 import EmailIcon from '@mui/icons-material/Email';
 import getUsername from "../../hooks/getUsername";
-import GroupIcon from '@mui/icons-material/Group';
+import AutoAwesomeMosaicIcon from '@mui/icons-material/AutoAwesomeMosaic';
 
 const drawerWidth = 240;
 
@@ -95,23 +95,23 @@ export default function MiniDrawer() {
             }}>
 
             <List className={classes.list}>
-                <ListItem button key={'Мои проекты'} onClick={() => window.location.href = '/projects'}>
+                <ListItem disabled={login === null} button key={'Рабочие пространства'} onClick={() => window.location.href = '/workspaces'}>
+                    <ListItemIcon><AutoAwesomeMosaicIcon/></ListItemIcon>
+                    <ListItemText primary={'Рабочие пространства'}/>
+                </ListItem>
+                <ListItem disabled={login === null} button key={'Мои проекты'} onClick={() => window.location.href = '/projects'}>
                     <ListItemIcon><Apps/></ListItemIcon>
                     <ListItemText primary={'Мои проекты'}/>
                 </ListItem>
-                <ListItem button key={'Моё портфолио'} onClick={() => window.location.href = `/portfolio/${login}`}>
+                <ListItem disabled={login === null} button key={'Моё портфолио'} onClick={() => window.location.href = `/portfolio/${login}`}>
                     <ListItemIcon><FormatAlignJustifyIcon/></ListItemIcon>
                     <ListItemText primary={'Моё портфолио'}/>
                 </ListItem>
-                <ListItem button key={'Мой профиль'} onClick={() => window.location.href = '/profile'}>
+                <ListItem disabled={login === null} button key={'Мой профиль'} onClick={() => window.location.href = '/profile'}>
                     <ListItemIcon><Person/></ListItemIcon>
                     <ListItemText primary={'Мой профиль'}/>
                 </ListItem>
-                {/*<ListItem button key={'Пользователи'} onClick={() => window.location.href = '/users'}>*/}
-                {/*    <ListItemIcon><GroupIcon/></ListItemIcon>*/}
-                {/*    <ListItemText primary={'Пользователи'}/>*/}
-                {/*</ListItem>*/}
-                <ListItem button key={'Уведомления'} onClick={() => window.location.href = '/notifications'}>
+                <ListItem disabled={login === null} button key={'Уведомления'} onClick={() => window.location.href = '/notifications'}>
                     <ListItemIcon><EmailIcon/></ListItemIcon>
                     <ListItemText primary={'Уведомления'}/>
                 </ListItem>

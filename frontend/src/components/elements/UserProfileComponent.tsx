@@ -19,6 +19,8 @@ import clsx from 'clsx';
 import Card from "@material-ui/core/Card";
 import Autocomplete from "@mui/material/Autocomplete";
 import Tag from "../../model/Tag";
+import {addRoleToReference, getRolesReference} from "../../api/reference";
+import RolesInput from "./RolesInput";
 
 const useStyles = makeStyles(theme => ({
     def: {
@@ -73,7 +75,6 @@ export default function UserProfileComponent({user, title}: UserProfileProps) {
     const [comment, setComment] = useState('');
     const [group, setGroup] = useState('');
     const passwordConfirmed = password === passwordConfirm;
-    const rolesReference = ['front', 'back', 'devops', 'test', 'analytic']; //TODO: get from backend
     const [roles, setRoles] = useState([] as string[]);
     const [tags, setTags] = useState([] as Tag[]);
 
@@ -113,6 +114,7 @@ export default function UserProfileComponent({user, title}: UserProfileProps) {
             }).catch(alert); //TODO: implement correct catch;
     }
 
+
     return (
         <Centered additionalClasses={[classes.container]}>
             <Card className={clsx(classes.card, classes.skills)}>
@@ -140,13 +142,10 @@ export default function UserProfileComponent({user, title}: UserProfileProps) {
                     <Typography className={classes.def} align='center'>Введи ваши навыки</Typography>
                     <TagsPanel label='skill' tagInputClasses={[classes.tagInput]} onSetTag={setTags}/>
                 </div>
-                <Autocomplete multiple freeSolo onChange={(a, b: string[]) => setRoles(b)}
-                              id="tags-standard" options={rolesReference} defaultValue={user?.roles}
-                              fullWidth={true} renderInput={(params) => (
-                    <TextField {...params} variant="standard" label="Ваша роль"
-                               placeholder="Введите роль, которую вы готовы выполнять"/>)}/>
+                <RolesInput onChange={s => setRoles(s as string[])} defRoles={roles} />
                 {user ?
-                    <TextField label="Текущий пароль" className={classes.def} onChange={getOnFieldChange(setOldPassword)}
+                    <TextField label="Текущий пароль" className={classes.def}
+                               onChange={getOnFieldChange(setOldPassword)}
                                type="password" fullWidth={true} required/> : <></>}
                 <TextField label={passwordLabels.input} className={classes.def} onChange={getOnFieldChange(setPassword)}
                            type="password" fullWidth={true} required/>
@@ -160,7 +159,7 @@ export default function UserProfileComponent({user, title}: UserProfileProps) {
                 <ErrorMessage message='*Логин и пароль должны содержать не меньше 6 символов'
                               condition={!(username.length >= 6 && password.length >= 6)}/>
                 <ErrorMessage message='*Некорректный емайл'
-                              condition={!(email.match(emailPattern))}/>
+                              condition={!(email?.match(emailPattern))}/>
 
                 <Aligned endAlign={true}>
                     <Button disabled={!(passwordConfirmed && allFilledAndValid)}
