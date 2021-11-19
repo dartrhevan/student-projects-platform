@@ -49,7 +49,7 @@ public class UserController {
         var user = userService.parseAndFindByJwt(token);
         var workspace = workspaceService.findById(workspaceId);
         var errorResponseEntity = workspaceService.getWorkspaceErrorResponseEntity(workspace,
-                user.getId(),
+                user.getLogin(),
                 List.of(ErrorConstants.USER_NOT_WORKSPACE_PARTICIPANT));
         if (errorResponseEntity != null)
             return errorResponseEntity;

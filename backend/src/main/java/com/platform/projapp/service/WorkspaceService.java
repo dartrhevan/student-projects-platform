@@ -67,17 +67,17 @@ public class WorkspaceService {
         workspaceRepository.save(workspace);
     }
 
-    public ResponseEntity<?> getWorkspaceErrorResponseEntity(Workspace workspace, Long userId, List<ErrorInfo> errorsInfo) {
+    public ResponseEntity<?> getWorkspaceErrorResponseEntity(Workspace workspace, String userLogin, List<ErrorInfo> errorsInfo) {
         if (workspace == null)
             return ResponseEntity.badRequest()
                     .body(MessageResponseBody.of(ErrorConstants.WORKSPACE_NOT_FOUND.getMessage()));
-        if (errorsInfo.contains(ErrorConstants.USER_NOT_WORKSPACE_PARTICIPANT) && !workspace.hasUser(userId))
+        if (errorsInfo.contains(ErrorConstants.USER_NOT_WORKSPACE_PARTICIPANT) && !workspace.hasUser(userLogin))
             return ResponseEntity.badRequest()
                     .body(MessageResponseBody.of(ErrorConstants.USER_NOT_WORKSPACE_PARTICIPANT.getMessage()));
-        if (errorsInfo.contains(ErrorConstants.USER_NOT_WORKSPACE_OWNER) && !workspace.ownerIs(userId))
+        if (errorsInfo.contains(ErrorConstants.USER_NOT_WORKSPACE_OWNER) && !workspace.ownerIs(userLogin))
             return ResponseEntity.badRequest()
                     .body(MessageResponseBody.of(ErrorConstants.USER_NOT_WORKSPACE_OWNER.getMessage()));
-        if (errorsInfo.contains(ErrorConstants.USER_IN_WORKSPACE) && workspace.hasUser(userId)) {
+        if (errorsInfo.contains(ErrorConstants.USER_IN_WORKSPACE) && workspace.hasUser(userLogin)) {
             return ResponseEntity.badRequest()
                     .body(MessageResponseBody.of(ErrorConstants.USER_IN_WORKSPACE.getMessage()));
         }

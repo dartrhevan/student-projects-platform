@@ -5,6 +5,7 @@ import com.platform.projapp.dto.request.RegisterOrUpdateUserRequest;
 import com.platform.projapp.dto.request.TokenRefreshRequest;
 import com.platform.projapp.dto.response.GeneralResponse;
 import com.platform.projapp.dto.response.body.JwtResponseBody;
+import com.platform.projapp.dto.response.body.MessageResponseBody;
 import com.platform.projapp.dto.response.body.TokenRefreshResponseBody;
 import com.platform.projapp.error.ErrorConstants;
 import com.platform.projapp.error.ErrorInfo;
@@ -14,6 +15,7 @@ import com.platform.projapp.model.User;
 import com.platform.projapp.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -37,6 +39,10 @@ public class AuthService {
     public GeneralResponse<JwtResponseBody> authUser(String login, String password) {
         GeneralResponse<JwtResponseBody> response = new GeneralResponse<>();
         try {
+            User user1 = userRepository.findByLogin(login);
+            if(user1==null)
+                return response.withError(ErrorConstants.USERNAME_NOT_FOUND);
+            else{
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(login, password));
 
@@ -49,27 +55,26 @@ public class AuthService {
             RefreshToken refreshToken = tokenService.createRefreshToken(user);
 
             return response.withData(new JwtResponseBody(jwt, refreshToken.getToken(), user));
-        } catch (UsernameNotFoundException e) {
-            return response.withErrors(List.of(ErrorConstants.USERNAME_NOT_FOUND));
+        }
+    } catch (BadCredentialsException e) {
+        return response.withError(ErrorConstants.WRONG_PASSWORD);
         }
     }
 
-    public List<ErrorInfo> registerUser(RegisterOrUpdateUserRequest registerRequest, BindingResult bindingResult) {
+    public GeneralResponse<MessageResponseBody> registerUser(RegisterOrUpdateUserRequest registerRequest, BindingResult bindingResult) {
 
-        List<ErrorInfo> errors = new ArrayList<>();
-        if (registerRequest.getPassword() == null) {
-            errors.add(ErrorConstants.PASSWORD_IS_EMPTY);
+        GeneralResponse<MessageResponseBody> response = new GeneralResponse<>();
+        if (registerRequest.getPassword()==null)
+        {
+            return response.withError(ErrorConstants.PASSWORD_IS_EMPTY);
         }
-
-        if (userRepository.existsByLogin(registerRequest.getLogin())) {
-            errors.add(ErrorConstants.LOGIN_IS_BUSY);
+        else if (userRepository.existsByLogin(registerRequest.getLogin())) {
+            return response.withError(ErrorConstants.LOGIN_IS_BUSY);
         }
-        errors.addAll(ErrorUtils.getErrorInfoFromBindingResult(bindingResult));
-
-        if (errors.isEmpty()) {
+        else {
             userService.addUser(registerRequest);
+            return response.withData(MessageResponseBody.of("Пользователь успешно зарегистрирован"));
         }
-        return errors;
     }
 
     public GeneralResponse<TokenRefreshResponseBody> refreshToken(TokenRefreshRequest token) {

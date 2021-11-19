@@ -29,10 +29,10 @@ public class RegisterOrUpdateUserRequest {
     private String surname;
     private String interests;
     private String email;
+    private String messenger;
     private List<String> roles;
     private String group;
     private Set<Tags> skills;
     @Size(min = 6, message = "Поле newPassword должно содержать не менее {min}")
     private String newPassword; //only for update
-    private Long id; //only for update
 }

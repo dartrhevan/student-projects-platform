@@ -34,7 +34,7 @@ public class Project {
     private Integer maxParticipantsCount;
     @ManyToOne
     private Workspace workspace;
-    private long ownerId;
+    private String ownerLogin;
 
     @ManyToMany(cascade = {PERSIST, MERGE, DETACH, REFRESH, PERSIST})
     private Set<Tags> tags;
@@ -42,9 +42,9 @@ public class Project {
     @OneToMany(mappedBy = "project", cascade = ALL, orphanRemoval = true)
     private Set<Participant> participants;
 
-    public Project(long ownerId, String name, String shortDescription, String fullDescription, String trackerLink, ProjectStatus status, Integer maxParticipantsCount, Workspace workspace, Set<Tags> tags) {
+    public Project(String ownerLogin, String name, String shortDescription, String fullDescription, String trackerLink, ProjectStatus status, Integer maxParticipantsCount, Workspace workspace, Set<Tags> tags) {
         this.name = name;
-        this.ownerId = ownerId;
+        this.ownerLogin = ownerLogin;
         this.shortDescription = shortDescription;
         this.fullDescription = fullDescription;
         this.trackerLink = trackerLink;
@@ -55,8 +55,8 @@ public class Project {
         this.participants = new HashSet<>();
     }
 
-    public boolean hasUser(Long userId) {
+    public boolean hasUser(String userLogin) {
         return participants.stream()
-                .anyMatch(workspaceParticipant -> workspaceParticipant.getUser().getId().equals(userId));
+                .anyMatch(workspaceParticipant -> workspaceParticipant.getUser().getLogin().equals(userLogin));
     }
 }

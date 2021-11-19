@@ -52,7 +52,7 @@ public class ProjectController {
         var workspace = workspaceService.findById(workspaceId);
 
         ResponseEntity<?> workspaceErrorResponseEntity = workspaceService.getWorkspaceErrorResponseEntity(workspace,
-                user.getId(),
+                user.getLogin(),
                 List.of(ErrorConstants.USER_NOT_WORKSPACE_PARTICIPANT));
         if (workspaceErrorResponseEntity != null)
             return workspaceErrorResponseEntity;
@@ -90,16 +90,16 @@ public class ProjectController {
         var workspaceRole = project.getWorkspace().getWorkspaceRoleByUser(user);
 
         ResponseEntity<?> projectErrorResponseEntity = projectService.getProjectErrorResponseEntity(project,
-                user.getId(), List.of(ErrorConstants.USER_NOT_WORKSPACE_PARTICIPANT));
+                user.getLogin(), List.of(ErrorConstants.USER_NOT_WORKSPACE_PARTICIPANT));
         return projectErrorResponseEntity != null ? projectErrorResponseEntity :
                 ResponseEntity.ok(response.withData(ProjectResponseBody.fromProject(project, toProjectRole(workspaceRole, project, user))));
     }
 
     private static ProjectRole toProjectRole(WorkspaceRole role, Project project, User user) {
-        if (project.getOwnerId() == user.getId()) return ProjectRole.OWNER;
+        if (project.getOwnerLogin().equals(user.getLogin())) return ProjectRole.OWNER;
         return switch (role) {
             case MENTOR, ORGANIZER -> ProjectRole.MENTOR;
-            case STUDENT -> !project.hasUser(user.getId()) ? ProjectRole.STRANGER : ProjectRole.PARTICIPANT;
+            case STUDENT -> !project.hasUser(user.getLogin()) ? ProjectRole.STRANGER : ProjectRole.PARTICIPANT;
         };
     }
 
@@ -112,7 +112,7 @@ public class ProjectController {
         var user = userService.parseAndFindByJwt(token);
         var workspace = workspaceService.findById(workspaceId);
         ResponseEntity<?> workspaceErrorResponseEntity = workspaceService.getWorkspaceErrorResponseEntity(workspace,
-                user.getId(),
+                user.getLogin(),
                 List.of(ErrorConstants.USER_NOT_WORKSPACE_PARTICIPANT));
         if (workspaceErrorResponseEntity != null)
             return workspaceErrorResponseEntity;
@@ -130,7 +130,7 @@ public class ProjectController {
         var user = userService.parseAndFindByJwt(token);
         var project = projectService.findById(projectId);
         ResponseEntity<?> projectErrorResponseEntity = projectService.getProjectErrorResponseEntity(project,
-                user.getId(),
+                user.getLogin(),
                 List.of(ErrorConstants.USER_NOT_WORKSPACE_OWNER));
         if (projectErrorResponseEntity != null) return projectErrorResponseEntity;
         var errorResponseEntity = ErrorUtils.getIncompleteOrIncorrectErrorResponseEntity(bindingResult);
@@ -146,7 +146,7 @@ public class ProjectController {
         var user = userService.parseAndFindByJwt(token);
         var project = projectService.findById(projectId);
         ResponseEntity<?> projectErrorResponseEntity = projectService.getProjectErrorResponseEntity(project,
-                user.getId(),
+                user.getLogin(),
                 List.of(ErrorConstants.USER_NOT_WORKSPACE_OWNER));
         if (projectErrorResponseEntity != null) return projectErrorResponseEntity;
         projectService.delete(project);
@@ -160,7 +160,7 @@ public class ProjectController {
         var user = userService.parseAndFindByJwt(token);
         var project = projectService.findById(projectId);
         ResponseEntity<?> projectErrorResponseEntity = projectService.getProjectErrorResponseEntity(project,
-                request.getUserId(),
+                request.getUserLogin(),
                 List.of(ErrorConstants.USER_NOT_WORKSPACE_PARTICIPANT, ErrorConstants.USER_IN_PROJECT));
         if (projectErrorResponseEntity != null) return projectErrorResponseEntity;
         projectService.addParticipant(project, request);

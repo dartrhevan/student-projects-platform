@@ -55,9 +55,9 @@ public class Workspace {
                 .anyMatch(workspaceParticipant -> workspaceParticipant.getUser().equals(user));
     }
 
-    public boolean hasUser(Long userId) {
+    public boolean hasUser(String userLogin) {
         return participants.stream()
-                .anyMatch(workspaceParticipant -> workspaceParticipant.getUser().getId().equals(userId));
+                .anyMatch(workspaceParticipant -> workspaceParticipant.getUser().getLogin().equals(userLogin));
     }
 
     public boolean ownerIs(User user) {
@@ -65,9 +65,9 @@ public class Workspace {
         return owner != null && owner.getUser().equals(user);
     }
 
-    public boolean ownerIs(Long userId) {
+    public boolean ownerIs(String userLogin) {
         WorkspaceParticipant owner = getOwner();
-        return owner != null && owner.getUser().getId().equals(userId);
+        return owner != null && owner.getUser().getLogin().equals(userLogin);
     }
 
     public WorkspaceParticipant getOwner() {
