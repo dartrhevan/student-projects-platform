@@ -26,7 +26,7 @@ labelColors.set(ProjectStatus.MODIFYING, 'purple');
 
 export default class Project implements IBadge {
     constructor(public id: string, public workSpaceId: string, public title: string, public description: string,
-                public tags: Tag[], public status = ProjectStatus.IN_PROGRESS,
+                public tags: number[], public status = ProjectStatus.IN_PROGRESS,
                 public label = status, public labelColor = labelColors.get(status) as string) {
     }
 }

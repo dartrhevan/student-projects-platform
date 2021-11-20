@@ -4,6 +4,9 @@ import clsx from 'clsx';
 import {Chip} from "@mui/material";
 import Tag from "../../model/Tag";
 import {addTagToReference, getTagsReference} from "../../api/reference";
+import {useDispatch, useSelector} from "react-redux";
+import getTagsRef from "../../hooks/getTagsRef";
+import {setTagsRef} from "../../store/actions/tags/tags";
 
 const useStyles = makeStyles(theme => ({
     chips: {
@@ -31,15 +34,19 @@ interface ITagsPanelProps {
 // const stub = () => {
 // };
 
-export default function TagsPanel({
-                                      onSetTag,
-                                      label = 'тэг',
-                                      tagInputClasses = [],
-                                      editable = true,
-                                      values = []
-                                  }: ITagsPanelProps) {
+export default function TagsPanel(
+    {
+        onSetTag,
+        label = 'тэг',
+        tagInputClasses = [],
+        editable = true,
+        values = []
+    }: ITagsPanelProps) {
     const classes = useStyles();
-    const [tagsReference, setTagsReference] = useState(values);
+
+    const tagsReference = useSelector(getTagsRef);
+    const dispatch = useDispatch();
+    // const [tagsReference, setTagsReference] = useState(values);
     const [tags, setTags] = useState(values);
     const [tag, setTag] = React.useState('');
 
@@ -48,12 +55,16 @@ export default function TagsPanel({
     // }, [values]);
 
     const v = values.map(t => t.name)[0]; //TODO: rewrite
+    function setTagsReference(r: Tag[]) {
+        dispatch(setTagsRef(r));
+    }
+
     useEffect(() => {
         setTags(values);
-        getTagsReference()
-            .then(r => {
-                setTagsReference(r);
-            }).catch(console.log);
+        // getTagsReference()
+        //     .then(r => {
+        //         setTagsReference(r);
+        //     }).catch(console.log);
     }, [v]);
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => setTag(event.target.value);
@@ -63,7 +74,7 @@ export default function TagsPanel({
             if (!tags?.find(t => t.name === tag)) {
                 let newTag = tagsReference?.find(t => t.name === tag);
                 if (newTag === undefined) {
-                    newTag = new Tag(tag);
+                    newTag = new Tag(-1, tag);
                     addTagToReference(newTag.name, newTag.colour)
                         .then(r => {
                             (newTag as Tag).id = r.data;
@@ -77,7 +88,8 @@ export default function TagsPanel({
                     onSetTag(newTags);
                     setTags(newTags);
                 }
-            } else {}
+            } else {
+            }
             setTag('');
         }
     };

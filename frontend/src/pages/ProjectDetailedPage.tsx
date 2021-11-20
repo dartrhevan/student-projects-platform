@@ -19,6 +19,8 @@ import ErrorMessage from "../components/elements/ErrorMessage";
 import {Clear} from "@material-ui/icons";
 import {useError, useSuccess, useWarn} from "../hooks/logging";
 import Tag from "../model/Tag";
+import {useSelector} from "react-redux";
+import getTagsRef, {getTagsReferenceMap} from "../hooks/getTagsRef";
 
 const useStyles = makeStyles(theme => ({
     paper: {
@@ -127,12 +129,13 @@ export default function ProjectDetailedPage() {
     const classes = useStyles();
     const [project, setProject] = useState(new DetailedProject(workspaceId as string));
 
+    const tagsReference = useSelector(getTagsReferenceMap);
     useEffect(() => {
             if (!isNew) {
                 getProjectInfo(projectId as string, workspaceId as string)
                     .then(r => {
                         const proj: DetailedProject = DetailedProject.fromObject(r.data);
-                        // proj.tags = r.data.tags.map(t => new Tag())
+                        proj.tags = r.data.tags.map(t => tagsReference[t.toString()]);
                         setProject(proj);
                     }).catch(console.log)
             }

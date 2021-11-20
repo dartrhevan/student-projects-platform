@@ -10,7 +10,7 @@ export function getTagsReference(): Promise<Tag[]> {
         }
     }).then(r => r.json()).then((r: GenericResponse<{tags: Tag[]}>) => {
         if (!r.message) {
-            return r.data.tags.map((t: any) => new Tag(t.name, t.color, t.id));
+            return r.data.tags.map((t: any) => new Tag(t.id, t.name, t.color));
         }
         else throw new Error(r.message);
     });
