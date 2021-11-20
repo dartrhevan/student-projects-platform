@@ -18,14 +18,12 @@ import com.platform.projapp.repository.UserRepository;
 import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -45,7 +43,7 @@ public class UserService {
         return userRepository.findById(id).orElse(null);
     }
 
-    public User findByUserName(String username) {
+    public Optional<User> findByUserName(String username) {
         return userRepository.findByLogin(username);
     }
 
@@ -78,7 +76,7 @@ public class UserService {
     }
 
     public User findByJwt(String jwt) {
-        return findByUserName(jwtHelper.getUserNameFromJwtToken(jwt));
+        return findByUserName(jwtHelper.getUserNameFromJwtToken(jwt)).get();
     }
 
     public User parseAndFindByJwt(String jwt) {
@@ -90,10 +88,12 @@ public class UserService {
         try {
             String token = jwtTokenFilter.parseRequestJwt(req);
             String login = jwtHelper.getUserNameFromJwtToken(token);
-            User user = userRepository.findByLogin(login);
+            User user = userRepository.findByLogin(login).orElseThrow(() -> new UsernameNotFoundException(""));
             return response.withData(new CurrentUserResponseBody(user.getName(), user.getSurname(), user.getLogin()));
         } catch (ExpiredJwtException e) {
             return response.withErrors(List.of(ErrorInfo.of("Jwt is Expired", "Срок использования токена истек")));
+        } catch (UsernameNotFoundException e) {
+            return response.withErrors(List.of(ErrorInfo.of("Username not found", "Пользователь не найден")));
         }
     }
 
@@ -105,7 +105,7 @@ public class UserService {
                 return response.withErrors(List.of(ErrorInfo.of("401", "Jwt is not provided")));
             }
             String login = jwtHelper.getUserNameFromJwtToken(token);
-            User user = userRepository.findByLogin(login);
+            User user = userRepository.findByLogin(login).orElseThrow(() -> new UsernameNotFoundException(""));
             return response.withData(new CurrentUserProfileResponseBody(user.getLogin(),
                     user.getName(),
                     user.getSurname(),
@@ -116,6 +116,8 @@ public class UserService {
                     user.getId()));
         } catch (ExpiredJwtException e) {
             return response.withErrors(List.of(ErrorInfo.of("Jwt is Expired", "Срок использования токена истек")));
+        } catch (UsernameNotFoundException e) {
+            return response.withErrors(List.of(ErrorInfo.of("Username not found", "Пользователь не найден")));
         }
     }
 

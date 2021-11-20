@@ -14,6 +14,7 @@ import com.platform.projapp.model.User;
 import com.platform.projapp.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -49,7 +50,7 @@ public class AuthService {
             RefreshToken refreshToken = tokenService.createRefreshToken(user);
 
             return response.withData(new JwtResponseBody(jwt, refreshToken.getToken(), user));
-        } catch (UsernameNotFoundException e) {
+        } catch (UsernameNotFoundException | BadCredentialsException e) {
             return response.withErrors(List.of(ErrorConstants.USERNAME_NOT_FOUND));
         }
     }

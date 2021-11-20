@@ -47,33 +47,41 @@ export default function TagsPanel({
     //     setTags(values);
     // }, [values]);
 
-    const v = values.map(t => t.text)[0]; //TODO: rewrite
+    const v = values.map(t => t.name)[0]; //TODO: rewrite
     useEffect(() => {
         setTags(values);
-        getTagsReference().then(r => setTagsReference(r.data));
+        getTagsReference()
+            .then(r => {
+                setTagsReference(r);
+            }).catch(console.log);
     }, [v]);
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => setTag(event.target.value);
     console.log(values);
     const addTag = (e: KeyboardEvent<HTMLDivElement>) => {
         if (e.key === 'Enter' && tag !== '') {
-            if (!tags?.find(t => t.text === tag)) {
-                let newTag = tagsReference?.find(t => t.text === tag);
+            if (!tags?.find(t => t.name === tag)) {
+                let newTag = tagsReference?.find(t => t.name === tag);
                 if (newTag === undefined) {
                     newTag = new Tag(tag);
+                    addTagToReference(newTag.name, newTag.colour)
+                        .then(r => {
+                            const newTags = [...tags, newTag as Tag];
+                            onSetTag(newTags);
+                            setTags(newTags);
+                            setTagsReference([...tagsReference, newTag as Tag])
+                        }).catch(console.log);//TODO: catch
+                } else {
+                    const newTags = [...tags, newTag as Tag];
+                    onSetTag(newTags);
+                    setTags(newTags);
                 }
-                addTagToReference(newTag.text, newTag.colour)
-                    .then(r => {
-                        const newTags = [...tags, newTag as Tag];
-                        onSetTag(newTags);
-                        setTags(newTags);
-                    }).catch(console.log);//TODO: catch
-            }
+            } else {}
             setTag('');
         }
     };
 
-    const handleDelete = (toDelete: string) => setTags(tags?.filter(t => t.text !== toDelete));
+    const handleDelete = (toDelete: string) => setTags(tags?.filter(t => t.name !== toDelete));
 
     return (
         <>
@@ -81,9 +89,9 @@ export default function TagsPanel({
                                     value={tag} onChange={handleChange} onKeyPress={addTag}/>) : (<></>)}
 
             <div className={classes.chips}>
-                {tags.map(t => (<Chip label={t.text} key={t.text} variant="outlined"
+                {tags.map(t => (<Chip label={t.name} key={t.name} variant="outlined"
                                       sx={{backgroundColor: t.backgroundColor, color: t.fontColor, margin: '5px 10px'}}
-                                      onDelete={editable ? () => handleDelete(t.text) : undefined}/>))}
+                                      onDelete={editable ? () => handleDelete(t.name) : undefined}/>))}
             </div>
         </>)
 }

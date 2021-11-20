@@ -3,7 +3,6 @@ import CommonResponse from "../model/dto/CommonResponse";
 import ProjectQuery from "../model/dto/ProjectQuery";
 import ProjectsResponse from "../model/dto/ProjectsResponse";
 import GenericResponse from "../model/dto/GenericResponse";
-import Tag from "../model/Tag";
 import {StorageKeys} from "../utils/StorageKeys";
 
 
@@ -42,11 +41,11 @@ export function editProject(project: DetailedProject): Promise<CommonResponse> {
     });
 }
 
-export function getProjectsForWorkspace(query: ProjectQuery): Promise<GenericResponse<ProjectsResponse>> {
+export function getProjectsForWorkspace(query: ProjectQuery, active: boolean = false): Promise<GenericResponse<ProjectsResponse>> {
     // return new Promise<ProjectsResponse>((res, rej) =>
     //     res(new ProjectsResponse(['AAAAAA', 'B', 'C', 'D', 'E', 'F', 'A1', '1B', 'C1', 'D1', 'E1', '1F']
     //         .map(s => new Project(s, query.workspaceId, s, s, [new Tag('Java', 0xE94907)])), 12)));
-    return fetch(`/api/projects?workspaceId=${query.workspaceId}&tag=${query.tags.join(",")}&page=${query.pageable.pageNumber}&size=${query.pageable.pageSize}`, {
+    return fetch(`/api/projects?workspaceId=${query.workspaceId}&tag=${query.tags.join(",")}&page=${query.pageable.pageNumber}&size=${query.pageable.pageSize}&active=${active}`, {
         headers: {
             "Authorization": "Bearer " + sessionStorage.getItem(StorageKeys.AccessToken)
         }
@@ -69,6 +68,7 @@ export function deleteProject(projectId: string) {
         }
     });
 }
+
 //TODO: change all!!!
 
 export function getProjectInfo(projectId: string, workspaceId: string): Promise<GenericResponse<DetailedProject>> {

@@ -12,7 +12,6 @@ interface RolesProps {
 
 export default function ({defRoles = [], onChange, multiple = true}: RolesProps) {
     const [roles, setRoles] = useState(defRoles);
-    // const [role, setRole] = useState('');
     const [rolesReference, setRolesReference] = useState([] as string[]);
 
     useEffect(() => {
@@ -20,18 +19,10 @@ export default function ({defRoles = [], onChange, multiple = true}: RolesProps)
     }, [onChange, multiple]);
 
     const onChangeRoles = (a: any, b: string[]) => {
-        // let newRole: string;
-        // if (multiple) {
         const newRoles = b as string[];
         onChange(newRoles);
         setRoles(newRoles);
-        // console.log(b)
         const newRole = newRoles[newRoles.length - 1];
-        // } else {
-        //     newRole = b as string;
-        //     onChange([newRole]);
-        //     setRole(newRole);
-        // }
         if (!rolesReference.includes(newRole)) {
             addRoleToReference(newRole).then(r => setRolesReference([...rolesReference, newRole])).catch(console.log);
         }
@@ -40,7 +31,6 @@ export default function ({defRoles = [], onChange, multiple = true}: RolesProps)
     function onChangeRole(a: any, b: string | null) {
         const newRole = b ? b : '';
         onChange(newRole);
-        // setRole(newRole);
     }
 
     return multiple ? (<Autocomplete multiple={multiple} freeSolo onChange={onChangeRoles}

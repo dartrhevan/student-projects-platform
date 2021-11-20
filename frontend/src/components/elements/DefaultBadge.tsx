@@ -57,7 +57,7 @@ export default function DefaultBadge({id, title, href, description, tags, label,
                         <Typography className={classes.description} variant='subtitle2'>{description}</Typography>
                         <br/>
                     </Centered>
-                    {tags?.map(t => <Dot key={t.text} color={t.backgroundColor}/>)}
+                    {tags?.map(t => <Dot key={t.name} color={t.backgroundColor}/>)}
                     <Typography sx={{color: labelColor}} variant='subtitle2' align='right'>{label}</Typography>
                 </CardContent>
             </CardActionArea>

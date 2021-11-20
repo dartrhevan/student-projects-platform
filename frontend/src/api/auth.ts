@@ -14,10 +14,12 @@ export function getCurrentUser() {
             }
         }).then(r => {
             if (!r.ok) {
-                throw new Error("Not authorized");
+                return r.json().then(m => {
+                    throw new Error(`Not authorized ${m.message}`);
+                });
             }
             return r.json();
-        })//TODO: civil & universal error handling
+        });
 }
 
 /**
@@ -43,15 +45,24 @@ export function login(login: string, password: string) {
         },
         body: JSON.stringify({login, password})
     }).then(r => {
-        if (r.ok) {
-            return r.json();
-        } else {
-            // const obj = (r.json() as any);
-            throw "Error auth"; //TODO: error catch
+        switch (r.status) {
+            case 401:
+            case 403:
+                return r.json().then(m => {
+                    throw new Error(`Введены невенрные данные`);
+                });
+            case 400:
+            case 404:
+            case 500:
+                return r.json().then(m => {
+                    throw new Error(`Ошибка авторизации: ${m.message}`);
+                });
+            default:
+                return r.json();
         }
     }).then((r: GenericResponse<Login>) => {
-        return r.success ? (alert(r.message), null) : r.data;
-    }).catch(r => (alert(r), null));
+        return r.data;
+    });//.catch(r => (alert(r), null));
     // return new Promise<GenericResponse<LoginState>>((res, rej) => res("vovan")); //TODO: implement
 }
 
