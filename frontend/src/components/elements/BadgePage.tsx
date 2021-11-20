@@ -37,11 +37,12 @@ interface BadgePageProps<T extends IBadge> {
     showDialog?: boolean
     showTags?: boolean
     additionalButtons?: JSX.Element
+    onSetTags?: (t: Tag[]) => void
 }
 
 export default function BadgePage<T extends IBadge>(
     {
-        checkBoxes, badgeData, title, href, addTitle, additionalButtons,
+        checkBoxes, badgeData, title, href, addTitle, additionalButtons, onSetTags,
         addOnClick, squared = true, showDialog = false, showTags = true
     }: BadgePageProps<T>) {
     const classes = useStyles();
@@ -50,7 +51,7 @@ export default function BadgePage<T extends IBadge>(
         <>
             <Typography className={classes.title} variant='h3'>{title}</Typography>
             <QueryPanel buttonTitle={addTitle} buttonOnClick={addOnClick} additionalButtons={additionalButtons}
-                        showTags={showTags} showDialog={showDialog}/>
+                        showTags={showTags} showDialog={showDialog} onSetTags={onSetTags}/>
             {checkBoxes ? <CheckBoxGroup checkBoxes={checkBoxes}/> : <></>}
             <Container>
                 <Centered row={true} additionalClasses={[classes.main]}>

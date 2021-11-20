@@ -18,6 +18,7 @@ import Invite from "../model/dto/Invite";
 import {getInviteForWorkspace} from "../api/workspaces";
 import {WorkspaceAssociation} from "../model/dto/ProjectsResponse";
 import getUsername from "../hooks/getUsername";
+import Tag from "../model/Tag";
 
 
 interface ProjectsParams {//TODO: remove
@@ -40,6 +41,7 @@ export default function Projects() {
     const {totalCount, pageSize, pageNumber} = useSelector(getPaging, shallowEqual);
     const [role, setRole] = useState(WorkspaceAssociation.STUDENT);
     const [activeOnly, setActiveOnly] = useState(false);
+    const [tags, setTags] = useState([] as Tag[]);
 
     const user = useSelector(getUsername);
 
@@ -50,7 +52,7 @@ export default function Projects() {
 
     useEffect(() => {
         if (workspaceId)
-            getProjectsForWorkspace(new ProjectQuery([], new Pageable(pageNumber, pageSize), workspaceId, activeOnly))
+            getProjectsForWorkspace(new ProjectQuery(tags.map(t => t.id), new Pageable(pageNumber, pageSize), workspaceId, activeOnly))
                 .then(r => {
                     setData(r.data.projects);
                     setRole(r.data.role);
@@ -127,6 +129,6 @@ export default function Projects() {
                        title={workspaceTitle ? `Проекты из "${workspaceTitle}"` : `Проекты "${user?.user.username}"`}
                        badgeData={data} squared={false}
                        href={i => `/project?projectId=${i.id}&workspaceId=${workspaceId}`}
-                       addTitle='Создать'
+                       addTitle='Создать' onSetTags={setTags}
                        addOnClick={() => window.location.href = `/project?isNew&workspaceId=${workspaceId}`}/>);
 }

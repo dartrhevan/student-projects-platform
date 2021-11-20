@@ -14,11 +14,16 @@ import java.util.List;
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class GeneralResponse<T> {
-    private List<ErrorInfo> errors;
+    private String message;
     private T data;
 
     public GeneralResponse<T> withErrors(List<ErrorInfo> errors) {
-        this.errors = errors;
+        this.message = errors.get(0).getMessage();
+        return this;
+    }
+
+    public GeneralResponse<T> withError(ErrorInfo error) {
+        this.message = error.getMessage();
         return this;
     }
 

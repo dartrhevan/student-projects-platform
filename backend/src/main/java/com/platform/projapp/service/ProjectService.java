@@ -8,6 +8,7 @@ import com.platform.projapp.error.ErrorConstants;
 import com.platform.projapp.error.ErrorInfo;
 import com.platform.projapp.model.*;
 import com.platform.projapp.repository.ProjectRepository;
+import com.platform.projapp.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,6 +29,7 @@ public class ProjectService {
     private final WorkspaceService workspaceService;
     private final TagsService tagsService;
     private final ProjectRoleService projectRoleService;
+    private final UserRepository userRepository;
 
     public Project findById(Long id) {
         return projectRepository.findById(id).orElse(null);
@@ -79,6 +81,11 @@ public class ProjectService {
         Participant participant = participantService.createParticipant(project, participantRequest);
         project.getParticipants().add(participant);
         projectRepository.save(project);
+    }
+
+    public ResponseEntity<?> getProjectErrorResponseEntity(Project project, String username, List<ErrorInfo> errorsInfo) {
+        var userId = userRepository.findByLogin(username).get().getId();
+        return getProjectErrorResponseEntity(project, userId, errorsInfo);
     }
 
     public ResponseEntity<?> getProjectErrorResponseEntity(Project project, Long userId, List<ErrorInfo> errorsInfo) {

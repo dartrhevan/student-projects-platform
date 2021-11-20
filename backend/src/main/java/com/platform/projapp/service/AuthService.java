@@ -51,7 +51,7 @@ public class AuthService {
 
             return response.withData(new JwtResponseBody(jwt, refreshToken.getToken(), user));
         } catch (UsernameNotFoundException | BadCredentialsException e) {
-            return response.withErrors(List.of(ErrorConstants.USERNAME_NOT_FOUND));
+            return response.withError(ErrorConstants.USERNAME_NOT_FOUND);
         }
     }
 
@@ -85,6 +85,6 @@ public class AuthService {
                     response.withData(new TokenRefreshResponseBody(accessToken, refreshToken));
                     return (response);
                 }).orElse(new GeneralResponse<TokenRefreshResponseBody>()
-                        .withErrors(List.of(ErrorConstants.RT_NOT_IN_BD)));
+                        .withError(ErrorConstants.RT_NOT_IN_BD));
     }
 }

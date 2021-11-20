@@ -66,6 +66,7 @@ export default function TagsPanel({
                     newTag = new Tag(tag);
                     addTagToReference(newTag.name, newTag.colour)
                         .then(r => {
+                            (newTag as Tag).id = r.data;
                             const newTags = [...tags, newTag as Tag];
                             onSetTag(newTags);
                             setTags(newTags);

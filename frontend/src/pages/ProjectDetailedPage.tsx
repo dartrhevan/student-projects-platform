@@ -17,6 +17,8 @@ import TagsPanel from "../components/util/TagsPanel";
 import Centered from "../components/util/Centered";
 import ErrorMessage from "../components/elements/ErrorMessage";
 import {Clear} from "@material-ui/icons";
+import {useError, useSuccess, useWarn} from "../hooks/logging";
+import Tag from "../model/Tag";
 
 const useStyles = makeStyles(theme => ({
     paper: {
@@ -128,7 +130,11 @@ export default function ProjectDetailedPage() {
     useEffect(() => {
             if (!isNew) {
                 getProjectInfo(projectId as string, workspaceId as string)
-                    .then(r => setProject(DetailedProject.fromObject(r.data))).catch(console.log)
+                    .then(r => {
+                        const proj: DetailedProject = DetailedProject.fromObject(r.data);
+                        // proj.tags = r.data.tags.map(t => new Tag())
+                        setProject(proj);
+                    }).catch(console.log)
             }
         }, //TODO: catch
         [workspaceId, projectId, isNew]);
@@ -137,10 +143,14 @@ export default function ProjectDetailedPage() {
     console.log(project)
     const allFilled = !isNew || project?.isNewFilled;//allNotEmpty(username, password);
 
+    const success = useSuccess();
+    const warn = useWarn();
+    const error = useError();
+
     function onSubmit() {
         (isNew ? addProject(project as DetailedProject) : editProject(project as DetailedProject))
-            .then(r => alert(!r.message ? 'Success' : r.message))
-            .catch(r => alert(`Error ${r}`));
+            .then(r => success('Success'))
+            .catch(r => error(`Error ${r}`));
     }
 
     function removeParticipant(participant: string) {

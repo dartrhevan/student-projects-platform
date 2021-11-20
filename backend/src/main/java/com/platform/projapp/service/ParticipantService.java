@@ -24,7 +24,7 @@ public class ParticipantService {
     }
 
     public Participant createParticipant(Project project, ParticipantRequest participantRequest) {
-        var user = userService.findById(participantRequest.getUserId());
+        var user = userService.findByUserName(participantRequest.getUsername()).get();
         var participant = new Participant(project, false, user, projectRoleService.findById(participantRequest.getProjectRoleId()));
         participantRepository.save(participant);
         return participant;

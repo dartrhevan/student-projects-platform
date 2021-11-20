@@ -45,21 +45,13 @@ export function login(login: string, password: string) {
         },
         body: JSON.stringify({login, password})
     }).then(r => {
-        switch (r.status) {
-            case 401:
-            case 403:
-                return r.json().then(m => {
-                    throw new Error(`Введены невенрные данные`);
-                });
-            case 400:
-            case 404:
-            case 500:
-                return r.json().then(m => {
-                    throw new Error(`Ошибка авторизации: ${m.message}`);
-                });
-            default:
-                return r.json();
-        }
+        if (!r.ok)
+            return r.json().then(m => {
+                throw new Error(`Ошибка авторизации: ${m.message}`);
+            });
+        else
+            return r.json();
+
     }).then((r: GenericResponse<Login>) => {
         return r.data;
     });//.catch(r => (alert(r), null));

@@ -13,12 +13,21 @@ export function addProject(project: DetailedProject): Promise<CommonResponse> {
             'Content-Type': 'application/json',
             "Authorization": "Bearer " + sessionStorage.getItem(StorageKeys.AccessToken)
         },
-        body: JSON.stringify(project)
+        body: JSON.stringify({
+            name: project.title,
+            shortDescription: project.shortDescription,
+            fullDescription: project.fullDescription,
+            trackerLink: project.trackerUrl,
+            tags: project.tags.map(t => t.id),
+            maxParticipantsCount: project.maxParticipantsCount
+        })
     }).then(res => {
         if (res.ok) {
             return {}
         } else {
-            return res.json()
+            return res.json().then(r => {
+                throw new Error(`Error: ${r.message}`);
+            })
         }
     });
 }
@@ -30,7 +39,14 @@ export function editProject(project: DetailedProject): Promise<CommonResponse> {
             'Content-Type': 'application/json',
             "Authorization": "Bearer " + sessionStorage.getItem(StorageKeys.AccessToken)
         },
-        body: JSON.stringify(project)
+        body: JSON.stringify({
+            name: project.title,
+            shortDescription: project.shortDescription,
+            fullDescription: project.fullDescription,
+            trackerLink: project.trackerUrl,
+            tags: project.tags.map(t => t.id),
+            maxParticipantsCount: project.maxParticipantsCount
+        })
     }).then(res => {
         if (res.ok) {
             console.log(res.status)
@@ -42,9 +58,6 @@ export function editProject(project: DetailedProject): Promise<CommonResponse> {
 }
 
 export function getProjectsForWorkspace(query: ProjectQuery, active: boolean = false): Promise<GenericResponse<ProjectsResponse>> {
-    // return new Promise<ProjectsResponse>((res, rej) =>
-    //     res(new ProjectsResponse(['AAAAAA', 'B', 'C', 'D', 'E', 'F', 'A1', '1B', 'C1', 'D1', 'E1', '1F']
-    //         .map(s => new Project(s, query.workspaceId, s, s, [new Tag('Java', 0xE94907)])), 12)));
     return fetch(`/api/projects?workspaceId=${query.workspaceId}&tag=${query.tags.join(",")}&page=${query.pageable.pageNumber}&size=${query.pageable.pageSize}&active=${active}`, {
         headers: {
             "Authorization": "Bearer " + sessionStorage.getItem(StorageKeys.AccessToken)

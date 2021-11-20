@@ -10,7 +10,7 @@ export function getTagsReference(): Promise<Tag[]> {
         }
     }).then(r => r.json()).then((r: GenericResponse<{tags: Tag[]}>) => {
         if (!r.message) {
-            return r.data.tags.map((t: any) => new Tag(t.name, t.color));
+            return r.data.tags.map((t: any) => new Tag(t.name, t.color, t.id));
         }
         else throw new Error(r.message);
     });
@@ -18,7 +18,7 @@ export function getTagsReference(): Promise<Tag[]> {
     //     resolve(new GenericResponse([new Tag('Java', 0xE94907)]))));
 }
 
-export function addTagToReference(tagName: string, color: number): Promise<CommonResponse> {
+export function addTagToReference(tagName: string, color: number): Promise<GenericResponse<number>> {
     // return new Promise<CommonResponse>((resolve, reject) => resolve(new CommonResponse()));
     return fetch("/api/tags", {
         method: 'POST',
@@ -30,9 +30,11 @@ export function addTagToReference(tagName: string, color: number): Promise<Commo
     }).then(res => {
         if (res.ok) {
             console.log(res.status)
-            return {};
-        } else {
             return res.json();
+        } else {
+            return res.json().then(r => {
+                throw new Error(`Error ${r.message}`)
+            });
         }
     });
 }
