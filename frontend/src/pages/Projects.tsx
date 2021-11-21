@@ -19,6 +19,7 @@ import {getInviteForWorkspace} from "../api/workspaces";
 import {WorkspaceAssociation} from "../model/dto/ProjectsResponse";
 import getUsername from "../hooks/getUsername";
 import Tag from "../model/Tag";
+import {useError} from "../hooks/logging";
 
 
 interface ProjectsParams {//TODO: remove
@@ -50,14 +51,20 @@ export default function Projects() {
 
     const dispatch = useDispatch();
 
+    const error = useError();
+
+    function updateData(tags: Tag[] = [], active = false) {
+        getProjectsForWorkspace(new ProjectQuery(tags.map(t => t.id), new Pageable(pageNumber, pageSize), workspaceId, active))
+            .then(r => {
+                setData(r.data.projects.map(p => new Project(p.id, p.workSpaceId, p.title, p.description, p.tags, p.status)));
+                setRole(r.data.role);
+                dispatch(initPaging(r.data.totalCount, pageSize, pageNumber));
+            }).catch(error);
+    }
+
     useEffect(() => {
         if (workspaceId)
-            getProjectsForWorkspace(new ProjectQuery(tags.map(t => t.id), new Pageable(pageNumber, pageSize), workspaceId, activeOnly))
-                .then(r => {
-                    setData(r.data.projects);
-                    setRole(r.data.role);
-                    dispatch(initPaging(r.data.totalCount, pageSize, pageNumber));
-                });
+            updateData();
     }, [workspaceId, pageNumber, pageSize]);//TODO: call back here
 
     const [openInvite, setOpenInvite] = useState(false);
@@ -77,7 +84,17 @@ export default function Projects() {
         setOpenInvite(false);
     }
 
-    return (<BadgePage checkBoxes={[new CheckBoxInfo('Показать только активные', setActiveOnly)]}
+    const tagsUpdate = (t: Tag[]) => {
+        setTags(t);
+        updateData(t, activeOnly);
+    }
+
+    const activeUpdate = (a: boolean) => {
+        setActiveOnly(a);
+        updateData(tags, a);
+    }
+
+    return (<BadgePage checkBoxes={[new CheckBoxInfo('Показать только активные', activeUpdate)]}
                        additionalButtons={(<>
                            <WorkspaceSettings workspaceId={workspaceId}/>
                            {role === WorkspaceAssociation.ORGANIZER ?
@@ -129,6 +146,6 @@ export default function Projects() {
                        title={workspaceTitle ? `Проекты из "${workspaceTitle}"` : `Проекты "${user?.user.username}"`}
                        badgeData={data} squared={false}
                        href={i => `/project?projectId=${i.id}&workspaceId=${workspaceId}`}
-                       addTitle='Создать' onSetTags={setTags}
-                       addOnClick={() => window.location.href = `/project?isNew&workspaceId=${workspaceId}`}/>);
-}
+                       addTitle='Создать' onSetTags={tagsUpdate}
+        addOnClick={() => window.location.href = `/project?isNew&workspaceId=${workspaceId}`}/>);
+    }

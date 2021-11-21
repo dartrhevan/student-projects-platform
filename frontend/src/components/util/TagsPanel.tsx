@@ -31,9 +31,6 @@ interface ITagsPanelProps {
     values?: Tag[]
 }
 
-// const stub = () => {
-// };
-
 export default function TagsPanel(
     {
         onSetTag,
@@ -46,25 +43,18 @@ export default function TagsPanel(
 
     const tagsReference = useSelector(getTagsRef);
     const dispatch = useDispatch();
-    // const [tagsReference, setTagsReference] = useState(values);
+
     const [tags, setTags] = useState(values);
     const [tag, setTag] = React.useState('');
 
-    // useEffect(() => {
-    //     setTags(values);
-    // }, [values]);
+    const v = values.map(t => t.name)[0];
 
-    const v = values.map(t => t.name)[0]; //TODO: rewrite
     function setTagsReference(r: Tag[]) {
         dispatch(setTagsRef(r));
     }
 
     useEffect(() => {
         setTags(values);
-        // getTagsReference()
-        //     .then(r => {
-        //         setTagsReference(r);
-        //     }).catch(console.log);
     }, [v]);
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => setTag(event.target.value);
@@ -94,7 +84,11 @@ export default function TagsPanel(
         }
     };
 
-    const handleDelete = (toDelete: string) => setTags(tags?.filter(t => t.name !== toDelete));
+    const handleDelete = (toDelete: string) => {
+        const newTags = tags?.filter(t => t.name !== toDelete);
+        setTags(newTags);
+        onSetTag(newTags);
+    };
 
     return (
         <>

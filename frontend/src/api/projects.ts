@@ -1,4 +1,4 @@
-import Project, {DetailedProject, Participant} from "../model/Project";
+import Project, {DetailedProject, Participant, ProjectStatus} from "../model/Project";
 import CommonResponse from "../model/dto/CommonResponse";
 import ProjectQuery from "../model/dto/ProjectQuery";
 import ProjectsResponse from "../model/dto/ProjectsResponse";
@@ -45,7 +45,8 @@ export function editProject(project: DetailedProject): Promise<CommonResponse> {
             fullDescription: project.fullDescription,
             trackerLink: project.trackerUrl,
             tags: project.tags.map(t => t.id),
-            maxParticipantsCount: project.maxParticipantsCount
+            maxParticipantsCount: project.maxParticipantsCount,
+            status: project.status
         })
     }).then(res => {
         if (res.ok) {
@@ -57,12 +58,19 @@ export function editProject(project: DetailedProject): Promise<CommonResponse> {
     });
 }
 
-export function getProjectsForWorkspace(query: ProjectQuery, active: boolean = false): Promise<GenericResponse<ProjectsResponse>> {
-    return fetch(`/api/projects?workspaceId=${query.workspaceId}&tag=${query.tags.join(",")}&page=${query.pageable.pageNumber}&size=${query.pageable.pageSize}&active=${active}`, {
+export function getProjectsForWorkspace(query: ProjectQuery): Promise<GenericResponse<ProjectsResponse>> {
+    return fetch(`/api/projects?workspaceId=${query.workspaceId}&tag=${query.tags.join(",")}&page=${query.pageable.pageNumber}&size=${query.pageable.pageSize}&active=${query.showOnlyActive}`, {
         headers: {
             "Authorization": "Bearer " + sessionStorage.getItem(StorageKeys.AccessToken)
         }
-    }).then(r => r.json());
+    }).then(r => {
+        if (r.ok)
+            return r.json();
+        else
+            return r.json().then(r => {
+                throw new Error(`Error: ${r.message}`)
+            });
+    });
 }
 
 export function deleteProject(projectId: string) {
@@ -77,7 +85,9 @@ export function deleteProject(projectId: string) {
             console.log(res.status)
             return {}
         } else {
-            return res.json()
+            return res.json().then(r => {
+               throw new Error(`Error: ${r.message}`)
+            });
         }
     });
 }

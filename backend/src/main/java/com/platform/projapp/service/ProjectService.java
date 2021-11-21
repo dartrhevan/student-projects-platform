@@ -74,6 +74,7 @@ public class ProjectService {
         project.setTrackerLink(projectRequest.getTrackerLink());
         project.setMaxParticipantsCount(projectRequest.getMaxParticipantsCount());
         project.setTags(tagsService.findAllByIdIn(projectRequest.getTags()));
+        project.setStatus(projectRequest.getStatus());
         projectRepository.save(project);
     }
 

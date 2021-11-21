@@ -49,7 +49,7 @@ export default function DefaultBadge({id, title, href, description, tags = [], l
     //     dispatch(openProjectMenuAction(id)); //TODO: change
     // };
     const tagsReference = useSelector(getTagsReferenceMap);
-    const tagsR = tags.map(t => tagsReference[t.toString()]);
+    const tagsR = tags.map(t => tagsReference[t.toString()]).filter(t => t !== undefined);
     return (
         <Card className={clsx({[classes.root]: true, [classes.squared]: squared, [classes.rectangle]: !squared})}>
             <CardActionArea className={classes.area} href={href as string}>

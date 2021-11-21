@@ -135,12 +135,12 @@ export default function ProjectDetailedPage() {
                 getProjectInfo(projectId as string, workspaceId as string)
                     .then(r => {
                         const proj: DetailedProject = DetailedProject.fromObject(r.data);
-                        proj.tags = r.data.tags.map(t => tagsReference[t.toString()]);
+                        proj.tags = r.data.tags.map(t => tagsReference[t.toString()]).filter(t => t !== undefined);
                         setProject(proj);
                     }).catch(console.log)
             }
         }, //TODO: catch
-        [workspaceId, projectId, isNew]);
+        [workspaceId, projectId, isNew, tagsReference]);
 
     console.log('render with')
     console.log(project)
