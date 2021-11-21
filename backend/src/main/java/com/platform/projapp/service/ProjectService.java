@@ -49,8 +49,8 @@ public class ProjectService {
     }
 
     public Page<Project> findAllByWorkspaceAndTagsInTags(Workspace workspace, Set<Tags> tags, Pageable pageable, boolean active) {
-        return active ? projectRepository.findAllByWorkspaceAndTagsInTags(workspace, tags, pageable)
-                : projectRepository.findAllByWorkspaceAndTagsInTags(workspace, tags, pageable, ACTIVE_STATUSES);
+        return active ? projectRepository.findAllByWorkspaceAndTagsInTags(workspace, tags, pageable, ACTIVE_STATUSES)
+                : projectRepository.findAllByWorkspaceAndTagsInTags(workspace, tags, pageable);
     }
 
     public void createProject(User user, Workspace workspace, ProjectRequest projectRequest) {

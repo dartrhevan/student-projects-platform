@@ -2,10 +2,10 @@ import Pageable from "../model/Pageable";
 import Workspace, {WorkspaceSettings} from "../model/Workspace";
 import CommonResponse from "../model/dto/CommonResponse";
 import GenericResponse from "../model/dto/GenericResponse";
-import PagingState from "../store/state/PagingState";
 import Invite from "../model/dto/Invite";
 import ScoreDTO from "../model/dto/ScoreDTO";
 import {StorageKeys} from "../utils/StorageKeys";
+import {getDefaultUploadHandler, getDefaultDownloadHandler} from "../utils/utils";
 
 
 export function getUsersWorkspaces(pageable: Pageable): Promise<GenericResponse<{ totalCount: number, workspaces: Workspace[] }>> {
@@ -13,18 +13,7 @@ export function getUsersWorkspaces(pageable: Pageable): Promise<GenericResponse<
         headers: {
             "Authorization": "Bearer " + sessionStorage.getItem(StorageKeys.AccessToken)
         }
-    }).then(r => {
-        console.log(`Status ${r.status}`)
-        if (r.ok)
-            return r.json()
-        else
-            throw new Error("error")
-    })
-    // return new Promise<GenericResponse<{p: PagingState,w: Workspace[]}>>((res, rej) =>
-    //     res(new GenericResponse({w:[ new Workspace('0', 'PPP'),
-    //             new Workspace('0', 'Standard'), new Workspace('0', 'WERTYU'),
-    //             new Workspace('0', 'bnm'), new Workspace('0', 'xx')],
-    //         p: new PagingState(20, 10, 0)})))
+    }).then(getDefaultDownloadHandler('Ошибка загрузки'));
 }
 
 /**
@@ -43,14 +32,7 @@ export function addNewWorkspace(title: string, sprintsCount: number, sprintsLeng
             "Authorization": "Bearer " + sessionStorage.getItem(StorageKeys.AccessToken)
         },
         body: JSON.stringify({title, sprintLength: sprintsLength, sprintCount: sprintsCount, startDate: startDate.toLocaleDateString()})
-    }).then(res => {
-        if (res.ok) {
-            console.log(`Status ${res.status}`)
-            return {};
-        } else {
-            return res.json();
-        }
-    });
+    }).then(getDefaultUploadHandler());
 }
 
 /**
@@ -69,13 +51,7 @@ export function updateWorkspace(id: string, title: string, sprintsCount: number,
             "Authorization": "Bearer " + sessionStorage.getItem(StorageKeys.AccessToken)
         },
         body: JSON.stringify({title, sprintsLength, sprintsCount, startDate})
-    }).then(res => {
-        if (res.ok) {
-            return {}
-        } else {
-            return res.json();
-        }
-    });
+    }).then(getDefaultUploadHandler());
 }
 
 export function deleteWorkspace(id: string) {
@@ -86,14 +62,7 @@ export function deleteWorkspace(id: string) {
             'Content-Type': 'application/json',
             "Authorization": "Bearer " + sessionStorage.getItem(StorageKeys.AccessToken)
         }
-    }).then(res => {
-        if (res.ok) {
-            console.log(res.status)
-            return {}
-        } else {
-            return res.json();
-        }
-    });
+    }).then(getDefaultUploadHandler());
 }
 
 

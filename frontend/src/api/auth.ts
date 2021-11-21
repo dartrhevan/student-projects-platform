@@ -2,6 +2,7 @@ import UserProfile from "../model/UserProfile";
 import GenericResponse from "../model/dto/GenericResponse";
 import {Login, LoginState} from "../store/state/LoginState";
 import {StorageKeys} from "../utils/StorageKeys";
+import {getDefaultDownloadHandler} from "../utils/utils";
 
 /**
  * @return current username
@@ -12,14 +13,7 @@ export function getCurrentUser() {
             headers: {
                 "Authorization": "Bearer " + sessionStorage.getItem(StorageKeys.AccessToken)
             }
-        }).then(r => {
-            if (!r.ok) {
-                return r.json().then(m => {
-                    throw new Error(`Not authorized ${m.message}`);
-                });
-            }
-            return r.json();
-        });
+        }).then(getDefaultDownloadHandler('Not authorized'));
 }
 
 /**
@@ -30,7 +24,7 @@ export function getCurrentUserProfile(): Promise<GenericResponse<UserProfile>> {
         headers: {
             "Authorization": "Bearer " + sessionStorage.getItem(StorageKeys.AccessToken)
         }
-    }).then(r => r.json()).catch(alert);//TODO: civil & universal error handling
+    }).then(r => r.json())
 }
 
 /**
@@ -44,26 +38,11 @@ export function login(login: string, password: string) {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({login, password})
-    }).then(r => {
-        if (!r.ok)
-            return r.json().then(m => {
-                throw new Error(`Ошибка авторизации: ${m.message}`);
-            });
-        else
-            return r.json();
-
-    }).then((r: GenericResponse<Login>) => {
-        return r.data;
-    });//.catch(r => (alert(r), null));
-    // return new Promise<GenericResponse<LoginState>>((res, rej) => res("vovan")); //TODO: implement
+    }).then(getDefaultDownloadHandler('Ошибка авторизации'))
+        .then((r: GenericResponse<Login>) => {
+            return r.data;
+        });
 }
-
-/**
- * @return nothing
- */
-// export function logout() {
-//     return new Promise<string>((res, rej) => res('')); //TODO: implement
-// }
 
 export function refreshToken() {
     return new Promise<string>((res, rej) => res('')); //TODO: implement
@@ -90,16 +69,7 @@ export function register(user: UserProfile, password: string) {
             skills: user.skills,
             password
         })
-    }).then(r => {
-        if (r.ok) {
-            return r.json();
-        } else {
-            // const obj = (r.json() as any);
-            throw "Error auth";
-        }
-    }).then((r: GenericResponse<Login>) => {
-        return r.success ? (alert(r.message), null) : r.data;
-    }).catch(r => (alert(r), null));//new Promise<string>((res, rej) => res("vovan")); //TODO: implement
+    }).then(getDefaultDownloadHandler('Ошибка регистрации'));
 }
 
 /**

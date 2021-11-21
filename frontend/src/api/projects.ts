@@ -4,6 +4,7 @@ import ProjectQuery from "../model/dto/ProjectQuery";
 import ProjectsResponse from "../model/dto/ProjectsResponse";
 import GenericResponse from "../model/dto/GenericResponse";
 import {StorageKeys} from "../utils/StorageKeys";
+import {getDefaultUploadHandler, getDefaultDownloadHandler} from "../utils/utils";
 
 
 export function addProject(project: DetailedProject): Promise<CommonResponse> {
@@ -48,14 +49,7 @@ export function editProject(project: DetailedProject): Promise<CommonResponse> {
             maxParticipantsCount: project.maxParticipantsCount,
             status: project.status
         })
-    }).then(res => {
-        if (res.ok) {
-            console.log(res.status)
-            return {}
-        } else {
-            return res.json()
-        }
-    });
+    }).then(getDefaultUploadHandler());
 }
 
 export function getProjectsForWorkspace(query: ProjectQuery): Promise<GenericResponse<ProjectsResponse>> {
@@ -63,14 +57,7 @@ export function getProjectsForWorkspace(query: ProjectQuery): Promise<GenericRes
         headers: {
             "Authorization": "Bearer " + sessionStorage.getItem(StorageKeys.AccessToken)
         }
-    }).then(r => {
-        if (r.ok)
-            return r.json();
-        else
-            return r.json().then(r => {
-                throw new Error(`Error: ${r.message}`)
-            });
-    });
+    }).then(getDefaultDownloadHandler());
 }
 
 export function deleteProject(projectId: string) {
@@ -80,16 +67,7 @@ export function deleteProject(projectId: string) {
         headers: {
             "Authorization": "Bearer " + sessionStorage.getItem(StorageKeys.AccessToken)
         }
-    }).then(res => {
-        if (res.ok) {
-            console.log(res.status)
-            return {}
-        } else {
-            return res.json().then(r => {
-               throw new Error(`Error: ${r.message}`)
-            });
-        }
-    });
+    }).then(getDefaultUploadHandler());
 }
 
 //TODO: change all!!!
@@ -100,9 +78,4 @@ export function getProjectInfo(projectId: string, workspaceId: string): Promise<
             "Authorization": "Bearer " + sessionStorage.getItem(StorageKeys.AccessToken)
         }
     }).then(r => r.json());
-    // return new Promise<GenericResponse<DetailedProject>>((res, rej) => res(new GenericResponse(
-    //     new DetailedProject(workspaceId, projectId, 'Project', ' Blabla', ' Blabla',
-    //         'https://www.atlassian.com/ru/software/jira',
-    //         [new Participant('ren', 'back'), new Participant("VV", 'front')],
-    //         [new Tag('Java', 0xE94907), new Tag('React')]))));
 }

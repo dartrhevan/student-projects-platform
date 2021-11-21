@@ -21,6 +21,9 @@ import Autocomplete from "@mui/material/Autocomplete";
 import Tag from "../../model/Tag";
 import {addRoleToReference, getRolesReference} from "../../api/reference";
 import RolesInput from "./RolesInput";
+import {useError, useSuccess} from "../../hooks/logging";
+import GenericResponse from "../../model/dto/GenericResponse";
+import {Login} from "../../store/state/LoginState";
 
 const useStyles = makeStyles(theme => ({
     def: {
@@ -93,25 +96,24 @@ export default function UserProfileComponent({user, title}: UserProfileProps) {
     }, [user]);
     const passwordLabels = getPasswordLabel(user);
 
-    console.log('name');
+    const error = useError();
+    // const success = useSuccess();
 
-    console.log(name);
     const dispatch = useDispatch();
     const onRegister = () => register(new UserProfile(name, surname, username, email, messenger, comment, group, roles, tags), password)
-        .then(r => {//TODO: extract common part from login
-            dispatch(setLoginAction(r));
+        .then((r: GenericResponse<Login>) => {
+            dispatch(setLoginAction(r.data));
             window.location.href = '/';
-        }).catch(alert); //TODO: implement correct catch;
+        }).catch(error);
 
     const allFilledAndValid = allNotEmpty(username, password, passwordConfirm) && email.match(emailPattern) && username.length >= 6 && password.length >= 6;
 
     function onUpdate() {
         update(new UserProfile(name, surname, username, email, messenger, comment, group, roles, tags), password, oldPassword)
-            .then(r => {//TODO: extract common part from login
-                // dispatch(setLoginAction(r));
+            .then(r => {
                 alert('Success');
                 window.location.href = '/';
-            }).catch(alert); //TODO: implement correct catch;
+            }).catch(error);
     }
 
 

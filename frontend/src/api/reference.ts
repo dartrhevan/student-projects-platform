@@ -2,24 +2,18 @@ import GenericResponse from "../model/dto/GenericResponse";
 import Tag from "../model/Tag";
 import CommonResponse from "../model/dto/CommonResponse";
 import {StorageKeys} from "../utils/StorageKeys";
+import {defErrorHandler, getDefaultDownloadHandler} from "../utils/utils";
 
 export function getTagsReference(): Promise<Tag[]> {
     return fetch("/api/tags", {
         headers: {
             "Authorization": "Bearer " + sessionStorage.getItem(StorageKeys.AccessToken)
         }
-    }).then(r => r.json()).then((r: GenericResponse<{tags: Tag[]}>) => {
-        if (!r.message) {
-            return r.data.tags.map((t: any) => new Tag(t.id, t.name, t.color));
-        }
-        else throw new Error(r.message);
-    });
-    // return new Promise<GenericResponse<Tag[]>>(((resolve, reject) =>
-    //     resolve(new GenericResponse([new Tag('Java', 0xE94907)]))));
+    }).then(getDefaultDownloadHandler()).then((r: GenericResponse<{ tags: Tag[] }>) =>
+        r.data.tags.map((t: any) => new Tag(t.id, t.name, t.color)));
 }
 
 export function addTagToReference(tagName: string, color: number): Promise<GenericResponse<number>> {
-    // return new Promise<CommonResponse>((resolve, reject) => resolve(new CommonResponse()));
     return fetch("/api/tags", {
         method: 'POST',
         headers: {
@@ -29,12 +23,9 @@ export function addTagToReference(tagName: string, color: number): Promise<Gener
         body: JSON.stringify({tagName, color})
     }).then(res => {
         if (res.ok) {
-            console.log(res.status)
             return res.json();
         } else {
-            return res.json().then(r => {
-                throw new Error(`Error ${r.message}`)
-            });
+            return defErrorHandler(res, 'Ошибка отправки данных');
         }
     });
 }
