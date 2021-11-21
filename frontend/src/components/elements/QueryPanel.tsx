@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button, makeStyles, Paper} from "@material-ui/core";
+import {Button, IconButton, makeStyles, Paper, Tooltip} from "@material-ui/core";
 import {Add} from "@material-ui/icons";
 import WorkspaceSettings from "./WorkspaceSettings";
 import TagsPanel from "../util/TagsPanel";
@@ -24,7 +24,7 @@ const useStyles = makeStyles(theme => ({
     addButton: {
         maxHeight: '70%',
         minHeight: '50px',
-        width: '100px',
+        width: '50px',
         flexShrink: 0
     },
     typ: {
@@ -41,7 +41,10 @@ interface QueryProps {
     onSetTags?: (t: Tag[]) => void
 }
 
-export default function QueryPanel({onSetTags = (s => {}), additionalButtons, buttonTitle, buttonOnClick, showDialog, showTags}: QueryProps) {
+export default function QueryPanel({
+                                       onSetTags = (s => {
+                                       }), additionalButtons, buttonTitle, buttonOnClick, showDialog, showTags
+                                   }: QueryProps) {
     const classes = useStyles();
     const mobile = isMobile();
 
@@ -52,9 +55,11 @@ export default function QueryPanel({onSetTags = (s => {}), additionalButtons, bu
         </> : <div className={clsx({[classes.queryPanel]: true, [classes.mobilePanel]: mobile})}/>}
         {showDialog ? <WorkspaceSettings/> : <></>}
         {additionalButtons}
-        <Button className={classes.addButton} variant='outlined'
-                onClick={buttonOnClick}>
-            <Add/> {buttonTitle}
-        </Button>
+
+        <Tooltip title={buttonTitle}>
+            <IconButton className={classes.addButton} onClick={buttonOnClick}>
+                <Add/>
+            </IconButton>
+        </Tooltip>
     </Paper>)
 }

@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {addProject, editProject, getProjectInfo} from "../api/projects";
+import {addProject, deleteProject, editProject, getProjectInfo} from "../api/projects";
 import {DetailedProject, ProjectRole, ProjectStatus} from "../model/Project";
 import {Button, makeStyles, Paper} from "@material-ui/core";
 import queryString from 'query-string';
@@ -21,6 +21,8 @@ import {useError, useSuccess, useWarn} from "../hooks/logging";
 import Tag from "../model/Tag";
 import {useSelector} from "react-redux";
 import getTagsRef, {getTagsReferenceMap} from "../hooks/getTagsRef";
+import ConfirmationDialog from "../components/util/ConfirmationDialog";
+import {deleteWorkspace} from "../api/workspaces";
 
 const useStyles = makeStyles(theme => ({
     paper: {
@@ -57,16 +59,33 @@ const useStyles = makeStyles(theme => ({
 
 const RoleSpecificButton = ({project, onSubmit, enabled, isNew}:
                                 { isNew: boolean, enabled?: boolean, project?: DetailedProject, onSubmit: () => void }) => {
+
+    const [deleteDialog, setDeleteDialog] = useState(false);
+    const error = useError();
+
+    function onDelete() {
+        deleteProject(project?.id as string)
+            .then(r => window.location.href = '/workspaces')
+            .catch(error);
+
+    }
+
     switch (project?.projectRole) {
         case ProjectRole.OWNER:
             return (
                 <>
+                    <ConfirmationDialog open={deleteDialog} onClose={() => setDeleteDialog(false)}
+                                        label="удалить проект" onSubmit={onDelete}/>
                     <Button href={`/users?projectId=${project.id}&workspaceId=${project.workSpaceId}`}>
                         Найти участника
                     </Button>
                     <Button href={`/project_plan?projectId=${project.id}&workspaceId=${project.workSpaceId}`}>
                         Просмотр плана
                     </Button>
+                    {!isNew ? (
+                        <Button onClick={() => setDeleteDialog(true)}>
+                            Удалить
+                        </Button>) : (<></>)}
                     <Button variant='contained' disabled={!enabled} onClick={onSubmit}>
                         Подтвердить изменения
                     </Button>
@@ -170,7 +189,13 @@ export default function ProjectDetailedPage() {
                 <EditableField isNew={isNew} left label='Краткое описание' inputProps={{required: true}}
                                project={project} field={p => p?.shortDescription}
                                onChange={t => setProject((project as DetailedProject).withShortDescription(t))}/>
-                <div style={{width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'center', flexWrap: 'wrap'}}>
+                <div style={{
+                    width: '100%',
+                    display: 'flex',
+                    flexDirection: 'row',
+                    justifyContent: 'center',
+                    flexWrap: 'wrap'
+                }}>
                     <TagsPanel onSetTag={tags => setProject(project?.withTags(tags))}
                                editable={project?.projectRole === ProjectRole.OWNER} values={project?.tags}/>
                 </div>

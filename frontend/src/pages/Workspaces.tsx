@@ -4,12 +4,12 @@ import {openDialog} from "../store/actions/dialog/dialog";
 import {shallowEqual, useDispatch, useSelector} from "react-redux";
 import Pageable from "../model/Pageable";
 import {initPaging} from "../store/actions/paging/setPagingData";
-import {useParams} from "react-router-dom";
+import GroupAddIcon from '@mui/icons-material/GroupAdd';
 import getPaging from "../hooks/getPaging";
 import Workspace from "../model/Workspace";
 import {attachToWorkspace, getUsersWorkspaces} from "../api/workspaces";
 import {Dialog, DialogActions, DialogContent, DialogTitle, TextField, Typography} from "@mui/material";
-import {Button, makeStyles} from "@material-ui/core";
+import {Button, IconButton, makeStyles, Tooltip} from "@material-ui/core";
 import {allNotEmpty, getOnFieldChange} from "../utils/utils";
 import {useError} from "../hooks/logging";
 
@@ -31,7 +31,7 @@ const useStyles = makeStyles(theme => ({
     button: {
         maxHeight: '70%',
         minHeight: '50px',
-        width: '170px',
+        width: '50px',
         margin: '10px'
     }
 }));
@@ -96,10 +96,11 @@ export default function Workspaces() {
                         <Button disabled={!allNotEmpty(workspaceCode)} onClick={onDialogClose}>Подтвердить</Button>
                     </DialogActions>
                 </Dialog>
-                <Button variant='outlined' className={classes.button}
-                        onClick={() => setOpenAttachDialog(true)}>
-                    Присоединиться
-                </Button>
+                <Tooltip title='Присоединиться'>
+                    <IconButton className={classes.button} onClick={() => setOpenAttachDialog(true)}>
+                        <GroupAddIcon/>
+                    </IconButton>
+                </Tooltip>
             </>)}
         href={s => `/projects/${(s as Workspace).id}/${(s as Workspace).title}`}/>);
 }

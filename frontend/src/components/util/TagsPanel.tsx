@@ -100,5 +100,5 @@ export default function TagsPanel(
                                       sx={{backgroundColor: t.backgroundColor, color: t.fontColor, margin: '5px 10px'}}
                                       onDelete={editable ? () => handleDelete(t.name) : undefined}/>))}
             </div>
-        </>)
+        </>);
 }
