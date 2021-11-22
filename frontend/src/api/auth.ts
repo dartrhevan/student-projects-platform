@@ -3,6 +3,7 @@ import GenericResponse from "../model/dto/GenericResponse";
 import {Login, LoginState} from "../store/state/LoginState";
 import {StorageKeys} from "../utils/StorageKeys";
 import {getDefaultDownloadHandler} from "../utils/utils";
+import RefreshToken from "../model/dto/RefreshToken";
 
 /**
  * @return current username
@@ -44,10 +45,6 @@ export function login(login: string, password: string) {
         });
 }
 
-export function refreshToken() {
-    return new Promise<string>((res, rej) => res('')); //TODO: implement
-}
-
 /**
  * @return current username
  */
@@ -79,3 +76,27 @@ export function update(user: UserProfile, password?: string, newPassword?: strin
     console.log(user);
     return new Promise<string>((res, rej) => res("vovan")); //TODO: implement
 }
+
+
+export function refreshToken(): Promise<GenericResponse<RefreshToken>> {
+    return fetch(`/api/auth/refreshtoken`, {
+        headers: {
+            "Authorization": "Bearer " + sessionStorage.getItem(StorageKeys.AccessToken)
+        },
+        body: `tokenRefresh: ${sessionStorage.getItem(StorageKeys.RefreshToken)}`
+    }).then(getDefaultDownloadHandler());
+}
+
+const REFRESH_TOKEN_TIMEOUT = 2000000;
+
+function refreshTokenScheduler() {//TODO: test
+    if (sessionStorage.getItem(StorageKeys.AccessToken) !== null) {
+        refreshToken().then(r => r.data).then(r => {
+            sessionStorage.setItem(StorageKeys.AccessToken, r.accessToken);
+            sessionStorage.setItem(StorageKeys.RefreshToken, r.refreshToken);
+        });
+    }
+    setTimeout(refreshTokenScheduler, REFRESH_TOKEN_TIMEOUT);
+}
+
+setTimeout(refreshTokenScheduler, REFRESH_TOKEN_TIMEOUT);
