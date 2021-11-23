@@ -80,20 +80,23 @@ export function update(user: UserProfile, password?: string, newPassword?: strin
 
 export function refreshToken(): Promise<GenericResponse<RefreshToken>> {
     return fetch(`/api/auth/refreshtoken`, {
+        method: 'POST',
         headers: {
+            'Content-Type': 'application/json',
             "Authorization": "Bearer " + sessionStorage.getItem(StorageKeys.AccessToken)
         },
-        body: `tokenRefresh: ${sessionStorage.getItem(StorageKeys.RefreshToken)}`
-    }).then(getDefaultDownloadHandler());
+        body: `{"tokenRefresh": "${sessionStorage.getItem(StorageKeys.RefreshToken)}"}`
+    }).then(getDefaultDownloadHandler()).catch(console.log);
 }
 
 const REFRESH_TOKEN_TIMEOUT = 2000000;
 
-function refreshTokenScheduler() {//TODO: test
+function refreshTokenScheduler() {
     if (sessionStorage.getItem(StorageKeys.AccessToken) !== null) {
         refreshToken().then(r => r.data).then(r => {
             sessionStorage.setItem(StorageKeys.AccessToken, r.accessToken);
             sessionStorage.setItem(StorageKeys.RefreshToken, r.refreshToken);
+            console.log(`Token refreshed access: ${r.accessToken} refresh: ${r.refreshToken}`);
         });
     }
     setTimeout(refreshTokenScheduler, REFRESH_TOKEN_TIMEOUT);
