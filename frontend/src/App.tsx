@@ -58,7 +58,7 @@ function App() {
             console.log(r);
             error('Auth not valid');
             dispatch(logoutAction());
-            // window.location.reload();
+            window.location.href = '/';
         }); // TODO: may be move somewhere
     }, [error, dispatch]);
 

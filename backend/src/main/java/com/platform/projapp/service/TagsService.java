@@ -24,14 +24,12 @@ public class TagsService {
 
     public ResponseEntity<?> createTag(CreateTagRequest req) {
         GeneralResponse<Long> response = new GeneralResponse<>();
-        List<ErrorInfo> errors = new ArrayList<>();
         if (!tagsRepository.existsByName(req.getTagName())) {
             Tags tag = new Tags(req.getTagName(), req.getColor());
             tagsRepository.save(tag);
             return ResponseEntity.ok(response.withData(tag.getId()));
         } else {
-            errors.add(ErrorConstants.TAG_IS_BUSY);
-            return ResponseEntity.badRequest().body(response.withErrors(errors));
+            return ResponseEntity.badRequest().body(response.withError(ErrorConstants.TAG_IS_BUSY));
         }
     }
 

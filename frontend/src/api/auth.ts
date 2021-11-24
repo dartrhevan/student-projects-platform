@@ -10,7 +10,7 @@ import RefreshToken from "../model/dto/RefreshToken";
  */
 export function getCurrentUser() {
     if (sessionStorage.getItem(StorageKeys.AccessToken))
-        return fetch('/api/auth/currentuser', {
+        return fetch('/api/users/currentuser', {
             headers: {
                 "Authorization": "Bearer " + sessionStorage.getItem(StorageKeys.AccessToken)
             }
@@ -21,7 +21,7 @@ export function getCurrentUser() {
  * @return current user profile
  */
 export function getCurrentUserProfile(): Promise<GenericResponse<UserProfile>> {
-    return fetch('/api/auth/userprofile', {
+    return fetch('/api/users/', {
         headers: {
             "Authorization": "Bearer " + sessionStorage.getItem(StorageKeys.AccessToken)
         }
@@ -64,6 +64,7 @@ export function register(user: UserProfile, password: string) {
             email: user.email,
             roles: user.roles,
             skills: user.skills,
+            messenger: user.messenger,
             password
         })
     }).then(getDefaultDownloadHandler('Ошибка регистрации'));

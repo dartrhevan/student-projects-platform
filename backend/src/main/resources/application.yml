@@ -12,6 +12,7 @@ spring:
     username: ${DB_USERNAME:project_platform}
     password: ${DB_PASS:12345}
   jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
     generate-ddl: true
     show-sql: false
     hibernate:

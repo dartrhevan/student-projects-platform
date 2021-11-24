@@ -43,7 +43,7 @@ public class JwtHelper {
 
     public String generateJwtTokenFromUsername(String username) {
 
-        UserDetails userPrincipal = userService.findByUserName(username).get();
+        UserDetails userPrincipal = userService.findByUserName(username);
 
         return Jwts.builder()
                 .setSubject((userPrincipal.getUsername()))

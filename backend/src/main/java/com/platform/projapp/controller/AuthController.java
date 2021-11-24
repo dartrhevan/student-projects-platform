@@ -31,9 +31,9 @@ public class AuthController {
         var response = authService.authUser(authRequest.getLogin(), authRequest.getPassword());
         //return response.success() ? ResponseEntity.ok(response) : ResponseEntity.status(404).body(response);
         if (response.success()) return ResponseEntity.ok(response);
-        else if (response.message.equals(ErrorConstants.WRONG_PASSWORD))
+        else if (response.getMessage().equals(ErrorConstants.WRONG_PASSWORD))
             return ResponseEntity.status(401).body(response);
-        else if (response.message.equals(ErrorConstants.USERNAME_NOT_FOUND))
+        else if (response.getMessage().equals(ErrorConstants.USERNAME_NOT_FOUND))
             return ResponseEntity.status(404).body(response);
         else return ResponseEntity.status(500).body(response);
     }

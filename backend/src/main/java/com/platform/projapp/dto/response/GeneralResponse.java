@@ -16,7 +16,6 @@ import java.util.List;
 public class GeneralResponse<T> {
     private String message;
     private T data;
-    public String message;
 
     public GeneralResponse<T> withError(String message) {
         this.message = message;
