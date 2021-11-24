@@ -3,7 +3,7 @@ import {makeStyles, TextField} from "@material-ui/core";
 import clsx from 'clsx';
 import {Chip} from "@mui/material";
 import Tag from "../../model/Tag";
-import {getTagsReference} from "../../api/tags";
+import {addTagToReference, getTagsReference} from "../../api/reference";
 
 const useStyles = makeStyles(theme => ({
     chips: {
@@ -12,6 +12,7 @@ const useStyles = makeStyles(theme => ({
         alignItems: "center",
         flexWrap: 'wrap',
         margin: "10px",
+        minWidth: '100px'
     },
     input: {
         margin: "10px",
@@ -30,7 +31,13 @@ interface ITagsPanelProps {
 // const stub = () => {
 // };
 
-export default function TagsPanel({onSetTag, label = 'тэг', tagInputClasses = [], editable = true, values = []}: ITagsPanelProps) {
+export default function TagsPanel({
+                                      onSetTag,
+                                      label = 'тэг',
+                                      tagInputClasses = [],
+                                      editable = true,
+                                      values = []
+                                  }: ITagsPanelProps) {
     const classes = useStyles();
     const [tagsReference, setTagsReference] = useState(values);
     const [tags, setTags] = useState(values);
@@ -55,9 +62,12 @@ export default function TagsPanel({onSetTag, label = 'тэг', tagInputClasses =
                 if (newTag === undefined) {
                     newTag = new Tag(tag);
                 }
-                const newTags = [...tags, newTag];
-                onSetTag(newTags)
-                setTags(newTags);
+                addTagToReference(newTag.text, newTag.colour)
+                    .then(r => {
+                        const newTags = [...tags, newTag as Tag];
+                        onSetTag(newTags);
+                        setTags(newTags);
+                    }).catch(console.log);//TODO: catch
             }
             setTag('');
         }

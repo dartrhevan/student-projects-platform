@@ -5,7 +5,7 @@ import PagedResponse from "../model/dto/PagedResponse";
 export function getAllNotifications(pageNumber: number, pageSize: number) {
     //TODO: implement
     console.log('getAllNotification');
-    return new Promise<PagedResponse<Notification[]>>(
+    return new Promise<PagedResponse<Notification>>(
         (res, rej) => res(new PagedResponse([new Notification(
             '1', 'BlaBla', true, '10.10.2021', NotificationType.APPLIANCE)], 0, 1)));
 }

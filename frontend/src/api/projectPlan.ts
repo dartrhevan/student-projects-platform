@@ -1,5 +1,5 @@
 import GenericResponse from "../model/dto/GenericResponse";
-import Sprint, {ProjectPlan} from "../model/Sprint";
+import Sprint, {ProjectPlan, ResultComment} from "../model/Sprint";
 import CommonResponse from "../model/dto/CommonResponse";
 
 /**
@@ -11,8 +11,8 @@ import CommonResponse from "../model/dto/CommonResponse";
 export function getProjectPlan(projectId: string, workspaceId: string) {//TODO: implement
     return new Promise<GenericResponse<ProjectPlan>>((res, rej) => res(
         new GenericResponse(new ProjectPlan(
-            [new Sprint('1', new Date(), new Date(2021, 12, 19), 'To start', 'Excellent')],
-            'My project'))));
+            [new Sprint('1', new Date(), new Date(2021, 12, 19), 'To start',
+                'http://ya.ru', [new ResultComment('1', 'WERTYUI', 'YYY')])], 'My project'))));
 }
 
 /**
@@ -54,5 +54,10 @@ export function updateSprint(workspaceId: string, projectId: string, sprint: Spr
  */
 export function uploadPresentation(workspaceId: string, projectId: string, sprintId: string, presentation: File) {//TODO: implement
     console.log(presentation.name);
-    return new Promise<GenericResponse<string>>(resolve => resolve(new GenericResponse("")))
+    return new Promise<GenericResponse<string>>(resolve => resolve(new GenericResponse("")));
+}
+
+
+export function dropPlan(workspaceId: string, projectId: string) {
+    return new Promise<CommonResponse>(resolve => resolve(new CommonResponse()));
 }

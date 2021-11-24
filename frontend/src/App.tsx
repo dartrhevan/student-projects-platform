@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import './App.css';
 import Header from "./components/elements/Header";
 import {BrowserRouter, Route, Switch} from 'react-router-dom';
@@ -7,7 +7,7 @@ import Register from "./pages/Register";
 import Centered from "./components/util/Centered";
 import MainMenu from './components/elements/MainMenu';
 import Projects from "./pages/Projects";
-import {useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import Users from "./pages/Users";
 import Notifications from "./pages/Notifications";
 import Workspaces from './pages/Workspaces';
@@ -19,29 +19,56 @@ import Scores from "./pages/Scores";
 import {getCurrentUser} from "./api/auth";
 import setLoginAction from "./store/actions/auth/setLoginAction";
 import logoutAction from "./store/actions/auth/logoutAction";
+import Scoring from "./pages/Scoring";
+import {Snackbar} from "@mui/material";
+import {Alert} from "@mui/lab";
+import {hide} from "./store/actions/log/log";
+import {getLogState, useError, useInfo, useSuccess} from "./hooks/logging";
+import StartPage from "./pages/StartPage";
 
 function App() {
     // const dispatch = useDispatch();
     console.log("render Start")
     // const classes = useStyles();
     const dispatch = useDispatch();
-    getCurrentUser()?.then(r => {
-        console.log(r);
-        // return dispatch(setLoginAction(r));
-    }).catch(r => {
-        console.log(r);
-        dispatch(logoutAction());
-    }); // TODO: may be move somewhere
+
+    const error = useError();
+
+
+    useEffect(() => {
+        getCurrentUser()?.then(r => {
+            console.log(r);
+            // success('Fine');
+        }).catch(r => {
+            console.log(r);
+            error('Auth not valid');
+            dispatch(logoutAction());
+            // window.location.reload();
+        }); // TODO: may be move somewhere
+    }, [error, dispatch]);
+
+    const log = useSelector(getLogState);
+
+    function handleClose() {
+        dispatch(hide());
+    }
+
     return (
         <>
             <Header/>
             <MainMenu/>
+            <Snackbar open={log.text !== undefined} autoHideDuration={3000} onClose={handleClose}>
+                <Alert onClose={handleClose} severity={log.level} sx={{width: '100%'}}>
+                    {log.text}
+                </Alert>
+            </Snackbar>
             <Centered>
                 <BrowserRouter>
                     <Switch>
                         <Route component={Login} path='/authentication'/>
                         <Route component={Register} path='/registration'/>
                         <Route component={Projects} path='/projects/:workspaceId/:workspaceTitle'/>
+                        <Route component={Projects} path='/projects'/>
                         <Route component={Users} path='/users'/>
                         <Route component={Notifications} path='/notifications'/>
                         <Route component={ProjectDetailedPage} path='/project'/>
@@ -49,7 +76,9 @@ function App() {
                         <Route component={UserProfilePage} path='/profile'/>
                         <Route component={Scores} path='/scores/:workspaceId'/>
                         <Route component={Portfolio} path='/portfolio/:login'/>
-                        <Route component={Workspaces} path='/'/>
+                        <Route component={Scoring} path='/scoring/:workspaceId'/>
+                        <Route component={Workspaces} path='/workspaces'/>
+                        <Route component={StartPage} path='/'/>
                     </Switch>
                 </BrowserRouter>
             </Centered>

@@ -3,40 +3,44 @@ import {IBadge} from "../props.common/ListItemProps";
 import {allNotEmpty} from "../utils/utils";
 
 export enum ProjectRole {
-    OWNER,
-    PARTICIPANT,
-    MENTOR,
-    STRANGER
+    OWNER = 'OWNER',
+    PARTICIPANT = 'PARTICIPANT',
+    MENTOR = 'MENTOR',
+    STRANGER = 'STRANGER'
 }
 
 export enum ProjectStatus {
     NEW = 'Новый',
     IN_PROGRESS = "В разработке",
-    ENDED = "Завершён"
+    ENDED = "Завершён",
+    CANCELLED = "Отклонён",
+    MODIFYING = "На доработке"
 }
 
-const labelColors = new Map<ProjectStatus, string>();
-labelColors.set(ProjectStatus.ENDED, 'red');
-labelColors.set(ProjectStatus.IN_PROGRESS, '#e7540c');
+export const labelColors = new Map<ProjectStatus, string>();
+labelColors.set(ProjectStatus.ENDED, 'brown');
+labelColors.set(ProjectStatus.IN_PROGRESS, 'orange');
 labelColors.set(ProjectStatus.NEW, 'green');
+labelColors.set(ProjectStatus.CANCELLED, 'red');
+labelColors.set(ProjectStatus.MODIFYING, 'purple');
 
 export default class Project implements IBadge {
     constructor(public id: string, public workSpaceId: string, public title: string, public description: string,
-                public tags: Tag[], public status = ProjectStatus.NEW, public label = status,
-                public labelColor = labelColors.get(status) as string) {
+                public tags: Tag[], public status = ProjectStatus.IN_PROGRESS,
+                public label = status, public labelColor = labelColors.get(status) as string) {
     }
 }
 
 export class Participant {
-    constructor(public login: string, public role: string) {
+    constructor(public name: string, public username: string, public role: string) {
     }
 }
 
 export class DetailedProject {
     constructor(public workSpaceId: string, public id: string = '', public title: string = '',
                 public shortDescription: string = '', public fullDescription: string = '',
-                public participantLogins: string[] = [], public tags: Tag[] = [],
-                public role = ProjectRole.OWNER, public maxParticipantsCount = 5,
+                public trackerUrl = '', public participants: Participant[] = [], public tags: Tag[] = [],
+                public projectRole = ProjectRole.OWNER, public maxParticipantsCount = 5,
                 public status = ProjectStatus.NEW) {
     }
 
@@ -56,6 +60,12 @@ export class DetailedProject {
         return project;
     }
 
+    public withTrackerUrl(url: string) {
+        const project: DetailedProject = this.clone();
+        project.trackerUrl = url;
+        return project;
+    }
+
     public withShortDescription(descr: string) {
         const project: DetailedProject = this.clone();
         project.shortDescription = descr;
@@ -68,9 +78,15 @@ export class DetailedProject {
         return project;
     }
 
+    public withStatus(status: ProjectStatus) {
+        const project: DetailedProject = this.clone();
+        project.status = status;
+        return project;
+    }
+
     public removeParticipant(participant: string) {
         const project: DetailedProject = this.clone();
-        project.participants = project.participants.filter(p => p.login !== participant);
+        project.participants = project.participants.filter(p => p.username !== participant);
         return project;
     }
 
@@ -78,6 +94,14 @@ export class DetailedProject {
         const cloneObj = new (this.constructor as any)(this.workSpaceId);
         for (const attribute in this) {
             cloneObj[attribute] = this[attribute]
+        }
+        return cloneObj;
+    }
+
+    public static fromObject(o: any): any {
+        const cloneObj = new DetailedProject(o.workSpaceId);
+        for (const attribute in o) {
+            (cloneObj as any)[attribute] = o[attribute]
         }
         return cloneObj;
     }

@@ -1,7 +1,6 @@
 package com.platform.projapp.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.platform.projapp.error.ErrorInfo;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,20 +15,25 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class GeneralResponse<T> {
     private List<ErrorInfo> errors;
-    @JsonProperty("data")
-    private T payload;
+    private T data;
+    public String message;
+
+    public GeneralResponse<T> withError(String message) {
+        this.message = message;
+        return this;
+    }
 
     public GeneralResponse<T> withErrors(List<ErrorInfo> errors) {
         this.errors = errors;
         return this;
     }
 
-    public GeneralResponse<T> withPayload(T payload) {
-        this.payload = payload;
+    public GeneralResponse<T> withData(T data) {
+        this.data = data;
         return this;
     }
 
     public boolean success() {
-        return payload != null;
+        return data != null;
     }
 }

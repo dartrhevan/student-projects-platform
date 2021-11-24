@@ -1,10 +1,10 @@
-import CommonResponse from "./CommonResponse";
+// import CommonResponse from "./CommonResponse";
 import Project from "../Project";
 
-export default class ProjectsResponse extends CommonResponse {
+export default class ProjectsResponse{
     public constructor(public projects: Project[], public totalCount: number,
-                       public role = WorkspaceAssociation.ORGANIZER, public message?: string) {
-        super(message);
+                       public role = WorkspaceAssociation.ORGANIZER) {
+        // super(message);
     }
 }
 

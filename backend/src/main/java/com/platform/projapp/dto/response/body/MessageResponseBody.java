@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
  */
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
-public class MessageResponseBody {
+@AllArgsConstructor(staticName = "of")
+public class MessageResponseBody implements ResponseBody {
     private String message;
 }

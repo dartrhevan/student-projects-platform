@@ -23,9 +23,12 @@ export function getCurrentUser() {
 /**
  * @return current user profile
  */
-export function getCurrentUserProfile() {
-    return new Promise<GenericResponse<UserProfile>>((res, rej) => res(new GenericResponse(new UserProfile(
-        'XXX', '', 'QWERTY', '', ['backend'], [])))); //TODO: implement
+export function getCurrentUserProfile(): Promise<GenericResponse<UserProfile>> {
+    return fetch('/api/auth/userprofile', {
+        headers: {
+            "Authorization": "Bearer " + sessionStorage.getItem(StorageKeys.AccessToken)
+        }
+    }).then(r => r.json()).catch(alert);//TODO: civil & universal error handling
 }
 
 /**
@@ -99,7 +102,7 @@ export function register(user: UserProfile, password: string) {
 /**
  * @return current username
  */
-export function update(userId: string, user: UserProfile, password?: string, newPassword?: string) {
+export function update(user: UserProfile, password?: string, newPassword?: string) {
     console.log(user);
     return new Promise<string>((res, rej) => res("vovan")); //TODO: implement
 }

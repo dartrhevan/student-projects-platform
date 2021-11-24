@@ -1,16 +1,17 @@
 import React, {useEffect, useState} from 'react';
 import {addProject, editProject, getProjectInfo} from "../api/projects";
-import {DetailedProject, ProjectRole} from "../model/Project";
+import {DetailedProject, ProjectRole, ProjectStatus} from "../model/Project";
 import {Button, makeStyles, Paper} from "@material-ui/core";
 import queryString from 'query-string';
 import {
     Divider,
+    IconButton, InputLabel, Link,
+    List,
     ListItemButton,
-    TextField,
-    Typography,
     ListItemText,
-    ListSubheader,
-    List, IconButton
+    ListSubheader, MenuItem, Select,
+    TextField,
+    Typography
 } from "@mui/material";
 import TagsPanel from "../components/util/TagsPanel";
 import Centered from "../components/util/Centered";
@@ -44,15 +45,15 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-interface ProjectParams {
-    workspaceId: string
-    projectId?: string
-    isNew?: string
-}
+// interface ProjectParams {
+//     workspaceId: string
+//     projectId?: string
+//     isNew?: string
+// }
 
 const RoleSpecificButton = ({project, onSubmit, enabled, isNew}:
                                 { isNew: boolean, enabled?: boolean, project?: DetailedProject, onSubmit: () => void }) => {
-    switch (project?.role) {
+    switch (project?.projectRole) {
         case ProjectRole.OWNER:
             return (
                 <>
@@ -72,11 +73,6 @@ const RoleSpecificButton = ({project, onSubmit, enabled, isNew}:
                 <Button href={`/project_plan?projectId=${project.id}&workspaceId=${project.workSpaceId}`}>
                     Просмотр плана
                 </Button>);
-        // case ProjectRole.MENTOR:
-        //     return (
-        //         <Button href={`/project_plan?projectId=${project.id}&workspaceId=${project.workSpaceId}`}>
-        //             Просмотр плана
-        //         </Button>);
         case ProjectRole.STRANGER:
             return (<Button>Присоединиться</Button>);
         default:
@@ -91,6 +87,7 @@ const RoleSpecificButton = ({project, onSubmit, enabled, isNew}:
 interface EditableFieldProps {
     field: (project?: DetailedProject) => string | undefined,
     props?: object,
+    inputProps?: object,
     prefix?: string
     project?: DetailedProject
     multiline?: boolean
@@ -98,25 +95,26 @@ interface EditableFieldProps {
     label: string
     isNew?: boolean
     onChange: (s: string) => void
+    // inputComponent?: (props: EditableFieldProps) => JSX.Element
 }
 
 const EditableField = ({
                            project, props = {}, left = false, field, prefix = '', onChange,
-                           label, multiline = false, isNew = false
+                           label, multiline = false, isNew = false, inputProps
                        }: EditableFieldProps) =>
-    project?.role === ProjectRole.OWNER || isNew
-        ? (
-            <div style={{
-                width: '100%',
-                display: 'flex',
-                flexDirection: 'row',
-                justifyContent: left ? 'start' : 'center'
-            }}>
-                <Typography {...props}>{prefix}</Typography>
-                <TextField label={label} sx={{margin: '10px'}} fullWidth={multiline} minRows={5}
-                           variant={multiline ? 'outlined' : 'standard'} multiline={multiline}
-                           defaultValue={field(project)} onChange={e => onChange((e.target as HTMLInputElement).value)}/>
-            </div>)
+    project?.projectRole === ProjectRole.OWNER || isNew
+        ? (<div style={{
+            width: '100%',
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: left ? 'start' : 'center'
+        }}>
+            {prefix ? <Typography {...props}>{prefix}</Typography> : <></>}
+            <TextField label={label} sx={{margin: '10px'}} fullWidth={multiline} minRows={5}
+                       variant={multiline ? 'outlined' : 'standard'} multiline={multiline}
+                       onChange={e => onChange((e.target as HTMLInputElement).value)}
+                       value={field(project)} {...inputProps}/>
+        </div>)
         : <Typography {...props}>{prefix + field(project)}</Typography>;
 
 export default function ProjectDetailedPage() {
@@ -124,60 +122,63 @@ export default function ProjectDetailedPage() {
     const params = queryString.parse(window.location.search);
     const workspaceId = params?.workspaceId, projectId = params?.projectId;
     const isNew = params?.isNew !== undefined;
-
     const classes = useStyles();
-    const [project, setProject] = useState(isNew ? new DetailedProject(workspaceId as string) : undefined);
+    const [project, setProject] = useState(new DetailedProject(workspaceId as string));
 
     useEffect(() => {
             if (!isNew) {
                 getProjectInfo(projectId as string, workspaceId as string)
-                    .then(r => setProject(r.data)).catch(console.log)
+                    .then(r => setProject(DetailedProject.fromObject(r.data))).catch(console.log)
             }
         }, //TODO: catch
         [workspaceId, projectId, isNew]);
 
     console.log('render with')
     console.log(project)
-    const allFilled = project?.isNewFilled;//allNotEmpty(username, password);
+    const allFilled = !isNew || project?.isNewFilled;//allNotEmpty(username, password);
 
     function onSubmit() {
-        if (isNew) {
-            addProject(project as DetailedProject);
-        } else {
-            editProject(project as DetailedProject);
-        }
+        (isNew ? addProject(project as DetailedProject) : editProject(project as DetailedProject))
+            .then(r => alert(!r.message ? 'Success' : r.message))
+            .catch(r => alert(`Error ${r}`));
     }
 
     function removeParticipant(participant: string) {
         const newProj = project?.removeParticipant(participant);
-        setProject(newProj as unknown as DetailedProject)
+        setProject(newProj as unknown as DetailedProject);
     }
 
     return (
         <Paper className={classes.paper}>
             <Centered additionalClasses={[classes.inner]}>
-                <EditableField isNew={isNew} label='' props={{variant: 'h4'}} project={project}
-                               prefix={'Проект '} field={p => p?.title}
+                <EditableField isNew={isNew} label='(название)' props={{variant: 'h4'}} project={project}
+                               prefix={'Проект '} field={p => p?.title} inputProps={{required: true}}
                                onChange={t => setProject((project as DetailedProject).withTitle(t))}/>
-                <EditableField isNew={isNew} left label='Краткое описание'
+                <EditableField isNew={isNew} left label='Краткое описание' inputProps={{required: true}}
                                project={project} field={p => p?.shortDescription}
                                onChange={t => setProject((project as DetailedProject).withShortDescription(t))}/>
-                <div style={{
-                    width: '100%',
-                    display: 'flex',
-                    flexDirection: 'row',
-                    justifyContent: 'center',
-                    flexWrap: 'wrap'
-                }}>
+                <div style={{width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'center', flexWrap: 'wrap'}}>
                     <TagsPanel onSetTag={tags => setProject(project?.withTags(tags))}
-                               editable={project?.role === ProjectRole.OWNER} values={project?.tags}/>
+                               editable={project?.projectRole === ProjectRole.OWNER} values={project?.tags}/>
                 </div>
                 <Divider flexItem/>
-                <EditableField label='Описание' multiline
+                <EditableField label='Описание' multiline inputProps={{required: true}}
                                props={{className: classes.descr, sx: {width: '100%', padding: '15px'}}}
                                project={project} field={p => p?.fullDescription} isNew={isNew}
                                onChange={t => setProject((project as DetailedProject).withFullDescription(t))}/>
                 <Divider flexItem/>
+                {project?.projectRole !== ProjectRole.STRANGER ?
+                    <EditableField label='Ссылка на трекер' field={p => p?.trackerUrl} project={project}
+                                   inputProps={{variant: 'outlined', fullWidth: true}}
+                                   props={{
+                                       sx: {width: '100%', padding: '10px 5px'},
+                                       component(p: { children: string, className: string }) {
+                                           return <Link className={p.className} href={p.children}>Ссылка на
+                                               трекер</Link>;
+                                       }
+                                   }}
+                                   onChange={t => setProject((project as DetailedProject).withTrackerUrl(t))}/> : <></>}
+
                 <List
                     sx={{width: '100%'}}
                     component="nav"
@@ -188,10 +189,10 @@ export default function ProjectDetailedPage() {
                         </ListSubheader>
                     }>
                     {project?.participants.map(p => (
-                        <ListItemButton disableRipple sx={{cursor: 'default'}} key={p.login}>
-                            <ListItemText primary={`${p.login} (${p.role})`}/>
-                            {project?.role === ProjectRole.OWNER ?
-                                <IconButton onClick={() => removeParticipant(p.login)}>
+                        <ListItemButton disableRipple sx={{cursor: 'default'}} key={p.username}>
+                            <ListItemText primary={`${p.name} (${p.role})`}/>
+                            {project?.projectRole === ProjectRole.OWNER ?
+                                <IconButton onClick={() => removeParticipant(p.username)}>
                                     <Clear/>
                                 </IconButton> : <></>}
                         </ListItemButton>))}
@@ -199,6 +200,18 @@ export default function ProjectDetailedPage() {
                 <div className={classes.butGr} style={{justifyContent: 'start'}}>
                     <Typography sx={{margin: '10px'}}>Максимальное кол-во участников</Typography>
                     <TextField sx={{width: '40px'}} type='number' variant='standard'/>
+                </div>
+                <div className={classes.butGr} style={{justifyContent: 'start'}}>
+                    <Typography sx={{margin: '10px'}}>Статус проекта</Typography>
+                    <Select
+                        value={project?.status}
+                        onChange={s => setProject(project?.withStatus(s.target.value as ProjectStatus))}>
+                        <MenuItem value={ProjectStatus.NEW}>Новый</MenuItem>
+                        <MenuItem value={ProjectStatus.IN_PROGRESS}>В разработке</MenuItem>
+                        <MenuItem value={ProjectStatus.ENDED}>Завершён</MenuItem>
+                        <MenuItem value={ProjectStatus.CANCELLED}>Отклонён</MenuItem>
+                        <MenuItem value={ProjectStatus.MODIFYING}>На доработке</MenuItem>
+                    </Select>
                 </div>
                 <ErrorMessage message='*Не все обязательные поля заполнены' condition={!allFilled}/>
                 <div className={classes.butGr}>
