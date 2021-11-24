@@ -11,5 +11,6 @@ export enum ActionType {
     OpenDialog,
     CloseDialog,
     ShowMessage,
-    HideMessage
+    HideMessage,
+    SetTagsRef
 }

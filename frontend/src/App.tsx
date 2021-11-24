@@ -25,6 +25,9 @@ import {Alert} from "@mui/lab";
 import {hide} from "./store/actions/log/log";
 import {getLogState, useError, useInfo, useSuccess} from "./hooks/logging";
 import StartPage from "./pages/StartPage";
+import Tag from "./model/Tag";
+import {setTagsRef} from "./store/actions/tags/tags";
+import {getTagsReference} from "./api/reference";
 
 function App() {
     // const dispatch = useDispatch();
@@ -34,6 +37,18 @@ function App() {
 
     const error = useError();
 
+
+    function setTagsReference(r: Tag[]) {
+        dispatch(setTagsRef(r));
+    }
+
+    useEffect(() => {
+        // setTags(values);
+        getTagsReference()
+            .then(r => {
+                setTagsReference(r);
+            }).catch(console.log);
+    }, [dispatch]);
 
     useEffect(() => {
         getCurrentUser()?.then(r => {

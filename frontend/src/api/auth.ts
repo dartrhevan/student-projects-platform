@@ -2,6 +2,8 @@ import UserProfile from "../model/UserProfile";
 import GenericResponse from "../model/dto/GenericResponse";
 import {Login, LoginState} from "../store/state/LoginState";
 import {StorageKeys} from "../utils/StorageKeys";
+import {getDefaultDownloadHandler} from "../utils/utils";
+import RefreshToken from "../model/dto/RefreshToken";
 
 /**
  * @return current username
@@ -12,12 +14,7 @@ export function getCurrentUser() {
             headers: {
                 "Authorization": "Bearer " + sessionStorage.getItem(StorageKeys.AccessToken)
             }
-        }).then(r => {
-            if (!r.ok) {
-                throw new Error("Not authorized");
-            }
-            return r.json();
-        })//TODO: civil & universal error handling
+        }).then(getDefaultDownloadHandler('Not authorized'));
 }
 
 /**
@@ -28,7 +25,7 @@ export function getCurrentUserProfile(): Promise<GenericResponse<UserProfile>> {
         headers: {
             "Authorization": "Bearer " + sessionStorage.getItem(StorageKeys.AccessToken)
         }
-    }).then(r => r.json()).catch(alert);//TODO: civil & universal error handling
+    }).then(r => r.json())
 }
 
 /**
@@ -42,28 +39,10 @@ export function login(login: string, password: string) {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({login, password})
-    }).then(r => {
-        if (r.ok) {
-            return r.json();
-        } else {
-            // const obj = (r.json() as any);
-            throw "Error auth"; //TODO: error catch
-        }
-    }).then((r: GenericResponse<Login>) => {
-        return r.success ? (alert(r.message), null) : r.data;
-    }).catch(r => (alert(r), null));
-    // return new Promise<GenericResponse<LoginState>>((res, rej) => res("vovan")); //TODO: implement
-}
-
-/**
- * @return nothing
- */
-// export function logout() {
-//     return new Promise<string>((res, rej) => res('')); //TODO: implement
-// }
-
-export function refreshToken() {
-    return new Promise<string>((res, rej) => res('')); //TODO: implement
+    }).then(getDefaultDownloadHandler('Ошибка авторизации'))
+        .then((r: GenericResponse<Login>) => {
+            return r.data;
+        });
 }
 
 /**
@@ -87,16 +66,7 @@ export function register(user: UserProfile, password: string) {
             skills: user.skills,
             password
         })
-    }).then(r => {
-        if (r.ok) {
-            return r.json();
-        } else {
-            // const obj = (r.json() as any);
-            throw "Error auth";
-        }
-    }).then((r: GenericResponse<Login>) => {
-        return r.success ? (alert(r.message), null) : r.data;
-    }).catch(r => (alert(r), null));//new Promise<string>((res, rej) => res("vovan")); //TODO: implement
+    }).then(getDefaultDownloadHandler('Ошибка регистрации'));
 }
 
 /**
@@ -106,3 +76,30 @@ export function update(user: UserProfile, password?: string, newPassword?: strin
     console.log(user);
     return new Promise<string>((res, rej) => res("vovan")); //TODO: implement
 }
+
+
+export function refreshToken(): Promise<GenericResponse<RefreshToken>> {
+    return fetch(`/api/auth/refreshtoken`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            "Authorization": "Bearer " + sessionStorage.getItem(StorageKeys.AccessToken)
+        },
+        body: `{"tokenRefresh": "${sessionStorage.getItem(StorageKeys.RefreshToken)}"}`
+    }).then(getDefaultDownloadHandler()).catch(console.log);
+}
+
+const REFRESH_TOKEN_TIMEOUT = 2000000;
+
+function refreshTokenScheduler() {
+    if (sessionStorage.getItem(StorageKeys.AccessToken) !== null) {
+        refreshToken().then(r => r.data).then(r => {
+            sessionStorage.setItem(StorageKeys.AccessToken, r.accessToken);
+            sessionStorage.setItem(StorageKeys.RefreshToken, r.refreshToken);
+            console.log(`Token refreshed access: ${r.accessToken} refresh: ${r.refreshToken}`);
+        });
+    }
+    setTimeout(refreshTokenScheduler, REFRESH_TOKEN_TIMEOUT);
+}
+
+setTimeout(refreshTokenScheduler, REFRESH_TOKEN_TIMEOUT);

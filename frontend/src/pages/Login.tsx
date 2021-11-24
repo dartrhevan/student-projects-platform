@@ -7,6 +7,7 @@ import {login} from "../api/auth";
 import {useDispatch} from "react-redux";
 import setLoginAction from "../store/actions/auth/setLoginAction";
 import {LoginState} from "../store/state/LoginState";
+import {useWarn} from "../hooks/logging";
 
 const useStyles = makeStyles(theme => ({
     def: {
@@ -23,12 +24,17 @@ export default function Login() {
     const dispatch = useDispatch();
     const [password, setPassword] = useState('');
     const [username, setUsername] = useState('');
+
+    const warn = useWarn();
+
     const onLogin = () => login(username, password).then(r => {
         if (r !== null) {
             dispatch(setLoginAction(r as LoginState));
             window.location.href = '/';
         }
-    }).catch(alert); //TODO: implement correct catch
+    }).catch(e => {
+        warn(e.toString());
+    });
 
     const allFilled = allNotEmpty(username, password);
 
@@ -38,7 +44,8 @@ export default function Login() {
                 Вход
             </Typography>
             <CssBaseline/>
-            <TextField required label="Логин" className={classes.def} onChange={getOnFieldChange(setUsername)} fullWidth={true}/>
+            <TextField required label="Логин" className={classes.def} onChange={getOnFieldChange(setUsername)}
+                       fullWidth={true}/>
             <CssBaseline/>
             <TextField label="Пароль" className={classes.def} onChange={getOnFieldChange(setPassword)}
                        type="password" fullWidth={true} required/>

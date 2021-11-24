@@ -20,5 +20,5 @@ spring:
 app:
   jwt:
     secret: ${JWT_SECRET:ProjAppRenSecretCode}
-    expirationMs: 30000000
-    refreshExpirationMs: 60000
+    expirationMs: 3600000
+    refreshExpirationMs: 3600000

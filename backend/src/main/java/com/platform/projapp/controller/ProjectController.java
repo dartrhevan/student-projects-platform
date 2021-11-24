@@ -46,8 +46,12 @@ public class ProjectController {
     public ResponseEntity<?> getProjects(@PageableDefault(size = 9) Pageable pageable,
                                          @RequestHeader(name = "Authorization") String token,
                                          @RequestParam(name = "tag", required = false) String tagsParam,
+                                         @RequestParam(name = "active", required = false) Boolean active,
                                          @RequestParam("workspaceId") Long workspaceId) {
         var response = new GeneralResponse<>();
+        if (active == null) {
+            active = false;
+        }
         var user = userService.parseAndFindByJwt(token);
         var workspace = workspaceService.findById(workspaceId);
 
@@ -60,8 +64,8 @@ public class ProjectController {
         Page<Project> page;
         if (tagsParam != null && !tagsParam.isBlank()) {
             var tags = tagsService.findByTagParam(tagsParam);
-            page = projectService.findAllByWorkspaceAndTagsInTags(workspace, tags, pageable);
-        } else page = projectService.findAllByWorkspace(workspace, pageable);
+            page = projectService.findAllByWorkspaceAndTagsInTags(workspace, tags, pageable, active);
+        } else page = projectService.findAllByWorkspace(workspace, pageable, active);
 
         var pageErrorResponseEntity = ErrorUtils.getPageErrorResponseEntity(
                 pageable.getPageNumber(),
@@ -160,7 +164,7 @@ public class ProjectController {
         var user = userService.parseAndFindByJwt(token);
         var project = projectService.findById(projectId);
         ResponseEntity<?> projectErrorResponseEntity = projectService.getProjectErrorResponseEntity(project,
-                request.getUserLogin(),
+                request.getUsername(),
                 List.of(ErrorConstants.USER_NOT_WORKSPACE_PARTICIPANT, ErrorConstants.USER_IN_PROJECT));
         if (projectErrorResponseEntity != null) return projectErrorResponseEntity;
         projectService.addParticipant(project, request);

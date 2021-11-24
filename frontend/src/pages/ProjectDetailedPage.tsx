@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {addProject, editProject, getProjectInfo} from "../api/projects";
+import {addProject, deleteProject, editProject, getProjectInfo} from "../api/projects";
 import {DetailedProject, ProjectRole, ProjectStatus} from "../model/Project";
 import {Button, makeStyles, Paper} from "@material-ui/core";
 import queryString from 'query-string';
@@ -17,6 +17,12 @@ import TagsPanel from "../components/util/TagsPanel";
 import Centered from "../components/util/Centered";
 import ErrorMessage from "../components/elements/ErrorMessage";
 import {Clear} from "@material-ui/icons";
+import {useError, useSuccess, useWarn} from "../hooks/logging";
+import Tag from "../model/Tag";
+import {useSelector} from "react-redux";
+import getTagsRef, {getTagsReferenceMap} from "../hooks/getTagsRef";
+import ConfirmationDialog from "../components/util/ConfirmationDialog";
+import {deleteWorkspace} from "../api/workspaces";
 
 const useStyles = makeStyles(theme => ({
     paper: {
@@ -53,16 +59,33 @@ const useStyles = makeStyles(theme => ({
 
 const RoleSpecificButton = ({project, onSubmit, enabled, isNew}:
                                 { isNew: boolean, enabled?: boolean, project?: DetailedProject, onSubmit: () => void }) => {
+
+    const [deleteDialog, setDeleteDialog] = useState(false);
+    const error = useError();
+
+    function onDelete() {
+        deleteProject(project?.id as string)
+            .then(r => window.location.href = '/workspaces')
+            .catch(error);
+
+    }
+
     switch (project?.projectRole) {
         case ProjectRole.OWNER:
             return (
                 <>
+                    <ConfirmationDialog open={deleteDialog} onClose={() => setDeleteDialog(false)}
+                                        label="удалить проект" onSubmit={onDelete}/>
                     <Button href={`/users?projectId=${project.id}&workspaceId=${project.workSpaceId}`}>
                         Найти участника
                     </Button>
                     <Button href={`/project_plan?projectId=${project.id}&workspaceId=${project.workSpaceId}`}>
                         Просмотр плана
                     </Button>
+                    {!isNew ? (
+                        <Button onClick={() => setDeleteDialog(true)}>
+                            Удалить
+                        </Button>) : (<></>)}
                     <Button variant='contained' disabled={!enabled} onClick={onSubmit}>
                         Подтвердить изменения
                     </Button>
@@ -125,22 +148,31 @@ export default function ProjectDetailedPage() {
     const classes = useStyles();
     const [project, setProject] = useState(new DetailedProject(workspaceId as string));
 
+    const tagsReference = useSelector(getTagsReferenceMap);
     useEffect(() => {
             if (!isNew) {
                 getProjectInfo(projectId as string, workspaceId as string)
-                    .then(r => setProject(DetailedProject.fromObject(r.data))).catch(console.log)
+                    .then(r => {
+                        const proj: DetailedProject = DetailedProject.fromObject(r.data);
+                        proj.tags = r.data.tags.map(t => tagsReference[t.toString()]).filter(t => t !== undefined);
+                        setProject(proj);
+                    }).catch(console.log)
             }
         }, //TODO: catch
-        [workspaceId, projectId, isNew]);
+        [workspaceId, projectId, isNew, tagsReference]);
 
     console.log('render with')
     console.log(project)
     const allFilled = !isNew || project?.isNewFilled;//allNotEmpty(username, password);
 
+    const success = useSuccess();
+    const warn = useWarn();
+    const error = useError();
+
     function onSubmit() {
         (isNew ? addProject(project as DetailedProject) : editProject(project as DetailedProject))
-            .then(r => alert(!r.message ? 'Success' : r.message))
-            .catch(r => alert(`Error ${r}`));
+            .then(r => success('Success'))
+            .catch(r => error(`Error ${r}`));
     }
 
     function removeParticipant(participant: string) {
@@ -157,7 +189,13 @@ export default function ProjectDetailedPage() {
                 <EditableField isNew={isNew} left label='Краткое описание' inputProps={{required: true}}
                                project={project} field={p => p?.shortDescription}
                                onChange={t => setProject((project as DetailedProject).withShortDescription(t))}/>
-                <div style={{width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'center', flexWrap: 'wrap'}}>
+                <div style={{
+                    width: '100%',
+                    display: 'flex',
+                    flexDirection: 'row',
+                    justifyContent: 'center',
+                    flexWrap: 'wrap'
+                }}>
                     <TagsPanel onSetTag={tags => setProject(project?.withTags(tags))}
                                editable={project?.projectRole === ProjectRole.OWNER} values={project?.tags}/>
                 </div>

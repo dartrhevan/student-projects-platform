@@ -38,12 +38,17 @@ public class ProjectService {
         projectRepository.delete(project);
     }
 
-    public Page<Project> findAllByWorkspace(Workspace workspace, Pageable pageable) {
-        return projectRepository.findAllByWorkspace(workspace, pageable);
+    private static final Set<ProjectStatus> ACTIVE_STATUSES =
+            Set.of(ProjectStatus.NEW, ProjectStatus.IN_PROGRESS, ProjectStatus.MODIFYING);
+
+    public Page<Project> findAllByWorkspace(Workspace workspace, Pageable pageable, boolean active) {
+        return active ? projectRepository.findAllByWorkspaceAndStatusIn(workspace, pageable, ACTIVE_STATUSES)
+                : projectRepository.findAllByWorkspace(workspace, pageable);
     }
 
-    public Page<Project> findAllByWorkspaceAndTagsInTags(Workspace workspace, Set<Tags> tags, Pageable pageable) {
-        return projectRepository.findAllByWorkspaceAndTagsInTags(workspace, tags, pageable);
+    public Page<Project> findAllByWorkspaceAndTagsInTags(Workspace workspace, Set<Tags> tags, Pageable pageable, boolean active) {
+        return active ? projectRepository.findAllByWorkspaceAndTagsInTags(workspace, tags, pageable, ACTIVE_STATUSES)
+                : projectRepository.findAllByWorkspaceAndTagsInTags(workspace, tags, pageable);
     }
 
     public void createProject(User user, Workspace workspace, ProjectRequest projectRequest) {

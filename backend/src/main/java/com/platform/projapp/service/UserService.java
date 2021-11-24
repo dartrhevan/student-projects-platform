@@ -18,6 +18,7 @@ import com.platform.projapp.repository.UserRepository;
 import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -95,6 +96,8 @@ public class UserService {
             return response.withData(new CurrentUserResponseBody(user.getName(), user.getSurname(), user.getLogin()));
         } catch (ExpiredJwtException e) {
             return response.withError("Срок использования токена истек");
+        } catch (UsernameNotFoundException e) {
+            return response.withError("Username not found: Пользователь не найден");
         }
     }
 
@@ -118,6 +121,8 @@ public class UserService {
                     user.getSkills()));
         } catch (ExpiredJwtException e) {
             return response.withError("Срок использования токена истек");
+        } catch (UsernameNotFoundException e) {
+            return response.withError("Username not found: Пользователь не найден");
         }
     }
 
@@ -126,29 +131,29 @@ public class UserService {
         String token = jwtTokenFilter.parseRequestJwt(request);
         String login = jwtHelper.getUserNameFromJwtToken(token);
         User user = userRepository.findByLogin(login);
-        if (login.equals(req.getLogin())) {
-            user.setName(req.getName());
-            user.setSurname(req.getSurname());
-            //user.setLogin(req.getLogin());
-            user.setInterests(req.getInterests());
-            user.setEmail(req.getEmail());
-            user.getRoles().addAll(req.getRoles().stream().map(projectRoleService::createProjectRole).collect(Collectors.toList()));
-            user.setGroupp(req.getGroup());
-            user.setSkills(req.getSkills().stream()
-                    .map(tags -> {
-                        Tags tgs = tags;
-                        tgs = tagsRepository.getById(tgs.getId());
-                        return tgs;
-                    }).collect(Collectors.toSet()));
-            if (req.getPassword() != null && req.getNewPassword() != null && !passwordEncoder.matches(req.getPassword(), user.getPasswordHash())) {
-                return response.withError(ErrorConstants.WRONG_PASSWORD);
-            } else if (req.getPassword() == null && req.getNewPassword() != null)
-                return response.withError(ErrorConstants.PASSWORD_IS_EMPTY);
-            else if (req.getNewPassword() != null && passwordEncoder.matches(req.getPassword(), user.getPasswordHash()))
-                user.setPasswordHash(passwordEncoder.encode(req.getNewPassword()));
-            userRepository.save(user);
-            return response.withData(MessageResponseBody.of("Информация о пользователе обновлена"));
+//        User user = userRepository.findByLogin(login).orElseThrow(() -> new UsernameNotFoundException(""));
+        if (user == null) {
+            return response.withError("Username not found: Пользователь не найден");
         }
-        else return response.withError("Вы не можете поменять логин");
+        user.setName(req.getName());
+        user.setSurname(req.getSurname());
+        //user.setLogin(req.getLogin());
+        user.setInterests(req.getInterests());
+        user.setEmail(req.getEmail());
+        user.getRoles().addAll(req.getRoles().stream().map(projectRoleService::createProjectRole).collect(Collectors.toList()));
+        user.setGroupp(req.getGroup());
+        user.setSkills(req.getSkills().stream().map(tags -> {
+            Tags tgs = tags;
+            tgs = tagsRepository.getById(tgs.getId());
+            return tgs;
+        }).collect(Collectors.toSet()));
+        if (req.getPassword() != null && req.getNewPassword() != null && !passwordEncoder.matches(req.getPassword(), user.getPasswordHash())) {
+            return response.withError(ErrorConstants.WRONG_PASSWORD);
+        } else if (req.getPassword() == null && req.getNewPassword() != null)
+            return response.withError(ErrorConstants.PASSWORD_IS_EMPTY);
+        else if (req.getNewPassword() != null && passwordEncoder.matches(req.getPassword(), user.getPasswordHash()))
+            user.setPasswordHash(passwordEncoder.encode(req.getNewPassword()));
+        userRepository.save(user);
+        return response.withData(MessageResponseBody.of("Информация о пользователе обновлена"));
     }
 }

@@ -86,8 +86,8 @@ export default function MiniDrawer() {
 
     const login = useSelector(getUsername);
 
-    return (
-        <Drawer
+    return !login ? (<></>) :
+        (<Drawer
             variant="permanent"
             className={clsx(classes.drawer, drawerClasses)}
             classes={{
@@ -95,23 +95,23 @@ export default function MiniDrawer() {
             }}>
 
             <List className={classes.list}>
-                <ListItem disabled={login === null} button key={'Рабочие пространства'} onClick={() => window.location.href = '/workspaces'}>
+                <ListItem button key={'Рабочие пространства'} onClick={() => window.location.href = '/workspaces'}>
                     <ListItemIcon><AutoAwesomeMosaicIcon/></ListItemIcon>
                     <ListItemText primary={'Рабочие пространства'}/>
                 </ListItem>
-                <ListItem disabled={login === null} button key={'Мои проекты'} onClick={() => window.location.href = '/projects'}>
+                <ListItem button key={'Мои проекты'} onClick={() => window.location.href = '/projects'}>
                     <ListItemIcon><Apps/></ListItemIcon>
                     <ListItemText primary={'Мои проекты'}/>
                 </ListItem>
-                <ListItem disabled={login === null} button key={'Моё портфолио'} onClick={() => window.location.href = `/portfolio/${login}`}>
+                <ListItem button key={'Моё портфолио'} onClick={() => window.location.href = `/portfolio/${login}`}>
                     <ListItemIcon><FormatAlignJustifyIcon/></ListItemIcon>
                     <ListItemText primary={'Моё портфолио'}/>
                 </ListItem>
-                <ListItem disabled={login === null} button key={'Мой профиль'} onClick={() => window.location.href = '/profile'}>
+                <ListItem button key={'Мой профиль'} onClick={() => window.location.href = '/profile'}>
                     <ListItemIcon><Person/></ListItemIcon>
                     <ListItemText primary={'Мой профиль'}/>
                 </ListItem>
-                <ListItem disabled={login === null} button key={'Уведомления'} onClick={() => window.location.href = '/notifications'}>
+                <ListItem button key={'Уведомления'} onClick={() => window.location.href = '/notifications'}>
                     <ListItemIcon><EmailIcon/></ListItemIcon>
                     <ListItemText primary={'Уведомления'}/>
                 </ListItem>
