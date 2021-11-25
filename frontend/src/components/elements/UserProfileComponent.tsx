@@ -72,12 +72,12 @@ export default function UserProfileComponent({user, title}: UserProfileProps) {
     const [name, setName] = useState('');
     const [messenger, setMessenger] = useState('');
     const [password, setPassword] = useState('');
-    const [oldPassword, setOldPassword] = useState('');
+    const [newPassword, setNewPassword] = useState('');
     const [email, setEmail] = useState('');
     const [passwordConfirm, setPasswordConfirm] = useState('');
     const [comment, setComment] = useState('');
     const [group, setGroup] = useState('');
-    const passwordConfirmed = password === passwordConfirm;
+    const passwordConfirmed = user === undefined ? password === passwordConfirm : newPassword === passwordConfirm;
     const [roles, setRoles] = useState([] as string[]);
     const [tags, setTags] = useState([] as Tag[]);
 
@@ -116,12 +116,12 @@ export default function UserProfileComponent({user, title}: UserProfileProps) {
     const editFilled = allNotEmpty(username, name, surname, password);
 
     const allFilledAndValid = (user === undefined ? registerFilled : editFilled)
-        && email.match(emailPattern) && username.length >= 6 && password.length >= 6;
+        && email.match(emailPattern) !== null && username.length >= 6 && password.length >= 6;
 
     function onUpdate() {
-        update(new UserProfile(name, surname, username, email, messenger, comment, group, roles, tags), password, oldPassword)
+        update(new UserProfile(name, surname, username, email, messenger, comment, group, roles, tags), password, newPassword)
             .then(r => {
-                alert('Success');
+                // alert('Success');
                 window.location.href = '/';
             }).catch(error);
     }
@@ -160,7 +160,7 @@ export default function UserProfileComponent({user, title}: UserProfileProps) {
                                onChange={getOnFieldChange(setPassword)}
                                type="password" fullWidth={true} required/> : <></>}
                 <TextField label={passwordLabels.input} className={classes.def}
-                           onChange={getOnFieldChange(user === undefined ? setPassword : setOldPassword)}
+                           onChange={getOnFieldChange(user === undefined ? setPassword : setNewPassword)}
                            type="password" fullWidth={true} required/>
                 <TextField label={passwordLabels.confirmation} className={classes.def} type="password"
                            onChange={getOnFieldChange(setPasswordConfirm)} fullWidth={true} required/>
@@ -175,7 +175,7 @@ export default function UserProfileComponent({user, title}: UserProfileProps) {
                               condition={!(email?.match(emailPattern))}/>
 
                 <Aligned endAlign={true}>
-                    <Button disabled={!((passwordConfirmed || user === undefined) && allFilledAndValid)}
+                    <Button disabled={!(passwordConfirmed && allFilledAndValid)}
                             className={classes.def} onClick={user ? onUpdate : onRegister}>
                         Подтвердить
                     </Button>
