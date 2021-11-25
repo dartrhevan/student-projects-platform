@@ -53,7 +53,7 @@ public class AuthService {
             return response.withData(new JwtResponseBody(jwt, refreshToken.getToken(), user));
 
         } catch (UsernameNotFoundException | BadCredentialsException e) {
-            return response.withError(ErrorConstants.WRONG_PASSWORD);
+            return response.withError(ErrorConstants.USERNAME_OR_PASSWORD_NOT_FOUND);
         }
     }
 

@@ -12,11 +12,9 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
+import static com.platform.projapp.enumarate.AccessRole.ROLE_USER;
 import static javax.persistence.CascadeType.*;
 
 /**
@@ -56,12 +54,12 @@ public class User implements UserDetails {
             inverseJoinColumns = @JoinColumn(name = "tag_id"))
     private Set<Tags> skills = new HashSet<>();
 
-    @ElementCollection(targetClass = AccessRole.class, fetch = FetchType.EAGER)
-    @CollectionTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"))
-    @Enumerated(EnumType.STRING)
-    private Set<AccessRole> accessRoles;
+//    @ElementCollection(targetClass = AccessRole.class, fetch = FetchType.EAGER)
+//    @CollectionTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"))
+//    @Enumerated(EnumType.STRING)
+//    private Set<AccessRole> accessRoles;
 
-    public User(String login, String passwordHash, String name, String surname, String email,String messenger, String interests, String groupp, Set<Tags> skills, Set<AccessRole> accessRoles) {
+    public User(String login, String passwordHash, String name, String surname, String email,String messenger, String interests, String groupp, Set<Tags> skills) {
         this.login = login;
         this.passwordHash = passwordHash;
         this.name = name;
@@ -72,7 +70,7 @@ public class User implements UserDetails {
         this.groupp = groupp;
         this.skills = skills;
 
-        this.accessRoles = accessRoles;
+//        this.accessRoles = accessRoles;
 
         this.reputation = 100;
         this.roles = new HashSet<>();
@@ -80,7 +78,7 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return accessRoles;
+        return List.of(ROLE_USER);
     }
 
     @Override

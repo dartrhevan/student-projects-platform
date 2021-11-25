@@ -72,8 +72,7 @@ public class UserService {
                     registerRequest.getMessenger(),
                     registerRequest.getInterests(),
                     registerRequest.getGroup(),
-                    skills,
-                    Set.of(AccessRole.ROLE_USER));
+                    skills);
             user.getRoles().addAll(projectRoles);
             userRepository.save(user);
         }
@@ -148,7 +147,7 @@ public class UserService {
             return tgs;
         }).collect(Collectors.toSet()));
         if (req.getPassword() != null && req.getNewPassword() != null && !passwordEncoder.matches(req.getPassword(), user.getPasswordHash())) {
-            return response.withError(ErrorConstants.WRONG_PASSWORD);
+            return response.withError(ErrorConstants.USERNAME_OR_PASSWORD_NOT_FOUND);
         } else if (req.getPassword() == null && req.getNewPassword() != null)
             return response.withError(ErrorConstants.PASSWORD_IS_EMPTY);
         else if (req.getNewPassword() != null && passwordEncoder.matches(req.getPassword(), user.getPasswordHash()))

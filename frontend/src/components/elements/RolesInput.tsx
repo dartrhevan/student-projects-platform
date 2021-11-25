@@ -15,6 +15,10 @@ export default function ({defRoles = [], onChange, multiple = true}: RolesProps)
     const [rolesReference, setRolesReference] = useState([] as string[]);
 
     useEffect(() => {
+        setRoles(defRoles);
+    }, [defRoles]);
+
+    useEffect(() => {
         getRolesReference().then(r => setRolesReference(r.data)).catch(console.log);
     }, [onChange, multiple]);
 
@@ -22,6 +26,7 @@ export default function ({defRoles = [], onChange, multiple = true}: RolesProps)
         const newRoles = b as string[];
         onChange(newRoles);
         setRoles(newRoles);
+        if (b.length === 0) return;
         const newRole = newRoles[newRoles.length - 1];
         if (!rolesReference.includes(newRole)) {
             addRoleToReference(newRole).then(r => setRolesReference([...rolesReference, newRole])).catch(console.log);

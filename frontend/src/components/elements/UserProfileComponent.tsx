@@ -87,7 +87,7 @@ export default function UserProfileComponent({user, title}: UserProfileProps) {
             setUsername(user?.username);
             setSurname(user?.surname);
             setName(user?.name);
-            setTags(user?.skills);
+            setTags(user?.skills.map(t => new Tag(t.id, t.name, t.colour)));
             setGroup(user?.group);
             setComment(user?.comment);
             setRoles(user?.roles);
@@ -106,7 +106,17 @@ export default function UserProfileComponent({user, title}: UserProfileProps) {
             window.location.href = '/';
         }).catch(error);
 
-    const allFilledAndValid = allNotEmpty(username, password, passwordConfirm) && email.match(emailPattern) && username.length >= 6 && password.length >= 6;
+    const required = [];
+
+    if (user === undefined) {
+        required.push();
+    }
+
+    const registerFilled = allNotEmpty(username, name, surname, password, passwordConfirm);
+    const editFilled = allNotEmpty(username, name, surname, password);
+
+    const allFilledAndValid = (user === undefined ? registerFilled : editFilled)
+        && email.match(emailPattern) && username.length >= 6 && password.length >= 6;
 
     function onUpdate() {
         update(new UserProfile(name, surname, username, email, messenger, comment, group, roles, tags), password, oldPassword)
@@ -142,14 +152,15 @@ export default function UserProfileComponent({user, title}: UserProfileProps) {
                 <CssBaseline/>
                 <div className={clsx(classes.def, classes.skills)}>
                     <Typography className={classes.def} align='center'>Введи ваши навыки</Typography>
-                    <TagsPanel label='skill' tagInputClasses={[classes.tagInput]} onSetTag={setTags}/>
+                    <TagsPanel values={tags} label='skill' tagInputClasses={[classes.tagInput]} onSetTag={setTags}/>
                 </div>
                 <RolesInput onChange={s => setRoles(s as string[])} defRoles={roles} />
                 {user ?
                     <TextField label="Текущий пароль" className={classes.def}
-                               onChange={getOnFieldChange(setOldPassword)}
+                               onChange={getOnFieldChange(setPassword)}
                                type="password" fullWidth={true} required/> : <></>}
-                <TextField label={passwordLabels.input} className={classes.def} onChange={getOnFieldChange(setPassword)}
+                <TextField label={passwordLabels.input} className={classes.def}
+                           onChange={getOnFieldChange(user === undefined ? setPassword : setOldPassword)}
                            type="password" fullWidth={true} required/>
                 <TextField label={passwordLabels.confirmation} className={classes.def} type="password"
                            onChange={getOnFieldChange(setPasswordConfirm)} fullWidth={true} required/>
@@ -164,7 +175,7 @@ export default function UserProfileComponent({user, title}: UserProfileProps) {
                               condition={!(email?.match(emailPattern))}/>
 
                 <Aligned endAlign={true}>
-                    <Button disabled={!(passwordConfirmed && allFilledAndValid)}
+                    <Button disabled={!((passwordConfirmed || user === undefined) && allFilledAndValid)}
                             className={classes.def} onClick={user ? onUpdate : onRegister}>
                         Подтвердить
                     </Button>
