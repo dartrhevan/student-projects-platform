@@ -4,25 +4,27 @@ import com.platform.projapp.configuration.jwt.JwtHelper;
 import com.platform.projapp.configuration.jwt.JwtTokenFilter;
 import com.platform.projapp.dto.request.RegisterOrUpdateUserRequest;
 import com.platform.projapp.dto.response.GeneralResponse;
-import com.platform.projapp.dto.response.body.CurrentUserProfileResponseBody;
-import com.platform.projapp.dto.response.body.CurrentUserResponseBody;
-import com.platform.projapp.dto.response.body.MessageResponseBody;
+import com.platform.projapp.dto.response.body.*;
 import com.platform.projapp.enumarate.AccessRole;
+import com.platform.projapp.enumarate.ProjectStatus;
 import com.platform.projapp.error.ErrorConstants;
 import com.platform.projapp.error.ErrorInfo;
-import com.platform.projapp.model.ProjectRole;
-import com.platform.projapp.model.Tags;
-import com.platform.projapp.model.User;
+import com.platform.projapp.model.*;
+import com.platform.projapp.repository.ParticipantRepository;
+import com.platform.projapp.repository.ProjectRepository;
 import com.platform.projapp.repository.TagsRepository;
 import com.platform.projapp.repository.UserRepository;
 import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -41,6 +43,9 @@ public class UserService {
     private final JwtHelper jwtHelper;
     private final JwtTokenFilter jwtTokenFilter;
     private final ProjectRoleService projectRoleService;
+    private final ParticipantRepository participantRepository;
+    private final ProjectRepository projectRepository;
+    private final TagsService tagsService;
 
     public User findById(Long id) {
         return userRepository.findById(id).orElse(null);
@@ -155,5 +160,62 @@ public class UserService {
             user.setPasswordHash(passwordEncoder.encode(req.getNewPassword()));
         userRepository.save(user);
         return response.withData(MessageResponseBody.of("Информация о пользователе обновлена"));
+    }
+
+    public GeneralResponse<UserPortfolioResponseEntity> getUserPortfolio(HttpServletRequest req, Pageable pageable, String login) {
+        GeneralResponse<UserPortfolioResponseEntity> response = new GeneralResponse<>();
+        try {
+            if (login.isBlank()) {
+                String token = jwtTokenFilter.parseRequestJwt(req);
+                login = jwtHelper.getUserNameFromJwtToken(token);
+            }
+            User user = userRepository.findByLogin(login);
+            List<Participant> participants = participantRepository.findByUser(user, pageable);
+
+            Set<ProjectStatus> statuses = Set.of(ProjectStatus.ENDED, ProjectStatus.CANCELLED);
+
+            Page<Project> page = projectRepository.findAllByParticipantsInAndStatusIn(participants, statuses, pageable);
+
+            Set<UserPortfolioResponseBody> projectsResponseBodyList = page.stream()
+                    .map(UserPortfolioResponseBody::fromProject)
+                    .collect(Collectors.toSet());
+
+            return response.withData(new UserPortfolioResponseEntity(projectsResponseBodyList));
+        } catch (ExpiredJwtException e) {
+            return response.withError("Срок использования токена истек");
+        }
+    }
+
+    public GeneralResponse<UserProjectsResponseEntity> getUserProjects(HttpServletRequest req, Pageable pageable, String tagsParam, Boolean active) {
+        GeneralResponse<UserProjectsResponseEntity> response = new GeneralResponse<>();
+        try {
+            String token = jwtTokenFilter.parseRequestJwt(req);
+            String login = jwtHelper.getUserNameFromJwtToken(token);
+            User user = userRepository.findByLogin(login);
+            List<Participant> participants = participantRepository.findByUser(user, pageable);
+
+            Set<ProjectStatus> statuses;
+            Set<ProjectStatus> active_statuses = Set.of(ProjectStatus.NEW, ProjectStatus.IN_PROGRESS, ProjectStatus.MODIFYING);
+            Set<ProjectStatus> all_statuses = Set.of(ProjectStatus.NEW, ProjectStatus.IN_PROGRESS, ProjectStatus.MODIFYING, ProjectStatus.ENDED, ProjectStatus.CANCELLED);
+            if (active == true)
+                statuses = active_statuses;
+            else
+                statuses = all_statuses;
+
+            Page<Project> page;
+            if (tagsParam != null && !tagsParam.isBlank()) {
+                var tags = tagsService.findByTagParam(tagsParam);
+                page = projectRepository.findAllByParticipantsInAndTagsInAndStatusIn(participants, tags, statuses, pageable);
+            } else
+                page = projectRepository.findAllByParticipantsInAndStatusIn(participants, statuses, pageable);
+
+            Set<UserProjectResponseBody> projectsResponseBodyList = page.stream()
+                    .map(UserProjectResponseBody::fromProject)
+                    .collect(Collectors.toSet());
+
+            return response.withData(new UserProjectsResponseEntity(page.getTotalElements(), projectsResponseBodyList));
+        } catch (ExpiredJwtException e) {
+            return response.withError("Срок использования токена истек");
+        }
     }
 }
