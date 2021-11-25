@@ -41,12 +41,8 @@ public class User implements UserDetails {
 
     @ManyToMany(cascade = {PERSIST, MERGE, DETACH, REFRESH, PERSIST})
     private Set<ProjectRole> roles;
-    @ManyToMany
-    @Cascade({org.hibernate.annotations.CascadeType.PERSIST,
-            org.hibernate.annotations.CascadeType.MERGE,
-            org.hibernate.annotations.CascadeType.DETACH,
-            org.hibernate.annotations.CascadeType.REFRESH,
-            org.hibernate.annotations.CascadeType.PERSIST})
+
+    @ManyToMany(cascade = {PERSIST, MERGE, DETACH, REFRESH, PERSIST})
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @JoinTable(
             name = "user_skills",

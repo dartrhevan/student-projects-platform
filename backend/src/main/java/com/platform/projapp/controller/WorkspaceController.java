@@ -2,10 +2,7 @@ package com.platform.projapp.controller;
 
 import com.platform.projapp.dto.request.WorkspaceRequest;
 import com.platform.projapp.dto.response.GeneralResponse;
-import com.platform.projapp.dto.response.body.MessageResponseBody;
-import com.platform.projapp.dto.response.body.WorkspaceCodeResponseBody;
-import com.platform.projapp.dto.response.body.WorkspaceResponseBody;
-import com.platform.projapp.dto.response.body.WorkspacesResponseBody;
+import com.platform.projapp.dto.response.body.*;
 import com.platform.projapp.error.ErrorConstants;
 import com.platform.projapp.error.ErrorUtils;
 import com.platform.projapp.service.UserService;
@@ -18,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -108,6 +106,20 @@ public class WorkspaceController {
             return errorResponseEntity;
         workspaceService.delete(workspace);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping("/{workspaceId}/settings")
+    public ResponseEntity<?> getSettings(@RequestHeader(name = "Authorization") String token,
+                                      @PathVariable("workspaceId") Long workspaceId) {
+        var response = new GeneralResponse<>();
+        var user = userService.parseAndFindByJwt(token);
+        var workspace = workspaceService.findById(workspaceId);
+        var errorResponseEntity = workspaceService.getWorkspaceErrorResponseEntity(workspace,
+                user.getLogin(),
+                List.of(ErrorConstants.USER_NOT_WORKSPACE_OWNER));
+        return errorResponseEntity != null ?
+                errorResponseEntity :
+                ResponseEntity.ok(response.withData(WorkspaceSettingsResponseBody.fromWorkspace(workspace)));
     }
 
     @GetMapping("/participants")

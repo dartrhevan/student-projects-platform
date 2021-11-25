@@ -35,6 +35,7 @@ public class Project {
     @ManyToOne
     private Workspace workspace;
     private String ownerLogin;
+    private Double score;
 
     @ManyToMany(cascade = {PERSIST, MERGE, DETACH, REFRESH, PERSIST})
     private Set<Tags> tags;

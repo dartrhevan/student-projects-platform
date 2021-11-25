@@ -1,6 +1,7 @@
 package com.platform.projapp.repository;
 
 import com.platform.projapp.enumarate.ProjectStatus;
+import com.platform.projapp.model.Participant;
 import com.platform.projapp.model.Project;
 import com.platform.projapp.model.Tags;
 import com.platform.projapp.model.Workspace;
@@ -12,6 +13,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -30,4 +32,10 @@ public interface ProjectRepository extends PagingAndSortingRepository<Project, L
     Page<Project> findAllByWorkspaceAndTagsInTags(
             @Param("workspace") Workspace workspace, @Param("tags") Set<Tags> tags, Pageable pageable,
             @Param("statuses") Collection<ProjectStatus> statuses);
+
+    Page<Project> findAllByParticipantsInAndStatusIn(List<Participant> participants, Set<ProjectStatus> status, Pageable pageable);
+
+    Page<Project> findAllByParticipantsInAndTagsIn(List<Participant> participants,Set<Tags> tags, Pageable pageable);
+
+    Page<Project> findAllByParticipantsInAndTagsInAndStatusIn(List<Participant> participants,  Set<Tags> tags, Set<ProjectStatus> status, Pageable pageable);
 }
