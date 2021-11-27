@@ -18,11 +18,10 @@ import Centered from "../components/util/Centered";
 import ErrorMessage from "../components/elements/ErrorMessage";
 import {Clear} from "@material-ui/icons";
 import {useError, useSuccess, useWarn} from "../hooks/logging";
-import Tag from "../model/Tag";
 import {useSelector} from "react-redux";
 import getTagsRef, {getTagsReferenceMap} from "../hooks/getTagsRef";
 import ConfirmationDialog from "../components/util/ConfirmationDialog";
-import {deleteWorkspace} from "../api/workspaces";
+import THEME, {ElementsStyle} from "../theme";
 
 const useStyles = makeStyles(theme => ({
     paper: {
@@ -30,9 +29,10 @@ const useStyles = makeStyles(theme => ({
         width: '70%',
         minHeight: '70vh',
         marginTop: '70px',
-        '&:only-child': {
-            width: '100%'
-        }
+        // '&:only-child': {
+        //     width: '100%'
+        // }
+        ...ElementsStyle
     },
     inner: {
         width: '100%',
@@ -76,31 +76,37 @@ const RoleSpecificButton = ({project, onSubmit, enabled, isNew}:
                 <>
                     <ConfirmationDialog open={deleteDialog} onClose={() => setDeleteDialog(false)}
                                         label="удалить проект" onSubmit={onDelete}/>
-                    <Button href={`/users?projectId=${project.id}&workspaceId=${project.workSpaceId}`}>
-                        Найти участника
-                    </Button>
-                    <Button href={`/project_plan?projectId=${project.id}&workspaceId=${project.workSpaceId}`}>
-                        Просмотр плана
-                    </Button>
+
                     {!isNew ? (
-                        <Button onClick={() => setDeleteDialog(true)}>
-                            Удалить
-                        </Button>) : (<></>)}
-                    <Button variant='contained' disabled={!enabled} onClick={onSubmit}>
+                        <>
+                            <Button color='inherit'
+                                    href={`/users?projectId=${project.id}&workspaceId=${project.workSpaceId}`}>
+                                Найти участника
+                            </Button>
+                            <Button color='inherit'
+                                    href={`/project_plan?projectId=${project.id}&workspaceId=${project.workSpaceId}`}>
+                                Просмотр плана
+                            </Button>
+                            <Button color='inherit' onClick={() => setDeleteDialog(true)}>
+                                Удалить
+                            </Button>
+                        </>) : (<></>)}
+                    <Button color='inherit' variant='contained' disabled={!enabled} onClick={onSubmit}>
                         Подтвердить изменения
                     </Button>
                 </>);
         case ProjectRole.PARTICIPANT:
         case ProjectRole.MENTOR:
             return (
-                <Button href={`/project_plan?projectId=${project.id}&workspaceId=${project.workSpaceId}`}>
+                <Button color='inherit'
+                        href={`/project_plan?projectId=${project.id}&workspaceId=${project.workSpaceId}`}>
                     Просмотр плана
                 </Button>);
         case ProjectRole.STRANGER:
-            return (<Button>Присоединиться</Button>);
+            return (<Button color='inherit'>Присоединиться</Button>);
         default:
             return isNew ?
-                <Button variant='contained' disabled={!enabled} onClick={onSubmit}>
+                <Button variant='contained' color='inherit' disabled={!enabled} onClick={onSubmit}>
                     Подтвердить изменения
                 </Button>
                 : <></>
@@ -222,7 +228,9 @@ export default function ProjectDetailedPage() {
                     component="nav"
                     aria-labelledby="nested-list-subheader"
                     subheader={
-                        <ListSubheader component="div" id="nested-list-subheader">
+                        <ListSubheader component="div" sx={{
+                            background: THEME.ELEMENTS_COLOUR,
+                        }} color='inherit'>
                             Список участников
                         </ListSubheader>
                     }>
@@ -236,7 +244,7 @@ export default function ProjectDetailedPage() {
                         </ListItemButton>))}
                 </List>
                 <div className={classes.butGr} style={{justifyContent: 'start'}}>
-                    <Typography sx={{margin: '10px'}}>Максимальное кол-во участников</Typography>
+                    <Typography sx={{margin: '10px'}} color='inherit'>Максимальное кол-во участников</Typography>
                     <TextField sx={{width: '40px'}} type='number' variant='standard'/>
                 </div>
                 <div className={classes.butGr} style={{justifyContent: 'start'}}>
@@ -244,11 +252,11 @@ export default function ProjectDetailedPage() {
                     <Select
                         value={project?.status}
                         onChange={s => setProject(project?.withStatus(s.target.value as ProjectStatus))}>
-                        <MenuItem value={ProjectStatus.NEW}>Новый</MenuItem>
-                        <MenuItem value={ProjectStatus.IN_PROGRESS}>В разработке</MenuItem>
-                        <MenuItem value={ProjectStatus.ENDED}>Завершён</MenuItem>
-                        <MenuItem value={ProjectStatus.CANCELLED}>Отклонён</MenuItem>
-                        <MenuItem value={ProjectStatus.MODIFYING}>На доработке</MenuItem>
+                        <MenuItem color='inherit' value={ProjectStatus.NEW}>Новый</MenuItem>
+                        <MenuItem color='inherit' value={ProjectStatus.IN_PROGRESS}>В разработке</MenuItem>
+                        <MenuItem color='inherit' value={ProjectStatus.ENDED}>Завершён</MenuItem>
+                        <MenuItem color='inherit' value={ProjectStatus.CANCELLED}>Отклонён</MenuItem>
+                        <MenuItem color='inherit' value={ProjectStatus.MODIFYING}>На доработке</MenuItem>
                     </Select>
                 </div>
                 <ErrorMessage message='*Не все обязательные поля заполнены' condition={!allFilled}/>

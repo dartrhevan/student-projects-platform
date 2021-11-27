@@ -20,8 +20,10 @@ import {
 } from "@mui/material";
 import {getOnFieldChange, toDateString} from "../utils/utils";
 import {ProjectRole} from "../model/Project";
+import {ElementsStyle} from "../theme";
 
 const useStyles = makeStyles(theme => ({
+    root: ElementsStyle,
     score: {
         width: '60px',
         margin: '0 10px',
@@ -37,9 +39,9 @@ const useStyles = makeStyles(theme => ({
         width: '70vw',
         minHeight: '70vh',
         marginTop: '70px',
-        '&:only-child': {
-            width: '100%'
-        }
+        // '&:only-child': {
+        //     width: '100%'
+        // },
     },
     label: {
         margin: '10px',
@@ -73,32 +75,22 @@ interface SprintProps extends ListItemProps {
 
 const SprintComponent = ({sprint, number, role, onSprintUpdate}: SprintProps) => {
     const classes = useStyles();
-    const editable = true;//role === ProjectRole.OWNER;
+    const editable = true;
 
     const [presentationFile, setPresentationFile] = useState(undefined as File | undefined);
     const [goalsDescription, setGoalsDescription] = useState(sprint.goalsDescription);
-    // const [scores, setScores] = useState(sprint.scores);
     const [startDate, setStartDate] = useState(sprint.startDate);
     const [endDate, setEndDate] = useState(sprint.endDate);
 
-    // const [resultComment, setResultComment] = useState(sprint.comments);
-
     function onChangesSubmit() {
         sprint.goalsDescription = goalsDescription;
-        // sprint.scores = scores;
         sprint.startDate = startDate;
         sprint.endDate = endDate;
-        // sprint.comments = resultComment;
         onSprintUpdate(sprint, presentationFile);
     }
 
-    // function onSetScore(index: number, value: string) {
-    //     scores[index] = Number.parseInt(value);
-    //     setScores(scores);
-    // }
-
     return (
-        <Accordion>
+        <Accordion elevation={8} sx={ElementsStyle}>
             <AccordionSummary
                 expandIcon={<ArrowForwardIosSharpIcon sx={{fontSize: '0.9rem', transform: 'rotate(90deg)'}}/>}>
                 <Typography>Спринт {number}</Typography>
@@ -111,7 +103,6 @@ const SprintComponent = ({sprint, number, role, onSprintUpdate}: SprintProps) =>
                 <div style={{
                     display: 'flex',
                     justifyContent: 'start',
-                    // alignItems: 'vaseline',
                     flexDirection: 'row',
                     marginTop: '15px'
                 }}>
@@ -127,7 +118,7 @@ const SprintComponent = ({sprint, number, role, onSprintUpdate}: SprintProps) =>
                           sx={{margin: '10px', fontSize: '18px'}}>
                         Презентация
                     </Link>
-                    <Button className={classes.dropzone} variant='outlined'>
+                    <Button className={classes.dropzone} variant='outlined' color='inherit'>
                         <Dropzone maxFiles={1} onDrop={(acceptedFiles: File[]) =>
                             setPresentationFile(acceptedFiles[acceptedFiles.length - 1])}>
                             {({getRootProps, getInputProps}) => (
@@ -147,7 +138,7 @@ const SprintComponent = ({sprint, number, role, onSprintUpdate}: SprintProps) =>
                 <br/>
                 <Typography paragraph variant='h6'>Комментарии результатов</Typography>
                 {sprint.comments.map((c, i) => (
-                    <Card sx={{padding: '5px'}}>
+                    <Card sx={{padding: '5px', ...ElementsStyle}}>
                         <Typography variant='body2'>
                             {c.mentorName}
                         </Typography>
@@ -160,8 +151,8 @@ const SprintComponent = ({sprint, number, role, onSprintUpdate}: SprintProps) =>
                     justifyContent: 'end'
                 }} className={classes.label}>
                     {editable ?
-                        <Button onClick={onChangesSubmit}>Подтвердить изменения</Button> : <></>}
-                    <Button>Удалить</Button>
+                        <Button color='inherit' onClick={onChangesSubmit}>Подтвердить изменения</Button> : <></>}
+                    <Button color='inherit'>Удалить</Button>
                 </div>
             </AccordionDetails>
         </Accordion>);
@@ -213,13 +204,13 @@ export default function ProjectPlanComponent() {
     }
 
     return (
-        <Paper className={classes.paper}>
+        <Paper className={classes.paper} sx={ElementsStyle} color='inherit' elevation={8}>
             <Typography align='center' paragraph variant='h4'>План проекта {}</Typography>
             <br/>
             {projectPlan?.plan.map((s, i) =>
                 <SprintComponent role={projectPlan.role} sprint={s} number={i}
                                  key={s.goalsDescription} onSprintUpdate={onSprintUpdate}/>)}
-            <Card sx={{margin: '30px 0'}} onClick={addNewSprint}>
+            <Card sx={{margin: '30px 0', ...ElementsStyle}} onClick={addNewSprint} elevation={8}>
                 <CardActionArea>
                     <CardContent sx={{padding: '5px'}} className={classes.card}>
                         <AddIcon fontSize='large' color='action'/>
@@ -232,15 +223,15 @@ export default function ProjectPlanComponent() {
                 flexDirection: 'row',
                 marginTop: '15px'
             }}>
-                <Button variant='outlined'>Сбросить график</Button>
+                <Button color='inherit' variant='outlined'>Сбросить график</Button>
             </div>
             <Dialog open={showConfirmDialog} onClose={() => setShowConfirmDialog(false)}>
                 <DialogTitle>
                     Вы уверены?
                 </DialogTitle>
                 <DialogActions>
-                    <Button variant='outlined' onClick={onDropPlan}>Да</Button>
-                    <Button variant='outlined' onClick={() => setShowConfirmDialog(false)}>Нет</Button>
+                    <Button color='inherit' variant='outlined' onClick={onDropPlan}>Да</Button>
+                    <Button color='inherit' variant='outlined' onClick={() => setShowConfirmDialog(false)}>Нет</Button>
                 </DialogActions>
             </Dialog>
         </Paper>);

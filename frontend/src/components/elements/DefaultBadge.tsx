@@ -7,6 +7,7 @@ import {Typography} from "@mui/material";
 import Dot from "../util/Dot";
 import clsx from 'clsx';
 import {getTagsReferenceMap} from "../../hooks/getTagsRef";
+import THEME, {ElementsStyle} from "../../theme";
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -33,7 +34,8 @@ const useStyles = makeStyles(theme => ({
         display: 'flex',
         height: '80%',
         flexGrow: 1,
-        flexDirection: 'column'
+        flexDirection: 'column',
+        ...ElementsStyle
     }
 }));
 

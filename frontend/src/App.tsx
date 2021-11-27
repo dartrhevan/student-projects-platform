@@ -28,11 +28,26 @@ import StartPage from "./pages/StartPage";
 import Tag from "./model/Tag";
 import {setTagsRef} from "./store/actions/tags/tags";
 import {getTagsReference} from "./api/reference";
+import {makeStyles} from "@material-ui/core";
+import THEME from './theme';
+
+
+const useStyles = makeStyles(theme => ({
+    main: {
+        background: THEME.BACKGROUND_COLOUR,
+        fontFamily: THEME.FONT_FAMILY,
+        color: THEME.MAIN_TEXT_COLOUR,
+        fontWeight: THEME.FONT_WEIGHT,
+        width: '100vw',
+        paddingTop: '60px',
+        maxWidth: '100vw',
+    }
+}));
 
 function App() {
     // const dispatch = useDispatch();
     console.log("render Start")
-    // const classes = useStyles();
+    const classes = useStyles();
     const dispatch = useDispatch();
 
     const error = useError();
@@ -77,7 +92,7 @@ function App() {
                     {log.text}
                 </Alert>
             </Snackbar>
-            <Centered>
+            <Centered additionalClasses={[classes.main]}>
                 <BrowserRouter>
                     <Switch>
                         <Route component={Login} path='/authentication'/>

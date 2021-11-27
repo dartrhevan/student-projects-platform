@@ -7,6 +7,7 @@ import clsx from "clsx";
 import isMobile from "../../hooks/isMobile";
 import Typography from "@material-ui/core/Typography";
 import Tag from "../../model/Tag";
+import THEME, {ElementsStyle} from "../../theme";
 
 const useStyles = makeStyles(theme => ({
     queryPanel: {
@@ -14,7 +15,8 @@ const useStyles = makeStyles(theme => ({
         width: '100%',
         maxWidth: '80vw',
         display: 'flex',
-        alignItems: 'center'
+        alignItems: 'center',
+        ...ElementsStyle
     },
     mobilePanel: {
         // flexDirection: 'column',
@@ -39,12 +41,11 @@ interface QueryProps {
     showTags: boolean
     additionalButtons?: JSX.Element
     onSetTags?: (t: Tag[]) => void
+    addButton?: boolean
 }
 
-export default function QueryPanel({
-                                       onSetTags = (s => {
-                                       }), additionalButtons, buttonTitle, buttonOnClick, showDialog, showTags
-                                   }: QueryProps) {
+export default function QueryPanel(
+    {addButton = true, onSetTags = (s => {}), additionalButtons, buttonTitle, buttonOnClick, showDialog, showTags}: QueryProps) {
     const classes = useStyles();
     const mobile = isMobile();
 
@@ -56,10 +57,11 @@ export default function QueryPanel({
         {showDialog ? <WorkspaceSettings/> : <></>}
         {additionalButtons}
 
-        <Tooltip title={buttonTitle}>
-            <IconButton className={classes.addButton} onClick={buttonOnClick}>
-                <Add/>
-            </IconButton>
-        </Tooltip>
+        {addButton ?
+            (<Tooltip title={buttonTitle}>
+                <IconButton className={classes.addButton} onClick={buttonOnClick}>
+                    <Add/>
+                </IconButton>
+            </Tooltip>) : <></>}
     </Paper>)
 }

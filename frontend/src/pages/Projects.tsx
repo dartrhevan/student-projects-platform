@@ -177,5 +177,6 @@ export default function Projects() {
                        badgeData={data} squared={false}
                        href={i => `/project?projectId=${i.id}&workspaceId=${workspaceId}`}
                        addTitle='Создать' onSetTags={tagsUpdate}
+                       addButton={workspaceId !== undefined}
                        addOnClick={() => window.location.href = `/project?isNew&workspaceId=${workspaceId}`}/>);
 }

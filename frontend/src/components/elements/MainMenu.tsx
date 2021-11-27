@@ -15,6 +15,7 @@ import FormatAlignJustifyIcon from '@mui/icons-material/FormatAlignJustify';
 import EmailIcon from '@mui/icons-material/Email';
 import getUsername from "../../hooks/getUsername";
 import AutoAwesomeMosaicIcon from '@mui/icons-material/AutoAwesomeMosaic';
+import THEME, {HeaderStyle} from "../../theme";
 
 const drawerWidth = 240;
 
@@ -31,6 +32,7 @@ const useStyles = makeStyles((theme: Theme) =>
             flexShrink: 0,
             whiteSpace: 'nowrap',
         },
+        paper: HeaderStyle,
         drawerOpen: {
             width: drawerWidth,
             transition: theme.transitions.create('width', {
@@ -91,7 +93,7 @@ export default function MiniDrawer() {
             variant="permanent"
             className={clsx(classes.drawer, drawerClasses)}
             classes={{
-                paper: clsx(drawerClasses)
+                paper: clsx(drawerClasses, classes.paper)
             }}>
 
             <List className={classes.list}>
@@ -103,7 +105,7 @@ export default function MiniDrawer() {
                     <ListItemIcon><Apps/></ListItemIcon>
                     <ListItemText primary={'Мои проекты'}/>
                 </ListItem>
-                <ListItem button key={'Моё портфолио'} onClick={() => window.location.href = `/portfolio/${login}`}>
+                <ListItem button key={'Моё портфолио'} onClick={() => window.location.href = `/portfolio/${login?.user.username}`}>
                     <ListItemIcon><FormatAlignJustifyIcon/></ListItemIcon>
                     <ListItemText primary={'Моё портфолио'}/>
                 </ListItem>

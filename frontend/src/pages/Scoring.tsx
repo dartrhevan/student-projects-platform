@@ -32,7 +32,7 @@ const tableColumns = [
         field: "presentationScore",
         sorting: false,
         render: (row: Score) => <TextField type='number' sx={{padding: '2px', maxWidth: '25px'}}
-                                           variant='standard' value={row.presentationScore}/>
+                                           variant='standard' defaultValue={row.presentationScore}/>
     },
     {
         title: 'Доска',

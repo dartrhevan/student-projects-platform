@@ -6,6 +6,7 @@ import {getScores} from "../api/workspaces";
 import ScoreDTO from "../model/dto/ScoreDTO";
 import {Paper, TableCell, TableContainer, TableHead, TableRow, Typography} from '@mui/material';
 import TableBody from '@material-ui/core/TableBody/TableBody';
+import THEME, {ElementsStyle} from "../theme";
 
 export default function Scores() {
     const {workspaceId} = useParams<{ workspaceId: string }>();
@@ -21,8 +22,14 @@ export default function Scores() {
     }, (value, key) => key); //an array with length of a maximum sprints count
 
     return (<>
-        <Typography paragraph variant='h3'>Оценки</Typography>
-        <TableContainer component={Paper}>
+        <Typography paragraph variant='h3' style={{
+            fontFamily: THEME.FONT_FAMILY,
+            color: THEME.HEADER_TEXT_COLOUR,
+            fontWeight: THEME.FONT_WEIGHT,
+        }}>Оценки</Typography>
+        <TableContainer component={Paper} style={{
+            maxWidth: '90%', ...ElementsStyle
+        }}>
             <Table sx={{minWidth: 650}} size="small" aria-label="a dense table">
                 <TableHead>
                     <TableRow>

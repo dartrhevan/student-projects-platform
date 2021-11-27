@@ -1,6 +1,6 @@
 import React, {forwardRef} from 'react';
 
-import {makeStyles, Typography} from "@material-ui/core";
+import {makeStyles} from "@material-ui/core";
 import MaterialTable, {Action, Column, Icons, Query, QueryResult} from "material-table";
 import {
     ArrowDownward,
@@ -11,6 +11,9 @@ import {
     LastPage,
     Search
 } from "@material-ui/icons";
+import THEME, {ElementsStyle} from '../../theme';
+import {Typography} from "@mui/material";
+import isMobile from "../../hooks/isMobile";
 
 const useStyles = makeStyles(theme => ({
     main: {
@@ -31,11 +34,14 @@ interface ITableProps<T extends object> {
     tableRef?: React.Ref<MaterialTable<T>>
 }
 
-export default function Table<T extends object>({tableRef, title, data, tableColumns, tableActions, paging = true, filtering = true}: ITableProps<T>) {
+export default function Table<T extends object>(
+    {tableRef, title, data, tableColumns, tableActions, paging = true, filtering = true}: ITableProps<T>) {
     const classes = useStyles();
+    const mobile = isMobile();
+
     const icons: Icons = {
         FirstPage: forwardRef((props, ref) => <FirstPage ref={ref}/>),
-        LastPage:  forwardRef((props, ref) => <LastPage ref={ref}/>),
+        LastPage: forwardRef((props, ref) => <LastPage ref={ref}/>),
         NextPage: forwardRef((props, ref) => <KeyboardArrowRight ref={ref}/>),
         PreviousPage: forwardRef((props, ref) => <KeyboardArrowLeft ref={ref}/>),
         Search: forwardRef((props, ref) => <Search ref={ref}/>),
@@ -52,6 +58,7 @@ export default function Table<T extends object>({tableRef, title, data, tableCol
                 tableRef={tableRef}
                 title={<Typography
                     variant="h6"
+                    sx={ElementsStyle}
                     gutterBottom>
                     {title}
                 </Typography>}
@@ -68,8 +75,12 @@ export default function Table<T extends object>({tableRef, title, data, tableCol
                     draggable: false,
                     search: false,
                     filtering: filtering,
-                    actionsColumnIndex: -1
+                    actionsColumnIndex: -1,
+                    headerStyle: ElementsStyle
                 }}
-                style={{width: '100%', margin: 15}}/>
+                style={{
+                    width: mobile ? '90%' : '70%', margin: 15,
+                    ...ElementsStyle
+                }}/>
         </>);
 }
