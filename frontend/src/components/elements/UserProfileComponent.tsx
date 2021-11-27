@@ -22,7 +22,7 @@ import RolesInput from "./RolesInput";
 import {useError, useSuccess} from "../../hooks/logging";
 import GenericResponse from "../../model/dto/GenericResponse";
 import {Login} from "../../store/state/LoginState";
-import THEME from "../../theme";
+import THEME, {ElementsStyle} from "../../theme";
 
 const useStyles = makeStyles(theme => ({
     def: {
@@ -44,10 +44,7 @@ const useStyles = makeStyles(theme => ({
     card: {
         margin: '40px 0',
         padding: '15px',
-        background: THEME.ELEMENTS_COLOUR,
-        fontFamily: THEME.FONT_FAMILY,
-        color: THEME.MAIN_TEXT_COLOUR,
-        fontWeight: THEME.FONT_WEIGHT,
+        ...ElementsStyle
     }
 }));
 
