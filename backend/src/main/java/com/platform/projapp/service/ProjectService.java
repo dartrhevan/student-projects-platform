@@ -8,6 +8,7 @@ import com.platform.projapp.error.ErrorConstants;
 import com.platform.projapp.error.ErrorInfo;
 import com.platform.projapp.model.*;
 import com.platform.projapp.repository.ProjectRepository;
+import com.platform.projapp.repository.SprintsRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Stream;
 
 /**
  * @author Yarullin Renat
@@ -28,6 +30,7 @@ public class ProjectService {
     private final WorkspaceService workspaceService;
     private final TagsService tagsService;
     private final ProjectRoleService projectRoleService;
+    private final SprintsRepository sprintsRepository;
 
     public Project findById(Long id) {
         return projectRepository.findById(id).orElse(null);
@@ -62,7 +65,17 @@ public class ProjectService {
                 workspace,
                 tagsService.findAllByIdIn(projectRequest.getTags()));
         project.getParticipants().add(new Participant(project, true, user, projectRoleService.createProjectRole("тимлид")));
+//        var workspace = project.getWorkspace();
         projectRepository.save(project);
+        createDefaultSprints(workspace, project);
+
+    }
+
+    private void createDefaultSprints(Workspace workspace, Project project) {
+        for (var sprintNumber = 0; sprintNumber < workspace.getSprintCount(); sprintNumber++) {
+            var sprintStartDate = workspace.getZeroSprintDate().plusWeeks(workspace.getFrequencyOfSprints() * sprintNumber);
+            sprintsRepository.save(new Sprint(sprintNumber, "", sprintStartDate, sprintStartDate.plusWeeks(workspace.getFrequencyOfSprints()), project));
+        }
     }
 
     public void updateProject(Project project, ProjectRequest projectRequest) {
