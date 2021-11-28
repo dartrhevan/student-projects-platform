@@ -109,6 +109,7 @@ export default function Projects() {
     }
 
     return (<BadgePage checkBoxes={[new CheckBoxInfo('Показать только активные', activeUpdate)]}
+                       titleAlign='left'
                        additionalButtons={(<>
                            <WorkspaceSettings workspaceId={workspaceId}/>
                            {role === WorkspaceAssociation.ORGANIZER ?

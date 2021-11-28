@@ -3,7 +3,7 @@ import {makeStyles, TablePagination} from "@material-ui/core";
 import getPaging from '../../hooks/getPaging';
 import {shallowEqual, useDispatch, useSelector} from "react-redux";
 import {setPage, setPageSize} from "../../store/actions/paging/setPagingData";
-import THEME, {ElementsStyle} from "../../theme";
+import THEME, {BackgroundStyle, ElementsStyle} from "../../theme";
 
 const useStyles = makeStyles(theme => ({
     pagingPanel: {
@@ -13,7 +13,8 @@ const useStyles = makeStyles(theme => ({
         display: 'flex',
         flexDirection: 'row',
         justifyContent: 'flex-end',
-        ...ElementsStyle
+        border: 'none',
+        ...BackgroundStyle
     }
 }));
 

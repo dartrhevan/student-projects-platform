@@ -29,18 +29,15 @@ import Tag from "./model/Tag";
 import {setTagsRef} from "./store/actions/tags/tags";
 import {getTagsReference} from "./api/reference";
 import {makeStyles} from "@material-ui/core";
-import THEME from './theme';
+import THEME, {BackgroundStyle} from './theme';
 
 
 const useStyles = makeStyles(theme => ({
     main: {
-        background: THEME.BACKGROUND_COLOUR,
-        fontFamily: THEME.FONT_FAMILY,
-        color: THEME.MAIN_TEXT_COLOUR,
-        fontWeight: THEME.FONT_WEIGHT,
         width: '100vw',
         paddingTop: '60px',
         maxWidth: '100vw',
+        ...BackgroundStyle
     }
 }));
 
