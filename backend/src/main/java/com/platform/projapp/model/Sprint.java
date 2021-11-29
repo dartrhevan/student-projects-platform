@@ -27,6 +27,7 @@ public class Sprint {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @Column(unique = true)
     private Long id;
     private int orderNumber;
     private String goals;
@@ -36,5 +37,12 @@ public class Sprint {
     @ManyToOne
     private Project project;
     @OneToMany(mappedBy = "sprintId")
-    private List<Comment> comments;
+
+    private List<Comment> comments;public boolean isTomorrow() {
+        return endDate.minusDays(1L).equals(LocalDate.now());
+    }
+
+    public boolean isHalfTheDuration() {
+        return endDate.minusWeeks(project.getWorkspace().getFrequencyOfSprints() / 2).equals(LocalDate.now());
+    }
 }

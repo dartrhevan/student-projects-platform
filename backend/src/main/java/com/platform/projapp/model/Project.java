@@ -1,6 +1,7 @@
 package com.platform.projapp.model;
 
 import com.platform.projapp.enumarate.ProjectStatus;
+import com.platform.projapp.enumarate.WorkspaceRole;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -65,5 +66,17 @@ public class Project {
     public boolean hasUser(String userLogin) {
         return participants.stream()
                 .anyMatch(workspaceParticipant -> workspaceParticipant.getUser().getLogin().equals(userLogin));
+    }
+
+    public Set<User> getMentors() {
+        return workspace.getUsersByWorkspaceRole(WorkspaceRole.MENTOR);
+    }
+
+    public User getOwner() {
+        return participants.stream()
+                .filter(Participant::getIsOwner)
+                .map(Participant::getUser)
+                .findFirst()
+                .orElse(null);
     }
 }
