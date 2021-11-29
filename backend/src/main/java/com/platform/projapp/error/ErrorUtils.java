@@ -47,7 +47,7 @@ public class ErrorUtils {
                 .collect(Collectors.toList());
         for (Object object : objects) {
             if (object instanceof User)
-                return badRequest.body(response.withData(MessageResponseBody.of(ErrorConstants.USERNAME_NOT_FOUND)));
+                return badRequest.body(response.withData(MessageResponseBody.of(ErrorConstants.USERNAME_OR_PASSWORD_NOT_FOUND)));
             if (object instanceof Project)
                 return badRequest.body(response.withData(MessageResponseBody.of(ErrorConstants.PROJECT_NOT_FOUND.getMessage())));
             if (object instanceof ProjectRole)
