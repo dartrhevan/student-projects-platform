@@ -17,20 +17,19 @@ import {useDispatch} from "react-redux";
 import TagsPanel from "../../components/util/TagsPanel";
 import clsx from 'clsx';
 import Card from "@material-ui/core/Card";
-import Autocomplete from "@mui/material/Autocomplete";
 import Tag from "../../model/Tag";
-import {addRoleToReference, getRolesReference} from "../../api/reference";
 import RolesInput from "./RolesInput";
 import {useError, useSuccess} from "../../hooks/logging";
 import GenericResponse from "../../model/dto/GenericResponse";
 import {Login} from "../../store/state/LoginState";
+import THEME, {ElementsStyle} from "../../theme";
 
 const useStyles = makeStyles(theme => ({
     def: {
         margin: "15px",
     },
     container: {
-        maxWidth: '500px'
+        maxWidth: '500px',
     },
     skills: {
         width: '100%',
@@ -44,7 +43,8 @@ const useStyles = makeStyles(theme => ({
     },
     card: {
         margin: '40px 0',
-        padding: '15px'
+        padding: '15px',
+        ...ElementsStyle
     }
 }));
 

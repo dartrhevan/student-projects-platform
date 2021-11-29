@@ -8,13 +8,20 @@ import {useDispatch} from "react-redux";
 import setLoginAction from "../store/actions/auth/setLoginAction";
 import {LoginState} from "../store/state/LoginState";
 import {useWarn} from "../hooks/logging";
+import {ElementsStyle} from "../theme";
+import Card from "@material-ui/core/Card";
 
 const useStyles = makeStyles(theme => ({
     def: {
-        margin: "15px"
+        margin: "15px 0"
     },
     container: {
-        maxWidth: '500px'
+        maxWidth: '500px',
+    },
+    card: {
+        margin: '40px 0',
+        padding: '15px',
+        ...ElementsStyle
     }
 }));
 
@@ -40,19 +47,21 @@ export default function Login() {
 
     return (
         <Centered additionalClasses={[classes.container]}>
-            <Typography variant="h5">
-                Вход
-            </Typography>
-            <CssBaseline/>
-            <TextField required label="Логин" className={classes.def} onChange={getOnFieldChange(setUsername)}
-                       fullWidth={true}/>
-            <CssBaseline/>
-            <TextField label="Пароль" className={classes.def} onChange={getOnFieldChange(setPassword)}
-                       type="password" fullWidth={true} required/>
-            <CssBaseline/>
-            <Aligned endAlign={true}>
-                <Button href='/registration' className={classes.def}>Регистрация</Button>
-                <Button disabled={!allFilled} onClick={onLogin} className={classes.def}>Подтвердить</Button>
-            </Aligned>
+            <Card className={classes.card}>
+                <Typography variant="h5" align='center'>
+                    Вход
+                </Typography>
+                <CssBaseline/>
+                <TextField required label="Логин" className={classes.def} onChange={getOnFieldChange(setUsername)}
+                           fullWidth={true}/>
+                <CssBaseline/>
+                <TextField label="Пароль" className={classes.def} onChange={getOnFieldChange(setPassword)}
+                           type="password" fullWidth={true} required/>
+                <CssBaseline/>
+                <Aligned endAlign={true}>
+                    <Button href='/registration' color='inherit' className={classes.def}>Регистрация</Button>
+                    <Button disabled={!allFilled} color='inherit' onClick={onLogin} className={classes.def}>Подтвердить</Button>
+                </Aligned>
+            </Card>
         </Centered>);
 }

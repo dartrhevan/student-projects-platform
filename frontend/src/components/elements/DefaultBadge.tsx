@@ -7,12 +7,14 @@ import {Typography} from "@mui/material";
 import Dot from "../util/Dot";
 import clsx from 'clsx';
 import {getTagsReferenceMap} from "../../hooks/getTagsRef";
+import THEME, {ElementsStyle} from "../../theme";
 
 const useStyles = makeStyles(theme => ({
     root: {
         margin: "30px",
         cursor: "pointer",
         boxShadow: "0 0 5px 5px rgba(50, 50, 50, 0.15)",
+        ...ElementsStyle
     },
     area: {
         width: '100%',
@@ -33,7 +35,7 @@ const useStyles = makeStyles(theme => ({
         display: 'flex',
         height: '80%',
         flexGrow: 1,
-        flexDirection: 'column'
+        flexDirection: 'column',
     }
 }));
 

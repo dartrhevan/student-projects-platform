@@ -43,8 +43,13 @@ public class Project {
     @OneToMany(mappedBy = "project", cascade = ALL, orphanRemoval = true)
     private Set<Participant> participants;
 
-    public Project(String ownerLogin, String name, String shortDescription, String fullDescription, String trackerLink, ProjectStatus status, Integer maxParticipantsCount, Workspace workspace, Set<Tags> tags) {
+    @OneToMany(mappedBy = "project", cascade = ALL, orphanRemoval = true)
+    private Set<Sprint> sprints;
+
+    public Project(String ownerLogin, String name, String shortDescription, String fullDescription, String trackerLink,
+                   ProjectStatus status, Integer maxParticipantsCount, Workspace workspace, Set<Tags> tags) {
         this.name = name;
+//        this.sprints = sprints;
         this.ownerLogin = ownerLogin;
         this.shortDescription = shortDescription;
         this.fullDescription = fullDescription;
@@ -54,6 +59,7 @@ public class Project {
         this.workspace = workspace;
         this.tags = tags;
         this.participants = new HashSet<>();
+        sprints = new HashSet<>();
     }
 
     public boolean hasUser(String userLogin) {

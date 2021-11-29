@@ -1,10 +1,14 @@
 import React from 'react';
 import {Paper, Typography} from "@mui/material";
 import Centered from "../components/util/Centered";
+import {ElementsStyle} from "../theme";
 
 export default function StartPage() {
     return (
-        <Paper sx={{padding: '25px', width: '100%', height: '70%'}}>
+        <Paper sx={{
+            padding: '25px', width: '70%', height: '70%',
+            ...ElementsStyle
+        }}>
             <Typography align='center' variant='h4' paragraph>
                 Платформа для организации проектной деятельности
             </Typography>
