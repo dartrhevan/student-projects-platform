@@ -13,7 +13,10 @@ public class ErrorConstants {
     //public static ErrorInfo PASSWORD_IS_EMPTY = ErrorInfo.of("PasswordIsEmpty", "Поле пароль обязательно для заполнения");
     //public static ErrorInfo TAG_IS_BUSY = ErrorInfo.of("TagIsBusy", "Тэг с таким именем уже существует");
     public static ErrorInfo WORKSPACE_NOT_FOUND = ErrorInfo.of("WorkspaceNotFound", "Workspace не найден");
+    public static ErrorInfo ROLE_NOT_FOUND = ErrorInfo.of("RoleNotFound", "Роль не найден");
     public static ErrorInfo PROJECT_NOT_FOUND = ErrorInfo.of("ProjectNotFound", "Проект не найден");
+    public static ErrorInfo NOTIFICATION_NOT_FOUND = ErrorInfo.of("NotificationNotFound", "Уведомление не найдено");
+    public static ErrorInfo NOTIFICATION_TYPE_NOT_VALID = ErrorInfo.of("NotificationTypeNotValid", "Тип уведомления не корректный");
     public static ErrorInfo USER_NOT_WORKSPACE_OWNER = ErrorInfo.of("UserNotWorkspaceOwner", "Пользователь не является владельцем workspace");
     public static ErrorInfo USER_NOT_WORKSPACE_PARTICIPANT = ErrorInfo.of("UserNotWorkspaceParticipant", "Пользователь не является участником workspace");
     public static ErrorInfo INCORRECT_NUMBER_OF_PAGES = ErrorInfo.of("IncorrectNumberOfPages", "Неверное количество страниц");
