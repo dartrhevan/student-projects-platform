@@ -14,6 +14,7 @@ const useStyles = makeStyles(theme => ({
         margin: "30px",
         cursor: "pointer",
         boxShadow: "0 0 5px 5px rgba(50, 50, 50, 0.15)",
+        ...ElementsStyle
     },
     area: {
         width: '100%',
@@ -35,7 +36,6 @@ const useStyles = makeStyles(theme => ({
         height: '80%',
         flexGrow: 1,
         flexDirection: 'column',
-        ...ElementsStyle
     }
 }));
 
