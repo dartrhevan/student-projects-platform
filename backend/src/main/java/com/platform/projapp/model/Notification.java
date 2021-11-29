@@ -66,10 +66,10 @@ public class Notification {
             case JOINED -> String.format("Участник %s вступил в команду %s на роль %s", sender.getFullName(), project.getName(), projectRole.getName());
             case NOT_JOINED -> String.format("Участник %s отказался вступать в команду %s на роль %s", sender.getFullName(), project.getName(), projectRole.getName());
             case REQUEST_REJECTED -> String.format("Ваш запрос на вступление в команду %s был отклонен", project.getName());
-            case DEMO -> String.format("%s будет проходит демо по спринту № %s", sprint.getDate(), sprint.getNumber());
-            case DEMO_VERIFICATION -> String.format("Завтра %s будет проходит демо по %s. Будете ли вы присутствовать?", sprint.getDate(), sprint.getNumber());
-            case DEMO_CONFIRMED -> String.format("Ментор %s подтвердил свое присутствие завтра %s на демо спринта № %s", sender.getFullName(), sprint.getDate(), sprint.getNumber());
-            case DEMO_REJECTED -> String.format("Ментор %s не сможет присутствовать завтра %s на демо спринта № %s", sender.getFullName(), sprint.getDate(), sprint.getNumber());
+            case DEMO -> String.format("%s будет проходит демо по спринту № %s", sprint.getEndDate(), sprint.getOrderNumber());
+            case DEMO_VERIFICATION -> String.format("Завтра %s будет проходит демо по %s. Будете ли вы присутствовать?", sprint.getEndDate(), sprint.getOrderNumber());
+            case DEMO_CONFIRMED -> String.format("Ментор %s подтвердил свое присутствие завтра %s на демо спринта № %s", sender.getFullName(), sprint.getEndDate(), sprint.getOrderNumber());
+            case DEMO_REJECTED -> String.format("Ментор %s не сможет присутствовать завтра %s на демо спринта № %s", sender.getFullName(), sprint.getEndDate(), sprint.getOrderNumber());
         };
     }
 }
