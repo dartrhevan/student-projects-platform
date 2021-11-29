@@ -1,6 +1,11 @@
 package com.platform.projapp.controller;
 
+import com.platform.projapp.dto.request.NotificationAnswerRequest;
+import com.platform.projapp.dto.request.NotificationInviteRequest;
+import com.platform.projapp.dto.request.NotificationReqRequest;
 import com.platform.projapp.dto.request.RegisterOrUpdateUserRequest;
+import com.platform.projapp.enumarate.NotificationType;
+import com.platform.projapp.service.NotificationService;
 import com.platform.projapp.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -16,6 +21,30 @@ import javax.servlet.http.HttpServletRequest;
 @RequiredArgsConstructor
 public class UsersController {
     private final UserService userService;
+    private final NotificationService notificationService;
+
+    @PostMapping("/invite")
+    public ResponseEntity<?> invite(@RequestHeader(name = "Authorization") String token,
+                                    @RequestBody NotificationInviteRequest request) {
+        var user = userService.parseAndFindByJwt(token);
+        return notificationService.sendInviteNotification(user, request, NotificationType.INVITE);
+    }
+
+    @PostMapping("/request")
+    public ResponseEntity<?> request(@RequestHeader(name = "Authorization") String token,
+                                     @RequestBody NotificationReqRequest request) {
+        var user = userService.parseAndFindByJwt(token);
+        return notificationService.sendReqNotification(user, request, NotificationType.REQUEST);
+    }
+
+    @PostMapping("/reply")
+    public ResponseEntity<?> reply(@RequestHeader(name = "Authorization") String token,
+                                   @RequestParam(name = "notificationId") Long notificationId,
+                                   @RequestBody NotificationAnswerRequest request) {
+        var user = userService.parseAndFindByJwt(token);
+        var notification = notificationService.findById(notificationId);
+        return notificationService.replyToNotification(user, notification, request.getAnswer());
+    }
 
     @GetMapping("/currentuser")
     public ResponseEntity<?> getCurrentUser(HttpServletRequest req) {

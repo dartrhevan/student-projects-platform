@@ -39,6 +39,7 @@ public class Notification {
     @ManyToOne
     @JoinColumn(name = "role_id")
     private ProjectRole projectRole;
+    private boolean isNew = true;
 
     public Notification(User recipient, User sender, NotificationType type, Project project, ProjectRole projectRole) {
         this.type = type;
