@@ -10,6 +10,6 @@ import java.util.List;
 
 @Repository
 public interface SprintsRepository extends JpaRepository<Sprint, Long> {
-    @Query(value = "SELECT * FROM sprint WHERE project_id = :projectId", nativeQuery = true)
-    List<Sprint> findAllByProjectId(@Param("projectId") long projectId);
+//    @Query(value = "SELECT * FROM sprint WHERE project_id = :projectId", nativeQuery = true)
+//    List<Sprint> findAllByProjectId(@Param("projectId") long projectId);
 }

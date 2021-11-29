@@ -1,6 +1,6 @@
 package com.platform.projapp.dto.response.body;
 
-import com.platform.projapp.model.Comment;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.platform.projapp.model.Sprint;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,7 +18,8 @@ public class SprintDTO {
         this.goals = sprint.getGoals();
         this.startDate = sprint.getStartDate();
         this.endDate = sprint.getEndDate();
-        this.presentation = String.format("/api/presentation/%d", sprint.getPresentationId());
+        if (sprint.getPresentationId() != null)
+            this.presentation = String.format("/api/presentation/%d", sprint.getPresentationId());
 //        this.maxParticipantsCount = sprint.getMaxParticipantsCount();
         this.comments = sprint.getComments().stream().map(c -> new CommentDTO(c.getMentorName(), c.getComment())).collect(Collectors.toList());
     }
@@ -29,6 +30,6 @@ public class SprintDTO {
     private LocalDate startDate;
     private LocalDate endDate;
     private String presentation;
-//    private Integer maxParticipantsCount;
+    //    private Integer maxParticipantsCount;
     private List<CommentDTO> comments;
 }

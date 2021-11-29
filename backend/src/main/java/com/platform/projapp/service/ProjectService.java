@@ -3,7 +3,9 @@ package com.platform.projapp.service;
 import com.platform.projapp.dto.request.ParticipantRequest;
 import com.platform.projapp.dto.request.ProjectRequest;
 import com.platform.projapp.dto.response.body.MessageResponseBody;
+import com.platform.projapp.enumarate.ProjectRole;
 import com.platform.projapp.enumarate.ProjectStatus;
+import com.platform.projapp.enumarate.WorkspaceRole;
 import com.platform.projapp.error.ErrorConstants;
 import com.platform.projapp.error.ErrorInfo;
 import com.platform.projapp.model.*;
@@ -30,8 +32,14 @@ public class ProjectService {
     private final WorkspaceService workspaceService;
     private final TagsService tagsService;
     private final ProjectRoleService projectRoleService;
-    private final SprintsRepository sprintsRepository;
 
+    public static com.platform.projapp.enumarate.ProjectRole toProjectRole(WorkspaceRole role, Project project, User user) {
+        if (project.getOwnerLogin().equals(user.getLogin())) return com.platform.projapp.enumarate.ProjectRole.OWNER;
+        return switch (role) {
+            case MENTOR, ORGANIZER -> com.platform.projapp.enumarate.ProjectRole.MENTOR;
+            case STUDENT -> !project.hasUser(user.getLogin()) ? com.platform.projapp.enumarate.ProjectRole.STRANGER : ProjectRole.PARTICIPANT;
+        };
+    }
     public Project findById(Long id) {
         return projectRepository.findById(id).orElse(null);
     }
@@ -66,15 +74,15 @@ public class ProjectService {
                 tagsService.findAllByIdIn(projectRequest.getTags()));
         project.getParticipants().add(new Participant(project, true, user, projectRoleService.createProjectRole("тимлид")));
 //        var workspace = project.getWorkspace();
-        projectRepository.save(project);
         createDefaultSprints(workspace, project);
+        projectRepository.save(project);
 
     }
 
     private void createDefaultSprints(Workspace workspace, Project project) {
         for (var sprintNumber = 0; sprintNumber < workspace.getSprintCount(); sprintNumber++) {
             var sprintStartDate = workspace.getZeroSprintDate().plusWeeks(workspace.getFrequencyOfSprints() * sprintNumber);
-            sprintsRepository.save(new Sprint(sprintNumber, "", sprintStartDate, sprintStartDate.plusWeeks(workspace.getFrequencyOfSprints()), project));
+            project.getSprints().add(new Sprint(sprintNumber, "", sprintStartDate, sprintStartDate.plusWeeks(workspace.getFrequencyOfSprints()), project));
         }
     }
 

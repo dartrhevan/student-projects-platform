@@ -1,9 +1,8 @@
 import React, {useEffect, useState} from 'react';
-import {useParams} from "react-router-dom";
 import ArrowForwardIosSharpIcon from '@mui/icons-material/ArrowForwardIosSharp';
 import {Button, makeStyles, Typography} from "@material-ui/core";
 import Sprint, {ProjectPlan} from "../model/Sprint";
-import {addSprint, dropPlan, getProjectPlan, updateSprint, uploadPresentation} from "../api/projectPlan";
+import {addSprint, getProjectPlan, removeSprint, updateSprint, uploadPresentation} from "../api/projectPlan";
 import AddIcon from '@mui/icons-material/Add';
 import ListItemProps from "../props.common/ListItemProps";
 import FileUploadIcon from '@mui/icons-material/FileUpload';
@@ -21,6 +20,9 @@ import {
 import {getOnFieldChange, toDateString} from "../utils/utils";
 import {ProjectRole} from "../model/Project";
 import {ElementsStyle} from "../theme";
+import {useError, useSuccess} from "../hooks/logging";
+import queryString from "query-string";
+import GenericResponse from "../model/dto/GenericResponse";
 
 const useStyles = makeStyles(theme => ({
     root: ElementsStyle,
@@ -71,26 +73,50 @@ interface SprintProps extends ListItemProps {
     number: number
     role: ProjectRole
     onSprintUpdate: (s: Sprint, pr?: File) => void
+    onSprintRemove: (s: Sprint) => void
 }
 
-const SprintComponent = ({sprint, number, role, onSprintUpdate}: SprintProps) => {
+const SprintComponent = ({sprint, number, role, onSprintUpdate, onSprintRemove}: SprintProps) => {
     const classes = useStyles();
     const editable = true;
 
     const [presentationFile, setPresentationFile] = useState(undefined as File | undefined);
-    const [goalsDescription, setGoalsDescription] = useState(sprint.goalsDescription);
+    const [goalsDescription, setGoalsDescription] = useState(sprint.goals);
     const [startDate, setStartDate] = useState(sprint.startDate);
     const [endDate, setEndDate] = useState(sprint.endDate);
 
     function onChangesSubmit() {
-        sprint.goalsDescription = goalsDescription;
+        sprint.goals = goalsDescription;
         sprint.startDate = startDate;
         sprint.endDate = endDate;
         onSprintUpdate(sprint, presentationFile);
     }
 
-    return (
+    const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+
+    function onDelete() {
+        onSprintRemove(sprint);
+    }
+
+    return (<>
+        <Dialog open={showConfirmDialog} onClose={() => setShowConfirmDialog(false)}>
+            <DialogTitle>
+                Вы уверены?
+            </DialogTitle>
+            <DialogActions>
+                <Button color='inherit' variant='outlined' onClick={onDelete}>Да</Button>
+                <Button color='inherit' variant='outlined' onClick={() => setShowConfirmDialog(false)}>Нет</Button>
+            </DialogActions>
+        </Dialog>
         <Accordion elevation={8} sx={ElementsStyle}>
+            {/*<div style={{*/}
+            {/*    display: 'flex',*/}
+            {/*    justifyContent: 'end',*/}
+            {/*    flexDirection: 'row',*/}
+            {/*    marginTop: '15px'*/}
+            {/*}}>*/}
+            {/*    <Button color='inherit' variant='outlined'>Сбросить график</Button>*/}
+            {/*</div>*/}
             <AccordionSummary
                 expandIcon={<ArrowForwardIosSharpIcon sx={{fontSize: '0.9rem', transform: 'rotate(90deg)'}}/>}>
                 <Typography>Спринт {number}</Typography>
@@ -107,11 +133,11 @@ const SprintComponent = ({sprint, number, role, onSprintUpdate}: SprintProps) =>
                     marginTop: '15px'
                 }}>
                     <Typography className={classes.label}>Начало спринта</Typography>
-                    <TextField disabled={!editable} type='date' defaultValue={toDateString(sprint.startDate)}
-                               onChange={getOnFieldChange(s => setStartDate(new Date(s)))}/>
+                    <TextField disabled={!editable} type='date' defaultValue={sprint.startDate}
+                               onChange={getOnFieldChange(setStartDate)}/>
                     <Typography className={classes.label}>Окончание спринта</Typography>
-                    <TextField disabled={!editable} type='date' defaultValue={toDateString(sprint.endDate)}
-                               onChange={getOnFieldChange(s => setEndDate(new Date(s)))}/>
+                    <TextField disabled={!editable} type='date' defaultValue={sprint.endDate}
+                               onChange={getOnFieldChange(setEndDate)}/>
                 </div>
                 <div style={{margin: '15px 5px 0 5px'}}>
                     <Link href={sprint.presentationUrl} className={classes.label} variant='body1'
@@ -152,64 +178,63 @@ const SprintComponent = ({sprint, number, role, onSprintUpdate}: SprintProps) =>
                 }} className={classes.label}>
                     {editable ?
                         <Button color='inherit' onClick={onChangesSubmit}>Подтвердить изменения</Button> : <></>}
-                    <Button color='inherit'>Удалить</Button>
+                    <Button color='inherit' onClick={() => setShowConfirmDialog(true)}>Удалить</Button>
                 </div>
             </AccordionDetails>
-        </Accordion>);
+        </Accordion>
+    </>);
 };
 
 export default function ProjectPlanComponent() {
-
     const classes = useStyles();
 
-    const {workspaceId, projectId} = useParams<ProjectParams>();
+    const params = queryString.parse(window.location.search);
+    const projectId = params?.projectId as string;
 
-    const [projectPlan, setProjectPlan] = useState(null as ProjectPlan | null);
+    const [projectPlan, setProjectPlan] = useState(undefined as ProjectPlan | undefined);
+
+    const error = useError();
+    const success = useSuccess();
 
     useEffect(() => {
-        getProjectPlan(projectId, workspaceId).then(r => setProjectPlan(r.data));
-    }, [projectId, workspaceId]);
+        getProjectPlan(projectId)
+            .then(r => setProjectPlan(r.data))
+            .catch(error);
+    }, []);
 
     function addNewSprint() {
-        addSprint(projectId, workspaceId)
-            .then(r => {
-                projectPlan?.plan.push(new Sprint(r.data));
+        const sprint = new Sprint();
+        addSprint(projectId, projectPlan?.plan.length.toString() as string, sprint)
+            .then((r: GenericResponse<string>) => {
+                sprint.id = r.data;
+                projectPlan?.plan.push(sprint);
                 setProjectPlan(new ProjectPlan(projectPlan?.plan as Sprint[], projectPlan?.projectTitle as string));//TODO: rewrite for null-safe
-            });
+                success("Изменения успешно применены");
+            }).catch(error);
+    }
+
+    function onSprintRemove(s: Sprint) {
+        removeSprint(s.id).then(r => {
+            success("Изменения успешно применены");
+            setProjectPlan(new ProjectPlan(projectPlan?.plan.filter(sp => sp.id !== s.id) as Sprint[], projectPlan?.projectTitle as string));//TODO: rewrite for null-safe
+        }).catch(error);
     }
 
     function onSprintUpdate(s: Sprint, pr?: File) {
-        let promise: Promise<any>
-        if (pr)
-            promise = uploadPresentation(workspaceId, projectId, s.id, pr as File)
-                .then(r => {
-                    s.presentationUrl = r.data;
-                    return updateSprint(workspaceId, projectId, s);
-                })
-        else
-            promise = updateSprint(workspaceId, projectId, s);
-        promise.then(() => {
+        updateSprint(s).then(() => {
             (projectPlan as ProjectPlan).plan = projectPlan?.plan.map(sp => s.id === sp.id ? s : sp) as Sprint[];
             setProjectPlan(projectPlan);
-        });
+        }).then(r => success("Изменения успешно применены")).catch(error);
     }
 
-    const [showConfirmDialog, setShowConfirmDialog] = useState(false);
-
-    function onDropPlan() {
-        dropPlan(workspaceId, projectId).then(r => {
-            setShowConfirmDialog(false);
-            window.location.reload();
-        }).catch(console.log);
-    }
 
     return (
-        <Paper className={classes.paper} sx={ElementsStyle} color='inherit' elevation={8}>
-            <Typography align='center' paragraph variant='h4'>План проекта {}</Typography>
+        <Paper className={classes.paper} sx={{minHeight: '100px', ...ElementsStyle}} color='inherit' elevation={8}>
+            <Typography align='center' paragraph variant='h4'>План проекта {projectPlan?.projectTitle}</Typography>
             <br/>
             {projectPlan?.plan.map((s, i) =>
-                <SprintComponent role={projectPlan.role} sprint={s} number={i}
-                                 key={s.goalsDescription} onSprintUpdate={onSprintUpdate}/>)}
+                <SprintComponent role={projectPlan.role} sprint={s} number={i} onSprintRemove={onSprintRemove}
+                                 key={s.id} onSprintUpdate={onSprintUpdate}/>)}
             <Card sx={{margin: '30px 0', ...ElementsStyle}} onClick={addNewSprint} elevation={8}>
                 <CardActionArea>
                     <CardContent sx={{padding: '5px'}} className={classes.card}>
@@ -217,22 +242,5 @@ export default function ProjectPlanComponent() {
                     </CardContent>
                 </CardActionArea>
             </Card>
-            <div style={{
-                display: 'flex',
-                justifyContent: 'end',
-                flexDirection: 'row',
-                marginTop: '15px'
-            }}>
-                <Button color='inherit' variant='outlined'>Сбросить график</Button>
-            </div>
-            <Dialog open={showConfirmDialog} onClose={() => setShowConfirmDialog(false)}>
-                <DialogTitle>
-                    Вы уверены?
-                </DialogTitle>
-                <DialogActions>
-                    <Button color='inherit' variant='outlined' onClick={onDropPlan}>Да</Button>
-                    <Button color='inherit' variant='outlined' onClick={() => setShowConfirmDialog(false)}>Нет</Button>
-                </DialogActions>
-            </Dialog>
         </Paper>);
 }

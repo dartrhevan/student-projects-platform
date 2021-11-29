@@ -33,7 +33,7 @@ public class Sprint {
     private LocalDate startDate;
     private LocalDate endDate;
     private Long presentationId;
-    @OneToOne
+    @ManyToOne
     private Project project;
     @OneToMany(mappedBy = "sprintId")
     private List<Comment> comments;

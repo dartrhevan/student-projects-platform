@@ -30,6 +30,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.platform.projapp.service.ProjectService.toProjectRole;
+
 /**
  * @author Yarullin Renat
  */
@@ -97,14 +99,6 @@ public class ProjectController {
                 user.getLogin(), List.of(ErrorConstants.USER_NOT_WORKSPACE_PARTICIPANT));
         return projectErrorResponseEntity != null ? projectErrorResponseEntity :
                 ResponseEntity.ok(response.withData(ProjectResponseBody.fromProject(project, toProjectRole(workspaceRole, project, user))));
-    }
-
-    private static ProjectRole toProjectRole(WorkspaceRole role, Project project, User user) {
-        if (project.getOwnerLogin().equals(user.getLogin())) return ProjectRole.OWNER;
-        return switch (role) {
-            case MENTOR, ORGANIZER -> ProjectRole.MENTOR;
-            case STUDENT -> !project.hasUser(user.getLogin()) ? ProjectRole.STRANGER : ProjectRole.PARTICIPANT;
-        };
     }
 
 
