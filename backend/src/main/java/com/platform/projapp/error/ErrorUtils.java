@@ -1,12 +1,18 @@
 package com.platform.projapp.error;
 
+import com.platform.projapp.dto.response.GeneralResponse;
 import com.platform.projapp.dto.response.body.MessageResponseBody;
+import com.platform.projapp.model.Notification;
+import com.platform.projapp.model.Project;
+import com.platform.projapp.model.ProjectRole;
+import com.platform.projapp.model.User;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -30,6 +36,25 @@ public class ErrorUtils {
         if (pageNumber < 0 || pageNumber > totalPages)
             return ResponseEntity.badRequest()
                     .body(MessageResponseBody.of(ErrorConstants.INCORRECT_NUMBER_OF_PAGES.getMessage()));
+        return null;
+    }
+
+    public static ResponseEntity<?> getNotFoundErrorResponseEntity(List<Object> objects) {
+        var response = new GeneralResponse<>();
+        var badRequest = ResponseEntity.badRequest();
+        objects = objects.stream()
+                .filter(Objects::isNull)
+                .collect(Collectors.toList());
+        for (Object object : objects) {
+            if (object instanceof User)
+                return badRequest.body(response.withData(MessageResponseBody.of(ErrorConstants.USERNAME_NOT_FOUND)));
+            if (object instanceof Project)
+                return badRequest.body(response.withData(MessageResponseBody.of(ErrorConstants.PROJECT_NOT_FOUND.getMessage())));
+            if (object instanceof ProjectRole)
+                return badRequest.body(response.withData(MessageResponseBody.of(ErrorConstants.ROLE_NOT_FOUND.getMessage())));
+            if (object instanceof Notification)
+                return badRequest.body(response.withData(MessageResponseBody.of(ErrorConstants.ROLE_NOT_FOUND.getMessage())));
+        }
         return null;
     }
 
