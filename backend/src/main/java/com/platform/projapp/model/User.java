@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.hibernate.Hibernate;
 import org.hibernate.annotations.Cascade;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,7 +13,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import javax.persistence.*;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 
 import static javax.persistence.CascadeType.*;
@@ -61,7 +59,7 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Set<AccessRole> accessRoles;
 
-    public User(String login, String passwordHash, String name, String surname, String email,String messenger, String interests, String groupp, Set<Tags> skills, Set<AccessRole> accessRoles) {
+    public User(String login, String passwordHash, String name, String surname, String email, String messenger, String interests, String groupp, Set<Tags> skills, Set<AccessRole> accessRoles) {
         this.login = login;
         this.passwordHash = passwordHash;
         this.name = name;
@@ -76,6 +74,10 @@ public class User implements UserDetails {
 
         this.reputation = 100;
         this.roles = new HashSet<>();
+    }
+
+    public String getFullName() {
+        return surname + " " + name;
     }
 
     @Override
