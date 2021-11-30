@@ -247,7 +247,8 @@ export default function ProjectDetailedPage() {
                     <Typography sx={{margin: '10px'}} color='inherit'>Максимальное кол-во участников</Typography>
                     <TextField sx={{width: '40px'}} type='number' variant='standard'/>
                 </div>
-                <div className={classes.butGr} style={{justifyContent: 'start'}}>
+
+                {!isNew ? (<div className={classes.butGr} style={{justifyContent: 'start'}}>
                     <Typography sx={{margin: '10px'}}>Статус проекта</Typography>
                     <Select
                         value={project?.status}
@@ -258,7 +259,7 @@ export default function ProjectDetailedPage() {
                         <MenuItem color='inherit' value={ProjectStatus.CANCELLED}>Отклонён</MenuItem>
                         <MenuItem color='inherit' value={ProjectStatus.MODIFYING}>На доработке</MenuItem>
                     </Select>
-                </div>
+                </div>) : (<></>)}
                 <ErrorMessage message='*Не все обязательные поля заполнены' condition={!allFilled}/>
                 <div className={classes.butGr}>
                     <RoleSpecificButton isNew={isNew} enabled={allFilled} onSubmit={onSubmit} project={project}/>

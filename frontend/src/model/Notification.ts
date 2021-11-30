@@ -1,15 +1,19 @@
 export enum NotificationType {
-    INVITATION, // Приглашение текущему пользователю присоединиться к проекту
-    APPLIANCE, // Предложение о присоединении к проекту текущего пользователя
-    INVITATION_ACCEPTED, // INVITATION принято
-    INVITATION_DECLINED // INVITATION отклонено
+    INVITE, // Приглашение текущему пользователю присоединиться к проекту
+    REQUEST, // Предложение о присоединении к проекту текущего пользователя
+    JOINED, // INVITATION принято
+    NOT_JOINED, // INVITATION отклонено
+    DEMO,
+    DEMO_VERIFICATION,
+    DEMO_REJECTED,
+    DEMO_CONFIRMED
 }
 
 export const notificationsColors = new Map<NotificationType, string>();
-notificationsColors.set(NotificationType.INVITATION, 'blue');
-notificationsColors.set(NotificationType.APPLIANCE, 'orange');
-notificationsColors.set(NotificationType.INVITATION_ACCEPTED, 'green');
-notificationsColors.set(NotificationType.INVITATION_DECLINED, 'red');
+notificationsColors.set(NotificationType.INVITE, 'blue');
+notificationsColors.set(NotificationType.REQUEST, 'orange');
+notificationsColors.set(NotificationType.JOINED, 'green');
+notificationsColors.set(NotificationType.NOT_JOINED, 'red');
 
 export default class Notification {
     public constructor(public id: string, public text: string, public isNew: boolean,

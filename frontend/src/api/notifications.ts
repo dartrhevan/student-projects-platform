@@ -7,7 +7,7 @@ export function getAllNotifications(pageNumber: number, pageSize: number) {
     console.log('getAllNotification');
     return new Promise<PagedResponse<Notification>>(
         (res, rej) => res(new PagedResponse([new Notification(
-            '1', 'BlaBla', true, '10.10.2021', NotificationType.APPLIANCE)], 0, 1)));
+            '1', 'BlaBla', true, '10.10.2021', NotificationType.REQUEST)], 0, 1)));
 }
 
 export function apply(id: string) {

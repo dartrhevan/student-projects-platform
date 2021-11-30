@@ -72,6 +72,10 @@ public class User implements UserDetails {
         this.roles = new HashSet<>();
     }
 
+    public String getFullName() {
+        return surname + " " + name;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(ROLE_USER);
