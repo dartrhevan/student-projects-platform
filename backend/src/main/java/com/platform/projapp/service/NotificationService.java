@@ -91,8 +91,8 @@ public class NotificationService {
         if (notFoundErrors != null) return notFoundErrors;
         if (notification.getType().equals(NotificationType.INVITE))
             type = answer ? NotificationType.JOINED : NotificationType.NOT_JOINED;
-        else if (notification.getType().equals(NotificationType.REQUEST) && !answer)
-            type = NotificationType.REQUEST_REJECTED;
+        else if (notification.getType().equals(NotificationType.REQUEST))
+            type = answer ? NotificationType.REQUEST_CONFIRMED : NotificationType.REQUEST_REJECTED;
         else if (notification.getType().equals(NotificationType.DEMO_VERIFICATION))
             type = answer ? NotificationType.DEMO_CONFIRMED : NotificationType.DEMO_REJECTED;
         else
