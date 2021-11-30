@@ -42,6 +42,7 @@ export function addNewWorkspace(title: string, sprintsCount: number, sprintsLeng
 
 /**
  *
+ * @param id
  * @param title - title of Workspace
  * @param sprintsCount - standard sprints count
  * @param sprintsLength - standard sprints length
@@ -55,7 +56,12 @@ export function updateWorkspace(id: string, title: string, sprintsCount: number,
             'Content-Type': 'application/json',
             "Authorization": "Bearer " + sessionStorage.getItem(StorageKeys.AccessToken)
         },
-        body: JSON.stringify({title, sprintsLength, sprintsCount, startDate})
+        body: JSON.stringify({
+            title: title,
+            sprintLength: sprintsLength,
+            sprintCount: sprintsCount,
+            startDate: startDate.toLocaleDateString()
+        })
     }).then(getDefaultUploadHandler());
 }
 
@@ -87,10 +93,11 @@ export function attachToWorkspace(code: string) {
 }
 
 export function getWorkspaceById(id: string) {
-    //TODO: implement
-    return new Promise<GenericResponse<WorkspaceSettings>>(res =>
-        res(new GenericResponse(new WorkspaceSettings(
-            '0', 'Standard', 2, 6, new Date())))); //TODO: change workspace class
+    return fetch(`/api/workspaces/${id}/settings`, {
+        headers: {
+            "Authorization": "Bearer " + sessionStorage.getItem(StorageKeys.AccessToken)
+        }
+    }).then(getDefaultDownloadHandler());
 }
 
 export function getInviteForWorkspace(id: string): Promise<GenericResponse<Invite>> {
