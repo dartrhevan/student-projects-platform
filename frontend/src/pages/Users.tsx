@@ -81,8 +81,7 @@ export default function Users() {
     const data = (query: Query<UserRow>) => {
         console.log(`query`);
         console.log(query);
-
-        return getUsers(workspaceId as string, new Pageable(query.page, query.pageSize));  //TODO: доделать поиск
+        return getUsers(workspaceId as string, query);
     };
     const tableActions: Action<UserRow>[] = [
         {
