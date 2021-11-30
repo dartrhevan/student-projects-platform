@@ -70,8 +70,6 @@ export function deleteProject(projectId: string) {
     }).then(getDefaultUploadHandler());
 }
 
-//TODO: change all!!!
-
 export function getProjectInfo(projectId: string, workspaceId: string): Promise<GenericResponse<DetailedProject>> {
     return fetch(`/api/projects/${projectId}`, {
         headers: {

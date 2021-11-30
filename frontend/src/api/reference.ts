@@ -31,10 +31,29 @@ export function addTagToReference(tagName: string, color: number): Promise<Gener
 }
 
 export function getRolesReference() {
-    return new Promise<GenericResponse<string[]>>((resolve, reject) =>
-        resolve(new GenericResponse(['front', 'back', 'devops', 'test', 'analytic'])));
+    return fetch("/api/roles", {
+        headers: {
+            "Authorization": "Bearer " + sessionStorage.getItem(StorageKeys.AccessToken)
+        }
+    }).then(getDefaultDownloadHandler())
+        .then(res => {
+            return {data: res.data.roles.map((role: any) => role.name)};
+        });
 }
 
 export function addRoleToReference(roles: string) {
-    return new Promise<CommonResponse>((resolve, reject) => resolve(new CommonResponse()));
+    return fetch("/api/roles", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            "Authorization": "Bearer " + sessionStorage.getItem(StorageKeys.AccessToken)
+        },
+        body: JSON.stringify({roleName: roles})
+    }).then(res => {
+        if (res.ok) {
+            return res.json();
+        } else {
+            return defErrorHandler(res, 'Ошибка отправки данных');
+        }
+    });
 }

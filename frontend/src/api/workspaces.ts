@@ -99,8 +99,6 @@ export function getInviteForWorkspace(id: string): Promise<GenericResponse<Invit
             "Authorization": "Bearer " + sessionStorage.getItem(StorageKeys.AccessToken)
         }
     }).then(getDefaultDownloadHandler());
-    // return new Promise<GenericResponse<Invite>>(res => res(
-    //     new GenericResponse(new Invite('qwertyui', '56tyguhj'))));
 }
 
 export function getScores(workspaceId: string) {
