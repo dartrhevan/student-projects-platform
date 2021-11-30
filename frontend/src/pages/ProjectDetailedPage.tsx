@@ -157,7 +157,7 @@ export default function ProjectDetailedPage() {
     const tagsReference = useSelector(getTagsReferenceMap);
     useEffect(() => {
             if (!isNew) {
-                getProjectInfo(projectId as string, workspaceId as string)
+                getProjectInfo(projectId as string)
                     .then(r => {
                         const proj: DetailedProject = DetailedProject.fromObject(r.data);
                         proj.tags = r.data.tags.map(t => tagsReference[t.toString()]).filter(t => t !== undefined);

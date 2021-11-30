@@ -70,7 +70,7 @@ export function deleteProject(projectId: string) {
     }).then(getDefaultUploadHandler());
 }
 
-export function getProjectInfo(projectId: string, workspaceId: string): Promise<GenericResponse<DetailedProject>> {
+export function getProjectInfo(projectId: string): Promise<GenericResponse<DetailedProject>> {
     return fetch(`/api/projects/${projectId}`, {
         headers: {
             "Authorization": "Bearer " + sessionStorage.getItem(StorageKeys.AccessToken)

@@ -11,6 +11,11 @@ import {Query} from "material-table";
 
 //TODO: implement
 export function getPortfolio(login: string) {
+    // return fetch(`/api/users/protfolio&username=${login}`, {
+    //     headers: {
+    //         "Authorization": "Bearer " + sessionStorage.getItem(StorageKeys.AccessToken)
+    //     }
+    // }).then(getDefaultDownloadHandler());
     return new Promise<GenericResponse<ProjectParticipation[]>>((res, rej) => res(new GenericResponse(
         [new ProjectParticipation('Платформа проектного практикума', 'A', 'A', 'backend', 3, ProjectStatus.IN_PROGRESS)])));
 }
@@ -28,6 +33,6 @@ export function getUsers(workspaceId: string, query: Query<UserRow>) {
             "Authorization": "Bearer " + sessionStorage.getItem(StorageKeys.AccessToken)
         }
     }).then(getDefaultDownloadHandler()).then(res => {
-            return new PagedResponse<UserRow>(res.data.participants, query.page, res.data.totalCount);
-        });
+        return new PagedResponse<UserRow>(res.data.participants, query.page, res.data.totalCount);
+    });
 }
