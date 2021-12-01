@@ -129,7 +129,7 @@ public class ProjectController {
         var project = projectService.findById(projectId);
         ResponseEntity<?> projectErrorResponseEntity = projectService.getProjectErrorResponseEntity(project,
                 user.getLogin(),
-                List.of(ErrorConstants.USER_NOT_WORKSPACE_OWNER));
+                List.of(ErrorConstants.USER_NOT_WORKSPACE_PARTICIPANT));
         if (projectErrorResponseEntity != null) return projectErrorResponseEntity;
         var errorResponseEntity = ErrorUtils.getIncompleteOrIncorrectErrorResponseEntity(bindingResult);
         if (errorResponseEntity != null) return errorResponseEntity;
@@ -145,7 +145,7 @@ public class ProjectController {
         var project = projectService.findById(projectId);
         ResponseEntity<?> projectErrorResponseEntity = projectService.getProjectErrorResponseEntity(project,
                 user.getLogin(),
-                List.of(ErrorConstants.USER_NOT_WORKSPACE_OWNER));
+                List.of(ErrorConstants.USER_NOT_WORKSPACE_PARTICIPANT));
         if (projectErrorResponseEntity != null) return projectErrorResponseEntity;
         projectService.delete(project);
         return new ResponseEntity<>(HttpStatus.OK);
