@@ -27,6 +27,7 @@ import Filter5Icon from '@mui/icons-material/Filter5';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ConfirmationDialog from "../components/util/ConfirmationDialog";
+import {getAllProjectsUsers} from "../api/users";
 
 
 interface ProjectsParams {//TODO: remove
@@ -69,9 +70,20 @@ export default function Projects() {
             }).catch(error);
     }
 
+    function updateDataForProjects(tags: Tag[] = [], active = false) {
+        getAllProjectsUsers(new ProjectQuery(tags.map(t => t.id), new Pageable(pageNumber, pageSize), workspaceId, active))
+            .then(r => {
+                setData(r.data.projects.map(p => new Project(p.id, "", p.title, p.description, p.tags, p.status)));
+                setRole(r.data.role);
+                dispatch(initPaging(r.data.totalCount, pageSize, pageNumber));
+            }).catch(error);
+    }
+
     useEffect(() => {
         if (workspaceId)
             updateData();
+        else
+            updateDataForProjects();
     }, [workspaceId, pageNumber, pageSize]);//TODO: call back here
 
     const [openInvite, setOpenInvite] = useState(false);
@@ -93,12 +105,18 @@ export default function Projects() {
 
     const tagsUpdate = (t: Tag[]) => {
         setTags(t);
-        updateData(t, activeOnly);
+        if (workspaceId)
+            updateData(t, activeOnly);
+        else
+            updateDataForProjects(t, activeOnly);
     }
 
     const activeUpdate = (a: boolean) => {
         setActiveOnly(a);
-        updateData(tags, a);
+        if (workspaceId)
+            updateData(tags, a);
+        else
+            updateDataForProjects(tags, a);
     }
 
     function onDelete() {

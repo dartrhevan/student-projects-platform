@@ -48,11 +48,11 @@ export default function () {
     const data = (query: Query<ProjectParticipation>) => new Promise<QueryResult<ProjectParticipation>>((res, rej) =>
         getPortfolio(login).then(d =>
             res({
-                data: d.data, page: 0, totalCount: 1
+                data: d.data.projects, page: 0, totalCount: 1
             })));
 
 //TODO: лучше выводить ФИ пользователя
     return (
         <Table title={`Портфолио пользователя ${login}`} filtering={false} data={data} tableColumns={tableColumns}
-               paging={false}/>);
+            paging={false} />);
 }

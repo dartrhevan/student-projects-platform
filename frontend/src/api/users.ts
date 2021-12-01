@@ -8,16 +8,23 @@ import Pageable from "../model/Pageable";
 import {StorageKeys} from "../utils/StorageKeys";
 import {getDefaultUploadHandler, getDefaultDownloadHandler} from "../utils/utils";
 import {Query} from "material-table";
+import ProjectQuery from "../model/dto/ProjectQuery";
+import ProjectsResponse from "../model/dto/ProjectsResponse";
 
-//TODO: implement
 export function getPortfolio(login: string) {
-    // return fetch(`/api/users/protfolio&username=${login}`, {
-    //     headers: {
-    //         "Authorization": "Bearer " + sessionStorage.getItem(StorageKeys.AccessToken)
-    //     }
-    // }).then(getDefaultDownloadHandler());
-    return new Promise<GenericResponse<ProjectParticipation[]>>((res, rej) => res(new GenericResponse(
-        [new ProjectParticipation('Платформа проектного практикума', 'A', 'A', 'backend', 3, ProjectStatus.IN_PROGRESS)])));
+    return fetch(`/api/users/portfolio?username=${login}`, {
+        headers: {
+            "Authorization": "Bearer " + sessionStorage.getItem(StorageKeys.AccessToken)
+        }
+    }).then(getDefaultDownloadHandler());
+}
+
+export function getAllProjectsUsers(query: ProjectQuery): Promise<GenericResponse<ProjectsResponse>> {
+    return fetch(`/api/users/projects?tag=${query.tags.join(",")}&page=${query.pageable.pageNumber}&size=${query.pageable.pageSize}&active=${query.showOnlyActive}`, {
+        headers: {
+            "Authorization": "Bearer " + sessionStorage.getItem(StorageKeys.AccessToken)
+        }
+    }).then(getDefaultDownloadHandler());
 }
 
 //TODO: implement
