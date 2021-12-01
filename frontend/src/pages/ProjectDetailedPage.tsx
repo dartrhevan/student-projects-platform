@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {addProject, deleteProject, editProject, getProjectInfo} from "../api/projects";
+import {addProject, deleteProject, editProject, getProjectInfo, requestAttachToProject} from "../api/projects";
 import {DetailedProject, ProjectRole, ProjectStatus} from "../model/Project";
 import {Button, makeStyles, Paper} from "@material-ui/core";
 import queryString from 'query-string';
@@ -69,6 +69,12 @@ const RoleSpecificButton = ({project, onSubmit, enabled, isNew}:
             .catch(error);
     }
 
+    function onAttach() {
+        requestAttachToProject(project?.id as string)
+            .then(r => window.location.reload())
+            .catch(error);
+    }
+
     switch (project?.projectRole) {
         case ProjectRole.OWNER:
             return (
@@ -102,7 +108,7 @@ const RoleSpecificButton = ({project, onSubmit, enabled, isNew}:
                     Просмотр плана
                 </Button>);
         case ProjectRole.STRANGER:
-            return (<Button color='inherit'>Присоединиться</Button>);
+            return (<Button color='inherit' onClick={onAttach}>Присоединиться</Button>);
         default:
             return isNew ?
                 <Button variant='contained' color='inherit' disabled={!enabled} onClick={onSubmit}>
@@ -244,12 +250,14 @@ export default function ProjectDetailedPage() {
                 </List>
                 <div className={classes.butGr} style={{justifyContent: 'start'}}>
                     <Typography sx={{margin: '10px'}} color='inherit'>Максимальное кол-во участников</Typography>
-                    <TextField sx={{width: '40px'}} type='number' variant='standard'/>
+                    <TextField disabled={!isNew || project?.projectRole === ProjectRole.STRANGER}
+                               sx={{width: '40px'}} type='number' variant='standard'/>
                 </div>
 
                 {!isNew ? (<div className={classes.butGr} style={{justifyContent: 'start'}}>
                     <Typography sx={{margin: '10px'}}>Статус проекта</Typography>
                     <Select
+                        disabled={!isNew || project?.projectRole === ProjectRole.STRANGER}
                         value={project?.status}
                         onChange={s => setProject(project?.withStatus(s.target.value as ProjectStatus))}>
                         <MenuItem color='inherit' value={ProjectStatus.NEW}>Новый</MenuItem>

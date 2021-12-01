@@ -1,4 +1,4 @@
-import Project, {DetailedProject, Participant, ProjectStatus} from "../model/Project";
+import {DetailedProject} from "../model/Project";
 import CommonResponse from "../model/dto/CommonResponse";
 import ProjectQuery from "../model/dto/ProjectQuery";
 import ProjectsResponse from "../model/dto/ProjectsResponse";
@@ -85,4 +85,8 @@ export function getProjectInfo(projectId: string): Promise<GenericResponse<Detai
             "Authorization": "Bearer " + sessionStorage.getItem(StorageKeys.AccessToken)
         }
     }).then(r => r.json());
+}
+
+export function requestAttachToProject(projectId: string) {
+    return new Promise<CommonResponse>((res) => res(new CommonResponse()));//TODO: implement
 }
