@@ -12,10 +12,7 @@ import com.platform.projapp.error.ErrorConstants;
 import com.platform.projapp.error.ErrorUtils;
 import com.platform.projapp.model.Project;
 import com.platform.projapp.model.User;
-import com.platform.projapp.service.ProjectService;
-import com.platform.projapp.service.TagsService;
-import com.platform.projapp.service.UserService;
-import com.platform.projapp.service.WorkspaceService;
+import com.platform.projapp.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -40,6 +37,7 @@ import static com.platform.projapp.service.ProjectService.toProjectRole;
 @RequestMapping("/api/projects")
 public class ProjectController {
     private final ProjectService projectService;
+    private final ParticipantService participantService;
     private final UserService userService;
     private final TagsService tagsService;
     private final WorkspaceService workspaceService;
@@ -152,16 +150,28 @@ public class ProjectController {
     }
 
     @PostMapping("/{projectId}")
-    public ResponseEntity<?> addParticipant(@RequestHeader(name = "Authorization") String token,
-                                            @PathVariable("projectId") Long projectId,
+    public ResponseEntity<?> addParticipant(@PathVariable("projectId") Long projectId,
                                             @RequestBody ParticipantRequest request) {
-        var user = userService.parseAndFindByJwt(token);
         var project = projectService.findById(projectId);
         ResponseEntity<?> projectErrorResponseEntity = projectService.getProjectErrorResponseEntity(project,
                 request.getUsername(),
                 List.of(ErrorConstants.USER_NOT_WORKSPACE_PARTICIPANT, ErrorConstants.USER_IN_PROJECT));
         if (projectErrorResponseEntity != null) return projectErrorResponseEntity;
         projectService.addParticipant(project, request);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{projectId}/participants")
+    public ResponseEntity<?> delParticipant(@RequestHeader(name = "Authorization") String token,
+                                            @PathVariable("projectId") Long projectId,
+                                            @RequestParam(name = "participantId") Long participantId) {
+        var user = userService.parseAndFindByJwt(token);
+        var project = projectService.findById(projectId);
+        ResponseEntity<?> projectErrorResponseEntity = projectService.getProjectErrorResponseEntity(project,
+                user.getLogin(),
+                List.of(ErrorConstants.USER_NOT_WORKSPACE_OWNER));
+        if (projectErrorResponseEntity != null) return projectErrorResponseEntity;
+        participantService.delete(participantId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }
