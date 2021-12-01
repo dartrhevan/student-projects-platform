@@ -165,7 +165,7 @@ export default function ProjectDetailedPage() {
                     }).catch(console.log)
             }
         }, //TODO: catch
-        [workspaceId, projectId, isNew, tagsReference]);
+        [projectId, isNew, tagsReference]);
 
     console.log('render with')
     console.log(project)
