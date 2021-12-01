@@ -1,5 +1,12 @@
 import React, {useEffect, useState} from 'react';
-import {addProject, deleteProject, editProject, getProjectInfo, requestAttachToProject} from "../api/projects";
+import {
+    addProject,
+    deleteProject,
+    editProject,
+    getProjectInfo,
+    removeParticipant,
+    requestAttachToProject
+} from "../api/projects";
 import {DetailedProject, ProjectRole, ProjectStatus} from "../model/Project";
 import {Button, makeStyles, Paper} from "@material-ui/core";
 import queryString from 'query-string';
@@ -186,9 +193,11 @@ export default function ProjectDetailedPage() {
             .catch(r => error(`Error ${r}`));
     }
 
-    function removeParticipant(participant: string) {
-        const newProj = project?.removeParticipant(participant);
-        setProject(newProj as unknown as DetailedProject);
+    function onRemoveParticipant(participantUsername: string) {
+        removeParticipant(participantUsername, projectId as string).then(r => {
+            const newProj = project?.removeParticipant(participantUsername);
+            setProject(newProj as unknown as DetailedProject);
+        }).catch(error);
     }
 
     return (
@@ -243,7 +252,7 @@ export default function ProjectDetailedPage() {
                         <ListItemButton disableRipple sx={{cursor: 'default'}} key={p.username}>
                             <ListItemText primary={`${p.name} (${p.role})`}/>
                             {project?.projectRole === ProjectRole.OWNER ?
-                                <IconButton onClick={() => removeParticipant(p.username)}>
+                                <IconButton onClick={() => onRemoveParticipant(p.username)}>
                                     <Clear/>
                                 </IconButton> : <></>}
                         </ListItemButton>))}
