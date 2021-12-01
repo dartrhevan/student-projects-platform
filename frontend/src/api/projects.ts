@@ -71,8 +71,12 @@ export function deleteProject(projectId: string) {
 }
 
 export function deleteParticipantFromProject(projectId: string, participantId: string) {
-    console.log("Delete ", participantId, " from project ", projectId);
-    return new Promise<CommonResponse>((res, rej) => res(new CommonResponse()));
+    return fetch(`/api/project/${projectId}/participants?participantId=${participantId}`, {
+        method: 'DELETE',
+        headers: {
+            "Authorization": "Bearer " + sessionStorage.getItem(StorageKeys.AccessToken)
+        }
+    }).then(getDefaultUploadHandler());
 }
 
 export function getProjectInfo(projectId: string): Promise<GenericResponse<DetailedProject>> {

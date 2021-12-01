@@ -65,9 +65,8 @@ const RoleSpecificButton = ({project, onSubmit, enabled, isNew}:
 
     function onDelete() {
         deleteProject(project?.id as string)
-            .then(r => window.location.href = '/workspaces')
+            .then(r => window.location.href = '/workspaces/') //TODO: rederect to projects in workspace
             .catch(error);
-
     }
 
     switch (project?.projectRole) {
@@ -75,7 +74,7 @@ const RoleSpecificButton = ({project, onSubmit, enabled, isNew}:
             return (
                 <>
                     <ConfirmationDialog open={deleteDialog} onClose={() => setDeleteDialog(false)}
-                                        label="удалить проект" onSubmit={onDelete}/>
+                                        label="Удалить проект" onSubmit={onDelete}/>
 
                     {!isNew ? (
                         <>
