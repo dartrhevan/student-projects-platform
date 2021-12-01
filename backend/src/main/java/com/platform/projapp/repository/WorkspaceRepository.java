@@ -9,6 +9,8 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * @author Yarullin Renat
  */
@@ -19,4 +21,7 @@ public interface WorkspaceRepository extends PagingAndSortingRepository<Workspac
 
     @Query("SELECT w FROM Workspace w WHERE :code IN (w.userInvite,w.mentorInvite)")
     Workspace findByCode(@Param("code") String code);
+
+    @Override
+    List<Workspace> findAll();
 }

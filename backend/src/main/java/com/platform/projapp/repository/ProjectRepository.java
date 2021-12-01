@@ -23,6 +23,8 @@ import java.util.Set;
 public interface ProjectRepository extends PagingAndSortingRepository<Project, Long> {
     Page<Project> findAllByWorkspace(Workspace workspace, Pageable pageable);
 
+    List<Project> findAllByWorkspace(Workspace workspace);
+
     @Query("SELECT p FROM Project p JOIN p.tags t where p.workspace = :workspace AND t in (:tags)")
     Page<Project> findAllByWorkspaceAndTagsInTags(@Param("workspace") Workspace workspace, @Param("tags") Set<Tags> tags, Pageable pageable);
 
@@ -38,4 +40,6 @@ public interface ProjectRepository extends PagingAndSortingRepository<Project, L
     Page<Project> findAllByParticipantsInAndTagsIn(List<Participant> participants,Set<Tags> tags, Pageable pageable);
 
     Page<Project> findAllByParticipantsInAndTagsInAndStatusIn(List<Participant> participants,  Set<Tags> tags, Set<ProjectStatus> status, Pageable pageable);
+
+    Project getById(Long id);
 }
