@@ -164,14 +164,16 @@ public class ProjectController {
     @DeleteMapping("/{projectId}/participants")
     public ResponseEntity<?> delParticipant(@RequestHeader(name = "Authorization") String token,
                                             @PathVariable("projectId") Long projectId,
-                                            @RequestParam(name = "participantId") Long participantId) {
+                                            @RequestParam(name = "participantUsername") String participantUsername) {
         var user = userService.parseAndFindByJwt(token);
         var project = projectService.findById(projectId);
+        var removedParticipant = userService.findByUserName(participantUsername);
+        //TODO: доделать проверку на ошибки
         ResponseEntity<?> projectErrorResponseEntity = projectService.getProjectErrorResponseEntity(project,
                 user.getLogin(),
-                List.of(ErrorConstants.USER_NOT_WORKSPACE_OWNER));
+                List.of(ErrorConstants.USER_NOT_WORKSPACE_PARTICIPANT));
         if (projectErrorResponseEntity != null) return projectErrorResponseEntity;
-        participantService.delete(participantId);
+        participantService.delete(project, removedParticipant);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

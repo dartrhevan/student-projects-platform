@@ -38,10 +38,6 @@ export function inviteToProject(username: string, projectId: string[] | string |
     }).then(getDefaultUploadHandler());
 }
 
-export function joinToProject(username: string, projectId: string[] | string | null | undefined, role: string) {
-    return new Promise<CommonResponse>((res, rej) => res(new CommonResponse()));
-}
-
 export function getUsers(workspaceId: string, query: Query<UserRow>) {
     const query_param = query.filters.map(x => `${x.column.field}=${x.value}`).join("&")
     console.log(query_param);
