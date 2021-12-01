@@ -1,14 +1,14 @@
 export enum NotificationType {
-    INVITE, // Участник приглашает в команду
-    REQUEST, // Участник хочет вступить в команду
-    REQUEST_REJECTED, // Запрос на вступление в команду отклонен
-    REQUEST_CONFIRMED, // Запрос на вступление в команду подтвержден
-    JOINED, // Участник согласился вступить в команду
-    NOT_JOINED, // Участник отказался вступать в команду
-    DEMO, // Уведомление о демо за длина спринта/2
-    DEMO_VERIFICATION, // Уведомление за день до демо с подтверждением присутствия
-    DEMO_REJECTED, // Ментор не сможет присутствовать на демо
-    DEMO_CONFIRMED // Ментор сможет присутствовать на демо
+    INVITE = "INVITE", // Участник приглашает в команду
+    REQUEST = "REQUEST", // Участник хочет вступить в команду
+    REQUEST_REJECTED = "REQUEST_REJECTED", // Запрос на вступление в команду отклонен
+    REQUEST_CONFIRMED = "REQUEST_CONFIRMED", // Запрос на вступление в команду подтвержден
+    JOINED = "JOINED", // Участник согласился вступить в команду
+    NOT_JOINED = "NOT_JOINED", // Участник отказался вступать в команду
+    DEMO = "DEMO", // Уведомление о демо за длина спринта/2
+    DEMO_VERIFICATION = "DEMO_VERIFICATION", // Уведомление за день до демо с подтверждением присутствия
+    DEMO_REJECTED = "DEMO_REJECTED", // Ментор не сможет присутствовать на демо
+    DEMO_CONFIRMED = "DEMO_CONFIRMED" // Ментор сможет присутствовать на демо
 }
 
 export const notificationsColors = new Map<NotificationType, string>();
