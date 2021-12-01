@@ -80,11 +80,11 @@ const RoleSpecificButton = ({project, onSubmit, enabled, isNew}:
                     {!isNew ? (
                         <>
                             <Button color='inherit'
-                                    href={`/users?projectId=${project.id}&workspaceId=${project.workSpaceId}`}>
+                                    href={`/users?projectId=${project.id}&workspaceId=${project.workspaceId}`}>
                                 Найти участника
                             </Button>
                             <Button color='inherit'
-                                    href={`/project_plan?projectId=${project.id}&workspaceId=${project.workSpaceId}`}>
+                                    href={`/project_plan?projectId=${project.id}&workspaceId=${project.workspaceId}`}>
                                 Просмотр плана
                             </Button>
                             <Button color='inherit' onClick={() => setDeleteDialog(true)}>
@@ -99,7 +99,7 @@ const RoleSpecificButton = ({project, onSubmit, enabled, isNew}:
         case ProjectRole.MENTOR:
             return (
                 <Button color='inherit'
-                        href={`/project_plan?projectId=${project.id}&workspaceId=${project.workSpaceId}`}>
+                        href={`/project_plan?projectId=${project.id}&workspaceId=${project.workspaceId}`}>
                     Просмотр плана
                 </Button>);
         case ProjectRole.STRANGER:

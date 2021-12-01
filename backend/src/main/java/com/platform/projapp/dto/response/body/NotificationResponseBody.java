@@ -12,7 +12,7 @@ import lombok.Data;
 public class NotificationResponseBody implements ResponseBody {
     private Long id;
     private Boolean isNew;
-    private String typeNote;
+    private String type;
     private String date;
     private String text;
 

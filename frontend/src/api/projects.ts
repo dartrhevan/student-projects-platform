@@ -8,7 +8,7 @@ import {getDefaultUploadHandler, getDefaultDownloadHandler} from "../utils/utils
 
 
 export function addProject(project: DetailedProject): Promise<CommonResponse> {
-    return fetch(`/api/projects?workspaceId=${project.workSpaceId}`, {
+    return fetch(`/api/projects?workspaceId=${project.workspaceId}`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

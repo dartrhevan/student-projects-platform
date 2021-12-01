@@ -37,7 +37,7 @@ export class Participant {
 }
 
 export class DetailedProject {
-    constructor(public workSpaceId: string, public id: string = '', public title: string = '',
+    constructor(public workspaceId: string, public id: string = '', public title: string = '',
                 public shortDescription: string = '', public fullDescription: string = '',
                 public trackerUrl = '', public participants: Participant[] = [], public tags: Tag[] = [],
                 public projectRole = ProjectRole.OWNER, public maxParticipantsCount = 5,
@@ -45,7 +45,7 @@ export class DetailedProject {
     }
 
     public get isNewFilled() {
-        return allNotEmpty(this.workSpaceId, this.shortDescription, this.fullDescription, this.title);
+        return allNotEmpty(this.workspaceId, this.shortDescription, this.fullDescription, this.title);
     }
 
     public withTitle(title: string) {
@@ -91,7 +91,7 @@ export class DetailedProject {
     }
 
     public clone(): any {
-        const cloneObj = new (this.constructor as any)(this.workSpaceId);
+        const cloneObj = new (this.constructor as any)(this.workspaceId);
         for (const attribute in this) {
             cloneObj[attribute] = this[attribute]
         }

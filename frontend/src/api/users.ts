@@ -27,9 +27,15 @@ export function getAllProjectsUsers(query: ProjectQuery) {
     }).then(getDefaultDownloadHandler());
 }
 
-//TODO: implement
-export function inviteToProject(login: string, projectId: string, workspaceId: string) {
-    return new Promise<CommonResponse>((res, rej) => res(new CommonResponse()));
+export function inviteToProject(username: string, projectId: string[] | string | null | undefined, role: string) {
+    return fetch(`/api/users/invite`, {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json',
+            "Authorization": "Bearer " + sessionStorage.getItem(StorageKeys.AccessToken)
+        },
+        body: JSON.stringify({username, projectId, role})
+    }).then(getDefaultUploadHandler());
 }
 
 export function getUsers(workspaceId: string, query: Query<UserRow>) {

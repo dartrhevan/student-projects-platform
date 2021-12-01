@@ -6,7 +6,6 @@ import {StorageKeys} from "../utils/StorageKeys";
 import {getDefaultUploadHandler, getDefaultDownloadHandler} from "../utils/utils";
 
 export function getAllNotifications(pageable: Pageable) {
-    console.log('getAllNotification');
     return fetch(`/api/notifications?page=${pageable.pageNumber}&size=${pageable.pageSize}`, {
         headers: {
             "Authorization": "Bearer " + sessionStorage.getItem(StorageKeys.AccessToken)
@@ -21,31 +20,31 @@ export function apply(id: string) {
     return fetch(`/api/users/reply?notificationId=${id}`, {
         method: "POST",
         headers: {
+            'Content-Type': 'application/json',
             "Authorization": "Bearer " + sessionStorage.getItem(StorageKeys.AccessToken)
         },
         body: JSON.stringify({answer: true})
-    }).then(getDefaultDownloadHandler());
+    }).then(getDefaultUploadHandler());
 }
 
 export function markRead(id: string) {
-    //TODO: implement
-
-    // return fetch(`/api/notifications?notificationId=${id}`, {
-    //     method: "POST",
-    //     headers: {
-    //         "Authorization": "Bearer " + sessionStorage.getItem(StorageKeys.AccessToken)
-    //     },
-    //     body: JSON.stringify({answer: true})
-    // }).then(getDefaultDownloadHandler());
-    return new Promise<CommonResponse>((res, rej) => res(new CommonResponse()));
+    return fetch(`/api/notifications?notificationId=${id}`, {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json',
+            "Authorization": "Bearer " + sessionStorage.getItem(StorageKeys.AccessToken)
+        },
+        body: JSON.stringify({})
+    }).then(getDefaultUploadHandler());
 }
 
 export function deny(id: string) {
     return fetch(`/api/users/reply?notificationId=${id}`, {
         method: "POST",
         headers: {
+            'Content-Type': 'application/json',
             "Authorization": "Bearer " + sessionStorage.getItem(StorageKeys.AccessToken)
         },
         body: JSON.stringify({answer: false})
-    }).then(getDefaultDownloadHandler());
+    }).then(getDefaultUploadHandler());
 }

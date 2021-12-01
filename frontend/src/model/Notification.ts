@@ -26,5 +26,6 @@ notificationsColors.set(NotificationType.DEMO_CONFIRMED, 'blue');
 export default class Notification {
     public constructor(public id: string, public text: string, public isNew: boolean,
                        public date: string, public type: NotificationType) {
+        console.log(this)
     }
 }

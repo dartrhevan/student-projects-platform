@@ -76,14 +76,6 @@ export function deleteWorkspace(id: string) {
     }).then(getDefaultUploadHandler());
 }
 
-
-//TODO: change all!!!
-export function invitePerson(username: string, role: string) {
-    //TODO: implement
-    return new Promise<CommonResponse>((res, rej) => res(new CommonResponse()));
-}
-
-
 export function attachToWorkspace(code: string) {
     return fetch(`/api/workspaces/participants?code=${code}`, {
         headers: {
