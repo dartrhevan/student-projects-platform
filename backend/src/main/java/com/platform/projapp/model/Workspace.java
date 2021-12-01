@@ -103,4 +103,6 @@ public class Workspace {
                 .map(WorkspaceParticipant::getUser)
                 .collect(Collectors.toSet());
     }
+
+    public LocalDate getEndDate(){return (zeroSprintDate.plusDays(frequencyOfSprints*sprintCount));}
 }
