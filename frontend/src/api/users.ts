@@ -19,7 +19,7 @@ export function getPortfolio(login: string) {
     }).then(getDefaultDownloadHandler());
 }
 
-export function getAllProjectsUsers(query: ProjectQuery): Promise<GenericResponse<ProjectsResponse>> {
+export function getAllProjectsUsers(query: ProjectQuery) {
     return fetch(`/api/users/projects?tag=${query.tags.join(",")}&page=${query.pageable.pageNumber}&size=${query.pageable.pageSize}&active=${query.showOnlyActive}`, {
         headers: {
             "Authorization": "Bearer " + sessionStorage.getItem(StorageKeys.AccessToken)

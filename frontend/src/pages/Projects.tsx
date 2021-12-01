@@ -73,7 +73,7 @@ export default function Projects() {
     function updateDataForProjects(tags: Tag[] = [], active = false) {
         getAllProjectsUsers(new ProjectQuery(tags.map(t => t.id), new Pageable(pageNumber, pageSize), workspaceId, active))
             .then(r => {
-                setData(r.data.projects.map(p => new Project(p.id, "", p.title, p.description, p.tags, p.status)));
+                setData(r.data.projects.map((p: any) => new Project(p.projectId, "", p.title, p.description, p.tags, p.status)));
                 setRole(r.data.role);
                 dispatch(initPaging(r.data.totalCount, pageSize, pageNumber));
             }).catch(error);
