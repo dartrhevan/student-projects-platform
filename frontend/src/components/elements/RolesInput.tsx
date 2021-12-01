@@ -20,7 +20,7 @@ export default function ({defRoles = [], onChange, multiple = true}: RolesProps)
 
     useEffect(() => {
         getRolesReference().then(r => setRolesReference(r.data)).catch(console.log);
-    }, [onChange, multiple]);
+    }, []);
 
     const onChangeRoles = (a: any, b: string[]) => {
         const newRoles = b as string[];
