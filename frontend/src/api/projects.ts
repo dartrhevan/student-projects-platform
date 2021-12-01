@@ -83,3 +83,7 @@ export function getProjectInfo(projectId: string, workspaceId: string): Promise<
 export function requestAttachToProject(projectId: string) {
     return new Promise<CommonResponse>((res) => res(new CommonResponse()));//TODO: implement
 }
+
+export function removeParticipant(participantUsername: string, projectId: string) {
+    return new Promise<CommonResponse>((res) => res(new CommonResponse()));//TODO: implement
+}
