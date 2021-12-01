@@ -5,6 +5,7 @@ import com.platform.projapp.dto.response.body.MessageResponseBody;
 import com.platform.projapp.enumarate.WorkspaceRole;
 import com.platform.projapp.error.ErrorConstants;
 import com.platform.projapp.error.ErrorInfo;
+import com.platform.projapp.model.Sprint;
 import com.platform.projapp.model.User;
 import com.platform.projapp.model.Workspace;
 import com.platform.projapp.model.WorkspaceParticipant;
@@ -25,6 +26,10 @@ import java.util.List;
 public class WorkspaceService {
     private final WorkspaceRepository workspaceRepository;
     private final WorkspaceParticipantService workspaceParticipantService;
+
+    public List<Workspace> findAll() {
+        return workspaceRepository.findAll();
+    }
 
     public Page<Workspace> findAllByUser(User user, Pageable pageable) {
         return workspaceRepository.findAllByUser(user, pageable);

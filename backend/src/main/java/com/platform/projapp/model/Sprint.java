@@ -38,7 +38,9 @@ public class Sprint {
     private Project project;
     @OneToMany(mappedBy = "sprintId")
 
-    private List<Comment> comments;public boolean isTomorrow() {
+    private List<Comment> comments;
+
+    public boolean isTomorrow() {
         return endDate.minusDays(1L).equals(LocalDate.now());
     }
 
