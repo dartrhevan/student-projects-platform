@@ -70,6 +70,11 @@ export function deleteProject(projectId: string) {
     }).then(getDefaultUploadHandler());
 }
 
+export function deleteParticipantFromProject(projectId: string, participantId: string) {
+    console.log("Delete ", participantId, " from project ", projectId);
+    return new Promise<CommonResponse>((res, rej) => res(new CommonResponse()));
+}
+
 export function getProjectInfo(projectId: string): Promise<GenericResponse<DetailedProject>> {
     return fetch(`/api/projects/${projectId}`, {
         headers: {
