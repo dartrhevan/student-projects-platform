@@ -65,7 +65,7 @@ export default function WorkspaceSettings({workspaceId = ''}: WorkspaceProps) {
                 setStartDate(new Date(r.data.startDate));
                 setSprintsLength(r.data.sprintsLength);
                 setSprintsCount(r.data.sprintsCount);
-            });
+            }).catch(console.log); //TODO: не отправлять если пользователь не владелец
         }
     }, [workspaceId]);
 
