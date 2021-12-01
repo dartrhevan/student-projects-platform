@@ -19,6 +19,10 @@ public class ParticipantService {
     private final UserService userService;
     private final ProjectRoleService projectRoleService;
 
+    public void delete(Long id){
+        participantRepository.deleteById(id);
+    }
+
     public Participant findByUserAndProjectStatus(User user, ProjectStatus projectStatus) {
         return participantRepository.findByUserAndProjectStatus(user, projectStatus);
     }
