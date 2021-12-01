@@ -4,11 +4,13 @@ import com.platform.projapp.dto.response.GeneralResponse;
 import com.platform.projapp.dto.response.body.NotificationResponseBody;
 import com.platform.projapp.dto.response.body.NotificationsResponseBody;
 import com.platform.projapp.error.ErrorUtils;
+import com.platform.projapp.model.Notification;
 import com.platform.projapp.service.NotificationService;
 import com.platform.projapp.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,6 +41,8 @@ public class NotificationController {
     }
 
     @PostMapping ResponseEntity<?> markViewed(@RequestParam(name = "notificationId") Long notificationId) {
-        return null;//TODO: implement
+        Notification notification = notificationService.findById(notificationId);
+        notification.setNew(false);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
