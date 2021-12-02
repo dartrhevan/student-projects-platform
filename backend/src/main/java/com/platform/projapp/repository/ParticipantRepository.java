@@ -18,7 +18,7 @@ import java.util.Set;
 @Repository
 public interface ParticipantRepository extends JpaRepository<Participant, Long> {
 
-    List<Participant> findByUserAndProjectStatusInOrderByProjectId(User user, Set<ProjectStatus> projectStatus);
+    List<Participant> findAllByUserAndProjectStatusInOrderByProjectId(User user, Set<ProjectStatus> projectStatus);
 
     List<Participant> findByUser(User user, Pageable pageable);
 

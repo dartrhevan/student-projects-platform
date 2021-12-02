@@ -17,24 +17,15 @@ import java.util.stream.Collectors;
 public class UserPortfolioResponseBody {
     private Long projectId;
     private String title;
-    private ProjectRole projectRole;
+    private String role;
     private Double score;
     private ProjectStatus status;
 
 
-    public static UserPortfolioResponseBody fromProject(Project project) {
-        return fromProject(project, ProjectRole.STRANGER);
-    }
-
-    public static UserPortfolioResponseBody fromProject(Project project, User user) {
-        return fromProject(project, ProjectRole.STRANGER);
-    }
-
-    public static UserPortfolioResponseBody fromProject(Project project, ProjectRole projectRole) {
-
+    public static UserPortfolioResponseBody fromProject(Project project, String role) {
         return new UserPortfolioResponseBody(project.getId(),
                 project.getName(),
-                projectRole,
+                role,
                 project.getScore(),
                 project.getStatus());
     }

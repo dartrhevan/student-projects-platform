@@ -7,6 +7,7 @@ import com.platform.projapp.enumarate.ProjectStatus;
 import com.platform.projapp.error.ErrorConstants;
 import com.platform.projapp.error.ErrorUtils;
 import com.platform.projapp.model.Participant;
+import com.platform.projapp.model.Project;
 import com.platform.projapp.model.WorkspaceParticipant;
 import com.platform.projapp.service.ParticipantService;
 import com.platform.projapp.service.UserService;
@@ -73,8 +74,11 @@ public class UserController {
                     Participant projectParticipant = participantService.findByUserAndProjectStatus(
                             workspaceParticipant.getUser(),
                             Set.of(ProjectStatus.IN_PROGRESS, ProjectStatus.MODIFYING, ProjectStatus.NEW));
-                    return WorkspaceParticipantInListResponseBody.fromWorkspaceParticipant(workspaceParticipant,
-                            projectParticipant != null ? projectParticipant.getProject() : null);
+                    Project project = projectParticipant != null ? projectParticipant.getProject() : null;
+                    if (project != null) {
+                        project = project.getWorkspace().equals(workspaceParticipant.getWorkspace()) ? project : null;
+                    }
+                    return WorkspaceParticipantInListResponseBody.fromWorkspaceParticipant(workspaceParticipant, project);
                 })
                 .collect(Collectors.toSet());
 
