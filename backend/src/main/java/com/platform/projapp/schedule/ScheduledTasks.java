@@ -2,9 +2,11 @@ package com.platform.projapp.schedule;
 
 import com.platform.projapp.enumarate.NotificationType;
 import com.platform.projapp.enumarate.ProjectStatus;
+import com.platform.projapp.model.Notification;
 import com.platform.projapp.model.Project;
 import com.platform.projapp.model.Sprint;
 import com.platform.projapp.model.Workspace;
+import com.platform.projapp.repository.NotificationRepository;
 import com.platform.projapp.repository.ProjectRepository;
 import com.platform.projapp.service.NotificationService;
 import com.platform.projapp.service.SprintService;
@@ -28,6 +30,7 @@ public class ScheduledTasks {
     private final NotificationService notificationService;
     private final ProjectRepository projectRepository;
     private final WorkspaceService workspaceService;
+    private final NotificationRepository notificationRepository;
 
     @Scheduled(cron = "0 0 1 * * ?")
     public void sendSprintNotificationEveryDay() {
@@ -50,9 +53,20 @@ public class ScheduledTasks {
             if (workspace.getEndDate().isBefore(LocalDate.now())) {
                 List<Project> projects = projectRepository.findAllByWorkspace(workspace);
                 for (Project project : projects) {
-                    project.setStatus(ProjectStatus.ENDED); //TODO: rework
+                    project.setStatus(ProjectStatus.ENDED); //TODO: подумать
                 }
             }
+        }
+    }
+
+    @Scheduled(cron = "0 0 2 * * ?")
+    public void deleteNotifications() {
+        List<Notification> notifications = notificationRepository.findAll();
+        for (Notification notification : notifications) {
+            if (!notification.isNew() && (notification.getAnswer() == true || notification.getAnswer() == false) && notification.getDate().isBefore(LocalDate.now().minusMonths(1)))
+                notificationRepository.delete(notification);
+            else if (notification.getDate().equals(null))
+                notification.setDate(LocalDate.now());
         }
     }
 }
