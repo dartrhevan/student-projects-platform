@@ -1,5 +1,6 @@
 package com.platform.projapp.model;
 
+import com.platform.projapp.dto.request.ParticipantRequest;
 import com.platform.projapp.enumarate.NotificationType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -72,6 +73,14 @@ public class Notification {
             case DEMO_VERIFICATION -> String.format("Завтра %s будет проходит демо по %s. Будете ли вы присутствовать?", sprint.getEndDate(), sprint.getOrderNumber());
             case DEMO_CONFIRMED -> String.format("Ментор %s подтвердил свое присутствие завтра %s на демо спринта № %s", sender.getFullName(), sprint.getEndDate(), sprint.getOrderNumber());
             case DEMO_REJECTED -> String.format("Ментор %s не сможет присутствовать завтра %s на демо спринта № %s", sender.getFullName(), sprint.getEndDate(), sprint.getOrderNumber());
+        };
+    }
+
+    public ParticipantRequest getParticipantRequest() {
+        return switch (type) {
+            case JOINED -> new ParticipantRequest(sender.getUsername(), projectRole.getId());
+            case REQUEST_CONFIRMED -> new ParticipantRequest(recipient.getUsername(), projectRole.getId());
+            default -> null;
         };
     }
 }

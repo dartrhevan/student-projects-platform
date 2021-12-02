@@ -42,7 +42,7 @@ public class NotificationController {
 
     @PostMapping ResponseEntity<?> markViewed(@RequestParam(name = "notificationId") Long notificationId) {
         Notification notification = notificationService.findById(notificationId);
-        notification.setNew(false);
+        notificationService.markViewed(notification);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }
