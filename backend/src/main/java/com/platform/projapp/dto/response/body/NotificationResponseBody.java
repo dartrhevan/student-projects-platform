@@ -15,6 +15,7 @@ public class NotificationResponseBody implements ResponseBody {
     private String type;
     private String date;
     private String text;
+    private Boolean answer;
 
     public static NotificationResponseBody fromNotification(Notification notification) {
         return new NotificationResponseBody(
@@ -22,7 +23,8 @@ public class NotificationResponseBody implements ResponseBody {
                 notification.isNew(),
                 notification.getType().toString(),
                 notification.getDate().toString(),
-                notification.getMessage()
+                notification.getMessage(),
+                notification.getAnswer()
         );
     }
 }

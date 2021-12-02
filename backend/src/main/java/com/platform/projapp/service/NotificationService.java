@@ -100,6 +100,7 @@ public class NotificationService {
                     .body(new GeneralResponse<>()
                             .withData(MessageResponseBody.of(ErrorConstants.NOTIFICATION_TYPE_NOT_VALID.getMessage())));
         notification.setAnswer(answer);
+        notification.setNew(false);
         notificationRepository.save(notification);
         if (notification.getType().equals(NotificationType.DEMO_VERIFICATION))
             return sendSprintNotification(notification, type);
