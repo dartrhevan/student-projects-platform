@@ -60,12 +60,12 @@ export default function WorkspaceSettings({workspaceId = ''}: WorkspaceProps) {
 
     useEffect(() => {
         if (existed) {
-            getWorkspaceById(workspaceId).then(r => {//TODO: refactor
+            getWorkspaceById(workspaceId).then(r => {
                 setTitle(r.data.title);
-                setStartDate(r.data.startDate);
+                setStartDate(new Date(r.data.startDate));
                 setSprintsLength(r.data.sprintsLength);
                 setSprintsCount(r.data.sprintsCount);
-            });
+            }).catch(console.log); //TODO: не отправлять если пользователь не владелец
         }
     }, [workspaceId]);
 

@@ -8,6 +8,7 @@ import Checkbox from '@mui/material/Checkbox';
 import {notificationsColors} from "../model/Notification";
 import {apply, deny, getAllNotifications, markRead} from "../api/notifications";
 import Notification from "../model/Notification";
+import Pageable from "../model/Pageable";
 
 
 export default function Notifications() {
@@ -59,7 +60,7 @@ export default function Notifications() {
             tooltip: 'Отклонить',
         },
     ];
-    const data = (query: Query<Notification>) => getAllNotifications(query.page, query.pageSize);
+    const data = (query: Query<Notification>) => getAllNotifications(new Pageable(query.page, query.pageSize));
 
     return (<Table title='Уведомления' filtering={false} data={data} tableColumns={tableColumns}
                    tableActions={tableActions} tableRef={tableRef}/>);

@@ -19,8 +19,9 @@ public class ParticipantService {
     private final UserService userService;
     private final ProjectRoleService projectRoleService;
 
-    public void delete(Long id){
-        participantRepository.deleteById(id);
+    public void delete(Project project, User user){
+        var participant = participantRepository.findByProjectAndUser(project, user);
+        participantRepository.delete(participant);
     }
 
     public Participant findByUserAndProjectStatus(User user, ProjectStatus projectStatus) {

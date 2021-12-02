@@ -7,8 +7,7 @@ import queryString from "query-string";
 import {allNotEmpty} from "../utils/utils";
 import ViewableText from "../components/elements/ViewableText";
 import {Dialog, DialogActions, DialogTitle} from "@mui/material";
-import {invitePerson} from "../api/workspaces";
-import {getUsers} from "../api/users";
+import {getUsers, inviteToProject} from "../api/users";
 import Pageable from "../model/Pageable";
 import UserRow from "../model/UserRow";
 import RolesInput from "../components/elements/RolesInput";
@@ -81,7 +80,7 @@ export default function Users() {
     const data = (query: Query<UserRow>) => {
         console.log(`query`);
         console.log(query);
-        return getUsers(workspaceId as string, new Pageable(query.page, query.pageSize));
+        return getUsers(workspaceId as string, query);
     };
     const tableActions: Action<UserRow>[] = [
         {
@@ -104,7 +103,7 @@ export default function Users() {
 
 
     function onInvite() {
-        invitePerson(openInviteUsername, inviteRole).then(() => {
+        inviteToProject(openInviteUsername, projectId, inviteRole).then(() => {
             alert('Invitation has been sent');
             setOpenInviteDialog(false)
         })

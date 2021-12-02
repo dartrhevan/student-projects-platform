@@ -8,7 +8,7 @@ import {getDefaultUploadHandler, getDefaultDownloadHandler} from "../utils/utils
 
 
 export function addProject(project: DetailedProject): Promise<CommonResponse> {
-    return fetch(`/api/projects?workspaceId=${project.workSpaceId}`, {
+    return fetch(`/api/projects?workspaceId=${project.workspaceId}`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -70,9 +70,7 @@ export function deleteProject(projectId: string) {
     }).then(getDefaultUploadHandler());
 }
 
-//TODO: change all!!!
-
-export function getProjectInfo(projectId: string, workspaceId: string): Promise<GenericResponse<DetailedProject>> {
+export function getProjectInfo(projectId: string): Promise<GenericResponse<DetailedProject>> {
     return fetch(`/api/projects/${projectId}`, {
         headers: {
             "Authorization": "Bearer " + sessionStorage.getItem(StorageKeys.AccessToken)
@@ -80,10 +78,22 @@ export function getProjectInfo(projectId: string, workspaceId: string): Promise<
     }).then(r => r.json());
 }
 
-export function requestAttachToProject(projectId: string) {
-    return new Promise<CommonResponse>((res) => res(new CommonResponse()));//TODO: implement
+export function requestAttachToProject(projectId: string, role: string) {
+    return fetch(`/api/users/request`, {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json',
+            "Authorization": "Bearer " + sessionStorage.getItem(StorageKeys.AccessToken)
+        },
+        body: JSON.stringify({projectId, role})
+    }).then(getDefaultUploadHandler());
 }
 
 export function removeParticipant(participantUsername: string, projectId: string) {
-    return new Promise<CommonResponse>((res) => res(new CommonResponse()));//TODO: implement
+    return fetch(`/api/projects/${projectId}/participants?participantUsername=${participantUsername}`, {
+        method: 'DELETE',
+        headers: {
+            "Authorization": "Bearer " + sessionStorage.getItem(StorageKeys.AccessToken)
+        }
+    }).then(getDefaultUploadHandler());
 }

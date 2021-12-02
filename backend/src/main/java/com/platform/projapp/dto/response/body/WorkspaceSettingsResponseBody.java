@@ -12,7 +12,7 @@ import java.time.LocalDate;
 public class WorkspaceSettingsResponseBody {
     private String title;
     private LocalDate startDate;
-    private Integer sprintLenght;
+    private Integer sprintsLength;
     private Integer sprintsCount;
 
     public static WorkspaceSettingsResponseBody fromWorkspace(Workspace workspace) {

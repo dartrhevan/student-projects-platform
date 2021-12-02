@@ -8,9 +8,12 @@ import {
     requestAttachToProject
 } from "../api/projects";
 import {DetailedProject, ProjectRole, ProjectStatus} from "../model/Project";
-import {Button, makeStyles, Paper} from "@material-ui/core";
+import {Button, DialogContent, makeStyles, Paper} from "@material-ui/core";
 import queryString from 'query-string';
 import {
+    Dialog,
+    DialogActions,
+    DialogTitle,
     Divider,
     IconButton, InputLabel, Link,
     List,
@@ -29,6 +32,7 @@ import {useSelector} from "react-redux";
 import getTagsRef, {getTagsReferenceMap} from "../hooks/getTagsRef";
 import ConfirmationDialog from "../components/util/ConfirmationDialog";
 import THEME, {ElementsStyle} from "../theme";
+import RolesInput from "../components/elements/RolesInput";
 
 const useStyles = makeStyles(theme => ({
     paper: {
@@ -68,18 +72,23 @@ const RoleSpecificButton = ({project, onSubmit, enabled, isNew}:
                                 { isNew: boolean, enabled?: boolean, project?: DetailedProject, onSubmit: () => void }) => {
 
     const [deleteDialog, setDeleteDialog] = useState(false);
+    const [openAttachDialog, setOpenAttachDialog] = useState(false);
+    const [attachRole, setAttachRole] = useState('');
+    const success = useSuccess();
     const error = useError();
 
     function onDelete() {
         deleteProject(project?.id as string)
-            .then(r => window.location.href = '/workspaces')
+            .then(r => window.location.href = '/workspaces/') //TODO: rederect to projects in workspace
             .catch(error);
-
     }
 
     function onAttach() {
-        requestAttachToProject(project?.id as string)
-            .then(r => window.location.reload())
+        requestAttachToProject(project?.id as string, attachRole)
+            .then(r => {
+                setOpenAttachDialog(false);
+                success("Запрос на присоединение отправлен");
+            })
             .catch(error);
     }
 
@@ -93,11 +102,11 @@ const RoleSpecificButton = ({project, onSubmit, enabled, isNew}:
                     {!isNew ? (
                         <>
                             <Button color='inherit'
-                                    href={`/users?projectId=${project.id}&workspaceId=${project.workSpaceId}`}>
+                                    href={`/users?projectId=${project.id}&workspaceId=${project.workspaceId}`}>
                                 Найти участника
                             </Button>
                             <Button color='inherit'
-                                    href={`/project_plan?projectId=${project.id}&workspaceId=${project.workSpaceId}`}>
+                                    href={`/project_plan?projectId=${project.id}&workspaceId=${project.workspaceId}`}>
                                 Просмотр плана
                             </Button>
                             <Button color='inherit' onClick={() => setDeleteDialog(true)}>
@@ -108,15 +117,46 @@ const RoleSpecificButton = ({project, onSubmit, enabled, isNew}:
                         Подтвердить изменения
                     </Button>
                 </>);
-        case ProjectRole.PARTICIPANT:
+        case ProjectRole.STRANGER:
+            return (<>
+                <Dialog open={openAttachDialog} onClose={() => setOpenAttachDialog(false)}>
+                    <DialogTitle>Присоединиться в роли</DialogTitle>
+                    <DialogContent dividers>
+                        <RolesInput onChange={s => setAttachRole(s as string)} role={attachRole} multiple={false}/>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button disabled={attachRole === ''} onClick={onAttach}>Подтвердить</Button>
+                    </DialogActions>
+                </Dialog>
+
+                <Button color='inherit' onClick={() => setOpenAttachDialog(true)}>Присоединиться</Button>
+            </>);
         case ProjectRole.MENTOR:
+            return (<>
+                <Dialog open={openAttachDialog} onClose={() => setOpenAttachDialog(false)}>
+                    <DialogTitle>Присоединиться в роли</DialogTitle>
+                    <DialogContent dividers>
+                        <RolesInput onChange={s => setAttachRole(s as string)} role={attachRole} multiple={false}/>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button disabled={attachRole === ''} onClick={onAttach}>Подтвердить</Button>
+                    </DialogActions>
+                </Dialog>
+
+
+                <Button color='inherit'
+                        href={`/project_plan?projectId=${project.id}&workspaceId=${project.workspaceId}`}>
+                    Просмотр плана
+                </Button>
+
+                <Button color='inherit' onClick={() => setOpenAttachDialog(true)}>Присоединиться</Button>
+            </>);
+        case ProjectRole.PARTICIPANT:
             return (
                 <Button color='inherit'
-                        href={`/project_plan?projectId=${project.id}&workspaceId=${project.workSpaceId}`}>
+                        href={`/project_plan?projectId=${project.id}&workspaceId=${project.workspaceId}`}>
                     Просмотр плана
                 </Button>);
-        case ProjectRole.STRANGER:
-            return (<Button color='inherit' onClick={onAttach}>Присоединиться</Button>);
         default:
             return isNew ?
                 <Button variant='contained' color='inherit' disabled={!enabled} onClick={onSubmit}>
@@ -166,11 +206,12 @@ export default function ProjectDetailedPage() {
     const isNew = params?.isNew !== undefined;
     const classes = useStyles();
     const [project, setProject] = useState(new DetailedProject(workspaceId as string));
+    const [removeParticipantDialog, setRemoveParticipantDialog] = useState({open: false, participant: ""});
 
     const tagsReference = useSelector(getTagsReferenceMap);
     useEffect(() => {
             if (!isNew) {
-                getProjectInfo(projectId as string, workspaceId as string)
+                getProjectInfo(projectId as string)
                     .then(r => {
                         const proj: DetailedProject = DetailedProject.fromObject(r.data);
                         proj.tags = r.data.tags.map(t => tagsReference[t.toString()]).filter(t => t !== undefined);
@@ -178,7 +219,7 @@ export default function ProjectDetailedPage() {
                     }).catch(console.log)
             }
         }, //TODO: catch
-        [workspaceId, projectId, isNew, tagsReference]);
+        [projectId, isNew, tagsReference]);
 
     console.log('render with')
     console.log(project)
@@ -198,11 +239,16 @@ export default function ProjectDetailedPage() {
         removeParticipant(participantUsername, projectId as string).then(r => {
             const newProj = project?.removeParticipant(participantUsername);
             setProject(newProj as unknown as DetailedProject);
+            setRemoveParticipantDialog({open: false, participant: ""})
+            success(`Участник ${participantUsername} исключен!`);
         }).catch(error);
     }
 
     return (
         <Paper className={classes.paper}>
+            <ConfirmationDialog open={removeParticipantDialog.open} onClose={() => setRemoveParticipantDialog({open: false, participant: ""})}
+                                label="исключить участника"  onSubmit={() => onRemoveParticipant(removeParticipantDialog.participant)}/>
+
             <Centered additionalClasses={[classes.inner]}>
                 <EditableField isNew={isNew} label='(название)' props={{variant: 'h4'}} project={project}
                                prefix={'Проект '} field={p => p?.title} inputProps={{required: true}}
@@ -253,7 +299,7 @@ export default function ProjectDetailedPage() {
                         <ListItemButton disableRipple sx={{cursor: 'default'}} key={p.username}>
                             <ListItemText primary={`${p.name} (${p.role})`}/>
                             {project?.projectRole === ProjectRole.OWNER ?
-                                <IconButton onClick={() => onRemoveParticipant(p.username)}>
+                                <IconButton onClick={() => setRemoveParticipantDialog({open: true, participant: p.username})}>
                                     <Clear/>
                                 </IconButton> : <></>}
                         </ListItemButton>))}
