@@ -139,7 +139,7 @@ const SprintComponent = ({sprint, number, role, onSprintUpdate, onSprintRemove}:
                     <TextField disabled={!editable} type='date' defaultValue={sprint.endDate}
                                onChange={getOnFieldChange(setEndDate)}/>
                 </div>
-                <div style={{margin: '15px 5px 0 5px'}}>
+                {/**<div style={{margin: '15px 5px 0 5px'}}>
                     <Link href={sprint.presentationUrl} className={classes.label} variant='body1'
                           sx={{margin: '10px', fontSize: '18px'}}>
                         Презентация
@@ -162,7 +162,7 @@ const SprintComponent = ({sprint, number, role, onSprintUpdate, onSprintRemove}:
                     </Typography>
                 </div>
                 <br/>
-                <Typography paragraph variant='h6'>Комментарии результатов</Typography>
+                <Typography paragraph variant='h6'>Комментарии результатов</Typography>*/}
                 {sprint.comments.map((c, i) => (
                     <Card sx={{padding: '5px', ...ElementsStyle}}>
                         <Typography variant='body2'>

@@ -151,7 +151,7 @@ export default function Projects() {
                                    <ConfirmationDialog open={deleteDialog} onClose={() => setDeleteDialog(false)}
                                                        label="удалить рабочее пространство" onSubmit={onDelete}/>
                                    <Tooltip title='Оценки'>
-                                       <IconButton href={`/scores/${workspaceId}`} className={classes.button}>
+                                       <IconButton disabled={true} href={`/scores/${workspaceId}`} className={classes.button}>
                                            <MenuBookIcon/>
                                        </IconButton>
                                    </Tooltip>
@@ -180,13 +180,13 @@ export default function Projects() {
                                    </Tooltip>
                                </> : <>
                                    <Tooltip title='Оценки'>
-                                       <IconButton href={`/scores/${workspaceId}`} className={classes.button}>
+                                       <IconButton disabled={true} href={`/scores/${workspaceId}`} className={classes.button}>
                                            <MenuBookIcon/>
                                        </IconButton>
                                    </Tooltip>
                                    {role === WorkspaceAssociation.MENTOR ?
                                        <Tooltip title='Оценить'>
-                                           <IconButton href={`/scoring/${workspaceId}`} className={classes.button}>
+                                           <IconButton disabled={true} href={`/scoring/${workspaceId}`} className={classes.button}>
                                                <Filter5Icon/>
                                            </IconButton>
                                        </Tooltip> : <></>}
