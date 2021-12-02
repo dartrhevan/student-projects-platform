@@ -12,6 +12,7 @@ import Pageable from "../model/Pageable";
 import UserRow from "../model/UserRow";
 import RolesInput from "../components/elements/RolesInput";
 import {useSuccess} from "../hooks/logging";
+import {addRoleToReference, getRolesReference} from "../api/reference";
 
 
 const tableColumns = [
@@ -104,24 +105,46 @@ export default function Users() {
 
     const success = useSuccess();
 
+    const [rolesReference, setRolesReference] = useState([] as string[]);
+
+    useEffect(() => {
+        getRolesReference().then(r => setRolesReference(r.data)).catch(console.log);
+    }, []);
+
     function onInvite() {
+        if (!rolesReference.includes(inviteRole)) {//TODO: move to back
+            addRoleToReference(inviteRole)
+                .then(r => setRolesReference([...rolesReference, inviteRole]))
+                .catch(console.log);
+        }
         inviteToProject(openInviteUsername, projectId, inviteRole).then(() => {
             success('Invitation has been sent');
             setOpenInviteDialog(false)
         })
     }
 
+    function onRoleChange(s: string | string[]) {
+        const newRole = s as string;
+        setInviteRole(newRole);
+    }
+
+    function onInviteAborted() {
+        setOpenInviteDialog(false);
+        setInviteRole('');
+    }
+
     return (<>
-        <Dialog open={openInviteDialog} onClose={() => setOpenInviteDialog(false)}>
+        <Dialog open={openInviteDialog} onClose={onInviteAborted}>
             <DialogTitle>Пригласить участника</DialogTitle>
             <DialogContent dividers>
-                <RolesInput onChange={s => setInviteRole(s as string)} multiple={false}/>
+                <RolesInput reference={rolesReference} onChange={onRoleChange} multiple={false}/>
             </DialogContent>
             <DialogActions>
-                <Button disabled={inviteRole === ''} onClick={onInvite}>Подтвердить</Button>
+                <Button disabled={!inviteRole || inviteRole === ''} onClick={onInvite}>Подтвердить</Button>
             </DialogActions>
         </Dialog>
         {/*<Button onClick={() => setOpenInviteDialog(true)}>assasa</Button>*/}
         <Table title='Поиск учасников' data={data} tableColumns={tableColumns} tableActions={tableActions}/>
     </>);
+
 }

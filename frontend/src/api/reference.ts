@@ -37,11 +37,12 @@ export function getRolesReference() {
         }
     }).then(getDefaultDownloadHandler())
         .then(res => {
-            return {data: res.data.roles.map((role: any) => role.name)};
+            return {data: res.data.roles.filter((r: any) => r !== null).map((role: any) => role.name)};
         });
 }
 
 export function addRoleToReference(roles: string) {
+    if (!roles) return new Promise(res => res({}));
     return fetch("/api/roles", {
         method: 'POST',
         headers: {

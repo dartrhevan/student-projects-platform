@@ -52,7 +52,9 @@ export default function Notifications() {
 
     const onAnswerNotification = () => {
         success("Ваше решение успешно отправлено");
-        (tableRef.current as any).onQueryChange();
+        // (tableRef.current as any).onQueryChange();
+        //TODO: fix onQueryChange
+        window.location.reload();
     };
 
     const tableActions: ((n:Notification) => Action<Notification>)[] = [
