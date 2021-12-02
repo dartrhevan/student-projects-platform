@@ -153,15 +153,15 @@ const RoleSpecificButton = ({project, onSubmit, enabled, isNew}:
             </>);
         case ProjectRole.MENTOR:
             return (<>
-                <Dialog open={openAttachDialog} onClose={onAttachDialogClosed}>
-                    <DialogTitle>Присоединиться в роли</DialogTitle>
-                    <DialogContent dividers>
-                        <RolesInput reference={rolesReference} onChange={onAttachRoleChange} multiple={false}/>
-                    </DialogContent>
-                    <DialogActions>
-                        <Button disabled={attachRole === ''} onClick={onAttach}>Подтвердить</Button>
-                    </DialogActions>
-                </Dialog>
+                {/*<Dialog open={openAttachDialog} onClose={onAttachDialogClosed}>*/}
+                {/*    <DialogTitle>Присоединиться в роли</DialogTitle>*/}
+                {/*    <DialogContent dividers>*/}
+                {/*        <RolesInput reference={rolesReference} onChange={onAttachRoleChange} multiple={false}/>*/}
+                {/*    </DialogContent>*/}
+                {/*    <DialogActions>*/}
+                {/*        <Button disabled={attachRole === ''} onClick={onAttach}>Подтвердить</Button>*/}
+                {/*    </DialogActions>*/}
+                {/*</Dialog>*/}
 
 
                 <Button color='inherit'
@@ -169,7 +169,7 @@ const RoleSpecificButton = ({project, onSubmit, enabled, isNew}:
                     Просмотр плана
                 </Button>
 
-                <Button color='inherit' onClick={() => setOpenAttachDialog(true)}>Присоединиться</Button>
+                {/*<Button color='inherit' onClick={() => setOpenAttachDialog(true)}>Присоединиться</Button>*/}
             </>);
         case ProjectRole.PARTICIPANT:
             return (
