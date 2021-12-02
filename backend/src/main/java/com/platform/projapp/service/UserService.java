@@ -174,15 +174,22 @@ public class UserService {
             Set<ProjectStatus> statuses = Set.of(ProjectStatus.ENDED, ProjectStatus.CANCELLED);
 
             Page<Project> page = projectRepository.findAllByParticipantsInAndStatusIn(participants, statuses, pageable);
-
+            //TODO: переделал чтобы отправлялись роли, нужно чтобы проверили корректность
             Set<UserPortfolioResponseBody> projectsResponseBodyList = page.stream()
-                    .map(UserPortfolioResponseBody::fromProject)
-                    .collect(Collectors.toSet());
+                    .map(proj -> {
+                                Participant participant = participants.stream()
+                                        .filter(part -> part.getProject().getId().equals(proj.getId()))
+                                        .findFirst().get();
+                                return UserPortfolioResponseBody.fromProject(proj, participant.getProjectRole().getName());
+                            }
+                    ).collect(Collectors.toSet());
 
             return response.withData(new UserPortfolioResponseEntity(projectsResponseBodyList));
-        } catch (ExpiredJwtException e) {
+        } catch (
+                ExpiredJwtException e) {
             return response.withError("Срок использования токена истек");
         }
+
     }
 
     public GeneralResponse<UserProjectsResponseEntity> getUserProjects(HttpServletRequest req, Pageable pageable, String tagsParam, Boolean active) {
