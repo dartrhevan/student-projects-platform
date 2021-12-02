@@ -28,7 +28,7 @@ interface ITableProps<T extends object> {
     title: string
     data: (query: Query<T>) => Promise<QueryResult<T>>
     tableColumns: Column<T>[]
-    tableActions?: Action<T>[]
+    tableActions?: Action<T>[] | ((t: T) => Action<T>)[]
     filtering?: boolean
     paging?: boolean
     tableRef?: React.Ref<MaterialTable<T>>

@@ -33,11 +33,11 @@ public class ProjectService {
     private final TagsService tagsService;
     private final ProjectRoleService projectRoleService;
 
-    public static com.platform.projapp.enumarate.ProjectRole toProjectRole(WorkspaceRole role, Project project, User user) {
-        if (project.getOwnerLogin().equals(user.getLogin())) return com.platform.projapp.enumarate.ProjectRole.OWNER;
+    public static ProjectRole toProjectRole(WorkspaceRole role, Project project, User user) {
+        if (project.getOwnerLogin().equals(user.getLogin())) return ProjectRole.OWNER;
         return switch (role) {
-            case MENTOR, ORGANIZER -> com.platform.projapp.enumarate.ProjectRole.MENTOR;
-            case STUDENT -> !project.hasUser(user.getLogin()) ? com.platform.projapp.enumarate.ProjectRole.STRANGER : ProjectRole.PARTICIPANT;
+            case MENTOR, ORGANIZER -> !project.hasUser(user.getLogin()) ? ProjectRole.STRANGER : ProjectRole.MENTOR;
+            case STUDENT -> !project.hasUser(user.getLogin()) ? ProjectRole.STRANGER : ProjectRole.PARTICIPANT;
         };
     }
     public Project findById(Long id) {

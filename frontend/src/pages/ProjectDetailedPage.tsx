@@ -122,7 +122,7 @@ const RoleSpecificButton = ({project, onSubmit, enabled, isNew}:
                 <Dialog open={openAttachDialog} onClose={() => setOpenAttachDialog(false)}>
                     <DialogTitle>Присоединиться в роли</DialogTitle>
                     <DialogContent dividers>
-                        <RolesInput onChange={s => setAttachRole(s as string)} role={attachRole} multiple={false}/>
+                        <RolesInput onChange={s => setAttachRole(s as string)} multiple={false}/>
                     </DialogContent>
                     <DialogActions>
                         <Button disabled={attachRole === ''} onClick={onAttach}>Подтвердить</Button>
@@ -136,7 +136,7 @@ const RoleSpecificButton = ({project, onSubmit, enabled, isNew}:
                 <Dialog open={openAttachDialog} onClose={() => setOpenAttachDialog(false)}>
                     <DialogTitle>Присоединиться в роли</DialogTitle>
                     <DialogContent dividers>
-                        <RolesInput onChange={s => setAttachRole(s as string)} role={attachRole} multiple={false}/>
+                        <RolesInput onChange={s => setAttachRole(s as string)} multiple={false}/>
                     </DialogContent>
                     <DialogActions>
                         <Button disabled={attachRole === ''} onClick={onAttach}>Подтвердить</Button>
@@ -230,9 +230,14 @@ export default function ProjectDetailedPage() {
     const error = useError();
 
     function onSubmit() {
-        (isNew ? addProject(project as DetailedProject) : editProject(project as DetailedProject))
-            .then(r => success('Success'))
-            .catch(r => error(`Error ${r}`));
+        if (isNew)
+            addProject(project as DetailedProject)
+                .then(r => window.location.href = '/workspaces')
+                .catch(r => error(`Error ${r}`));
+        else
+            editProject(project as DetailedProject)
+                .then(r => success('Success'))
+                .catch(r => error(`Error ${r}`));
     }
 
     function onRemoveParticipant(participantUsername: string) {
@@ -246,8 +251,10 @@ export default function ProjectDetailedPage() {
 
     return (
         <Paper className={classes.paper}>
-            <ConfirmationDialog open={removeParticipantDialog.open} onClose={() => setRemoveParticipantDialog({open: false, participant: ""})}
-                                label="исключить участника"  onSubmit={() => onRemoveParticipant(removeParticipantDialog.participant)}/>
+            <ConfirmationDialog open={removeParticipantDialog.open}
+                                onClose={() => setRemoveParticipantDialog({open: false, participant: ""})}
+                                label="исключить участника"
+                                onSubmit={() => onRemoveParticipant(removeParticipantDialog.participant)}/>
 
             <Centered additionalClasses={[classes.inner]}>
                 <EditableField isNew={isNew} label='(название)' props={{variant: 'h4'}} project={project}
@@ -299,21 +306,22 @@ export default function ProjectDetailedPage() {
                         <ListItemButton disableRipple sx={{cursor: 'default'}} key={p.username}>
                             <ListItemText primary={`${p.name} (${p.role})`}/>
                             {project?.projectRole === ProjectRole.OWNER ?
-                                <IconButton onClick={() => setRemoveParticipantDialog({open: true, participant: p.username})}>
+                                <IconButton
+                                    onClick={() => setRemoveParticipantDialog({open: true, participant: p.username})}>
                                     <Clear/>
                                 </IconButton> : <></>}
                         </ListItemButton>))}
                 </List>
                 <div className={classes.butGr} style={{justifyContent: 'start'}}>
                     <Typography sx={{margin: '10px'}} color='inherit'>Максимальное кол-во участников</Typography>
-                    <TextField disabled={!isNew || project?.projectRole === ProjectRole.STRANGER}
+                    <TextField disabled={!(isNew || project?.projectRole === ProjectRole.OWNER)}
                                sx={{width: '40px'}} type='number' variant='standard'/>
                 </div>
 
                 {!isNew ? (<div className={classes.butGr} style={{justifyContent: 'start'}}>
                     <Typography sx={{margin: '10px'}}>Статус проекта</Typography>
                     <Select
-                        disabled={!isNew || project?.projectRole === ProjectRole.STRANGER}
+                        disabled={!(isNew || project?.projectRole === ProjectRole.OWNER)}
                         value={project?.status}
                         onChange={s => setProject(project?.withStatus(s.target.value as ProjectStatus))}>
                         <MenuItem color='inherit' value={ProjectStatus.NEW}>Новый</MenuItem>

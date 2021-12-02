@@ -7,16 +7,15 @@ interface RolesProps {
     defRoles?: string[],
     onChange: (r: string[] | string) => void
     multiple?: boolean
-    role?: string
 }
 
-export default function ({defRoles = [], onChange, multiple = true}: RolesProps) {
+export default function RolesInput({defRoles = [], onChange, multiple = true}: RolesProps) {
     const [roles, setRoles] = useState(defRoles);
     const [rolesReference, setRolesReference] = useState([] as string[]);
 
     useEffect(() => {
         setRoles(defRoles);
-    }, [defRoles]);
+    }, []);
 
     useEffect(() => {
         getRolesReference().then(r => setRolesReference(r.data)).catch(console.log);
@@ -33,8 +32,11 @@ export default function ({defRoles = [], onChange, multiple = true}: RolesProps)
         }
     };
 
-    function onChangeRole(a: any, b: string | null) {
-        const newRole = b ? b : '';
+    function onChangeRole(b: any) {
+        const newRole = b.target.value;// : '';
+        if (!rolesReference.includes(newRole)) {
+            addRoleToReference(newRole).then(r => setRolesReference([...rolesReference, newRole])).catch(console.log);
+        }
         onChange(newRole);
     }
 
@@ -43,8 +45,7 @@ export default function ({defRoles = [], onChange, multiple = true}: RolesProps)
                                      fullWidth={true} renderInput={(params) =>
             (<TextField {...params} variant="standard" label="Ваша роль"
                         placeholder="Введите роль, которую вы готовы выполнять"/>)}/>)
-        : (<Autocomplete freeSolo onChange={onChangeRole}
-                         options={rolesReference}
+        : (<Autocomplete onInput={onChangeRole} freeSolo options={rolesReference}
                          fullWidth={true} renderInput={(params) =>
             (<TextField {...params} variant="standard" label="Ваша роль"
                         placeholder="Введите роль, которую вы готовы выполнять"/>)}/>);

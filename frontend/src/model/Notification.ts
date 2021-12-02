@@ -11,6 +11,8 @@ export enum NotificationType {
     DEMO_CONFIRMED = "DEMO_CONFIRMED" // Ментор сможет присутствовать на демо
 }
 
+const replyableNotifications = [NotificationType.INVITE, NotificationType.REQUEST, NotificationType.DEMO];
+
 export const notificationsColors = new Map<NotificationType, string>();
 notificationsColors.set(NotificationType.INVITE, 'orange');
 notificationsColors.set(NotificationType.REQUEST, 'orange');
@@ -25,7 +27,11 @@ notificationsColors.set(NotificationType.DEMO_CONFIRMED, 'blue');
 
 export default class Notification {
     public constructor(public id: string, public text: string, public isNew: boolean,
-                       public date: string, public type: NotificationType) {
+                       public date: string, public type: NotificationType, public answer: boolean | null) {
         console.log(this)
     }
+}
+
+export function showActions(notification: Notification) {
+    return replyableNotifications.includes(notification.type) && notification.answer === null;
 }
