@@ -15,7 +15,6 @@ export function getAllNotifications(pageable: Pageable) {
     });
 }
 
-//TODO: надо проверить после того, как поправят уведомления
 export function apply(id: string) {
     return fetch(`/api/users/reply?notificationId=${id}`, {
         method: "POST",

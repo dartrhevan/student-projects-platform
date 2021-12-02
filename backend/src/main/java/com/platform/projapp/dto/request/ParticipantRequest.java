@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ParticipantRequest {
-//    private Long userId;
     private String username;
     private Long projectRoleId;
 }

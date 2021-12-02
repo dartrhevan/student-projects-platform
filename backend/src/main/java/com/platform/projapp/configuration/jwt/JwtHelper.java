@@ -85,6 +85,6 @@ public class JwtHelper {
             return token.substring(7);
         }
 
-        throw new RuntimeException("incorrect token");
+        return null;
     }
 }

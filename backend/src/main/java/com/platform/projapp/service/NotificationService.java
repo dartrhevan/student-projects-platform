@@ -31,6 +31,7 @@ public class NotificationService {
     private final UserService userService;
     private final ProjectService projectService;
     private final ProjectRoleService projectRoleService;
+    private final ParticipantService participantService;
 
     public Notification findById(Long id) {
         return notificationRepository.findById(id).orElse(null);
@@ -68,6 +69,9 @@ public class NotificationService {
         ResponseEntity<?> notFoundErrors = ErrorUtils.getNotFoundErrorResponseEntity(List.of(recipient, project, role));
         if (notFoundErrors != null) return notFoundErrors;
         Notification newNotification = new Notification(recipient, sender, notificationType, project, role);
+        if (newNotification.getType().equals(NotificationType.JOINED) || newNotification.getType().equals(NotificationType.REQUEST_CONFIRMED)) {
+            participantService.createParticipant(newNotification.getProject(), newNotification.getParticipantRequest());
+        }
         notificationRepository.save(newNotification);
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -105,5 +109,11 @@ public class NotificationService {
         if (notification.getType().equals(NotificationType.DEMO_VERIFICATION))
             return sendSprintNotification(notification, type);
         else return sendNotification(sender, notification, type);
+    }
+
+
+    public void markViewed(Notification notification) {
+        notification.setNew(false);
+        notificationRepository.save(notification);
     }
 }
