@@ -33,6 +33,7 @@ import getTagsRef, {getTagsReferenceMap} from "../hooks/getTagsRef";
 import ConfirmationDialog from "../components/util/ConfirmationDialog";
 import THEME, {ElementsStyle} from "../theme";
 import RolesInput from "../components/elements/RolesInput";
+import {addRoleToReference, getRolesReference} from "../api/reference";
 
 const useStyles = makeStyles(theme => ({
     paper: {
@@ -84,6 +85,11 @@ const RoleSpecificButton = ({project, onSubmit, enabled, isNew}:
     }
 
     function onAttach() {
+        if (!rolesReference.includes(attachRole)) { //TODO: move to back
+            addRoleToReference(attachRole)
+                .then(r => setRolesReference([...rolesReference, attachRole]))
+                .catch(console.log);
+        }
         requestAttachToProject(project?.id as string, attachRole)
             .then(r => {
                 setOpenAttachDialog(false);
@@ -92,15 +98,29 @@ const RoleSpecificButton = ({project, onSubmit, enabled, isNew}:
             .catch(error);
     }
 
+    const [rolesReference, setRolesReference] = useState([] as string[]);
+
+    useEffect(() => {
+        getRolesReference().then(r => setRolesReference(r.data)).catch(console.log);
+    }, []);
+
+    function onAttachDialogClosed() {
+        setOpenAttachDialog(false);
+        setAttachRole('');
+    }
+
+    function onAttachRoleChange(s: string | string[]) {
+        const newRole = s as string;
+        setAttachRole(newRole);
+    }
+
     switch (project?.projectRole) {
         case ProjectRole.OWNER:
             return (
                 <>
                     <ConfirmationDialog open={deleteDialog} onClose={() => setDeleteDialog(false)}
                                         label="удалить проект" onSubmit={onDelete}/>
-
-                    {!isNew ? (
-                        <>
+                    {!isNew ? (<>
                             <Button color='inherit'
                                     href={`/users?projectId=${project.id}&workspaceId=${project.workspaceId}`}>
                                 Найти участника
@@ -119,13 +139,13 @@ const RoleSpecificButton = ({project, onSubmit, enabled, isNew}:
                 </>);
         case ProjectRole.STRANGER:
             return (<>
-                <Dialog open={openAttachDialog} onClose={() => setOpenAttachDialog(false)}>
+                <Dialog open={openAttachDialog} onClose={onAttachDialogClosed}>
                     <DialogTitle>Присоединиться в роли</DialogTitle>
                     <DialogContent dividers>
-                        <RolesInput onChange={s => setAttachRole(s as string)} multiple={false}/>
+                        <RolesInput reference={rolesReference} onChange={onAttachRoleChange} multiple={false}/>
                     </DialogContent>
                     <DialogActions>
-                        <Button disabled={attachRole === ''} onClick={onAttach}>Подтвердить</Button>
+                        <Button disabled={!attachRole || attachRole === ''} onClick={onAttach}>Подтвердить</Button>
                     </DialogActions>
                 </Dialog>
 
@@ -133,10 +153,10 @@ const RoleSpecificButton = ({project, onSubmit, enabled, isNew}:
             </>);
         case ProjectRole.MENTOR:
             return (<>
-                <Dialog open={openAttachDialog} onClose={() => setOpenAttachDialog(false)}>
+                <Dialog open={openAttachDialog} onClose={onAttachDialogClosed}>
                     <DialogTitle>Присоединиться в роли</DialogTitle>
                     <DialogContent dividers>
-                        <RolesInput onChange={s => setAttachRole(s as string)} multiple={false}/>
+                        <RolesInput reference={rolesReference} onChange={onAttachRoleChange} multiple={false}/>
                     </DialogContent>
                     <DialogActions>
                         <Button disabled={attachRole === ''} onClick={onAttach}>Подтвердить</Button>
