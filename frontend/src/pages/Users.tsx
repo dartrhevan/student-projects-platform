@@ -11,6 +11,7 @@ import {getUsers, inviteToProject} from "../api/users";
 import Pageable from "../model/Pageable";
 import UserRow from "../model/UserRow";
 import RolesInput from "../components/elements/RolesInput";
+import {useSuccess} from "../hooks/logging";
 
 
 const tableColumns = [
@@ -54,7 +55,7 @@ const tableColumns = [
     },
     {
         title: 'Текущий проект',
-        field: "project",
+        field: "projectTitle",
         sorting: false,
         filtering: true,
     },
@@ -101,10 +102,11 @@ export default function Users() {
             tooltip: 'Пригласить',
         });
 
+    const success = useSuccess();
 
     function onInvite() {
         inviteToProject(openInviteUsername, projectId, inviteRole).then(() => {
-            alert('Invitation has been sent');
+            success('Invitation has been sent');
             setOpenInviteDialog(false)
         })
     }
@@ -113,7 +115,7 @@ export default function Users() {
         <Dialog open={openInviteDialog} onClose={() => setOpenInviteDialog(false)}>
             <DialogTitle>Пригласить участника</DialogTitle>
             <DialogContent dividers>
-                <RolesInput onChange={s => setInviteRole(s as string)} role={inviteRole} multiple={false}/>
+                <RolesInput onChange={s => setInviteRole(s as string)} multiple={false}/>
             </DialogContent>
             <DialogActions>
                 <Button disabled={inviteRole === ''} onClick={onInvite}>Подтвердить</Button>

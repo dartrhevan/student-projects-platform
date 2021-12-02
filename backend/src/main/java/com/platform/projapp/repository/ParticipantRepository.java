@@ -10,13 +10,15 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Yarullin Renat
  */
 @Repository
 public interface ParticipantRepository extends JpaRepository<Participant, Long> {
-    Participant findByUserAndProjectStatus(User user, ProjectStatus projectStatus);
+
+    List<Participant> findByUserAndProjectStatusInOrderByProjectId(User user, Set<ProjectStatus> projectStatus);
 
     List<Participant> findByUser(User user, Pageable pageable);
 

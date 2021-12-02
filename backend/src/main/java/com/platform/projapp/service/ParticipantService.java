@@ -9,6 +9,8 @@ import com.platform.projapp.repository.ParticipantRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Set;
+
 /**
  * @author Yarullin Renat
  */
@@ -24,8 +26,8 @@ public class ParticipantService {
         participantRepository.delete(participant);
     }
 
-    public Participant findByUserAndProjectStatus(User user, ProjectStatus projectStatus) {
-        return participantRepository.findByUserAndProjectStatus(user, projectStatus);
+    public Participant findByUserAndProjectStatus(User user, Set<ProjectStatus> projectStatus) {
+        return participantRepository.findByUserAndProjectStatusInOrderByProjectId(user, projectStatus).get(0);
     }
 
     public Participant createParticipant(Project project, ParticipantRequest participantRequest) {

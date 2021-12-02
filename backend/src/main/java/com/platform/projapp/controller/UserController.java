@@ -21,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.platform.projapp.specification.WorkspaceParticipantSpecification.byParams;
@@ -71,8 +72,7 @@ public class UserController {
                 .map(workspaceParticipant -> {
                     Participant projectParticipant = participantService.findByUserAndProjectStatus(
                             workspaceParticipant.getUser(),
-                            ProjectStatus.IN_PROGRESS
-                    );
+                            Set.of(ProjectStatus.IN_PROGRESS, ProjectStatus.MODIFYING, ProjectStatus.NEW));
                     return WorkspaceParticipantInListResponseBody.fromWorkspaceParticipant(workspaceParticipant,
                             projectParticipant != null ? projectParticipant.getProject() : null);
                 })
