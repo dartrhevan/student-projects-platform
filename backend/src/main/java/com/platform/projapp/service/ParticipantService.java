@@ -9,6 +9,7 @@ import com.platform.projapp.repository.ParticipantRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -27,7 +28,8 @@ public class ParticipantService {
     }
 
     public Participant findByUserAndProjectStatus(User user, Set<ProjectStatus> projectStatus) {
-        return participantRepository.findByUserAndProjectStatusInOrderByProjectId(user, projectStatus).get(0);
+        List<Participant> participants = participantRepository.findAllByUserAndProjectStatusInOrderByProjectId(user, projectStatus);
+        return participants.size() != 0 ? participants.get(0) : null;
     }
 
     public Participant createParticipant(Project project, ParticipantRequest participantRequest) {
