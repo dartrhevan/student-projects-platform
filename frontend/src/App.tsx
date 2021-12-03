@@ -99,7 +99,7 @@ function App() {
                         <Route component={Users} path='/users'/>
                         <Route component={Notifications} path='/notifications'/>
                         <Route component={ProjectDetailedPage} path='/project'/>
-                        <Route component={ProjectPlanComponent} path='/project_plan'/>
+                        <Route component={ProjectPlanComponent} path='/project-plan'/>
                         <Route component={UserProfilePage} path='/profile'/>
                         <Route component={Scores} path='/scores/:workspaceId'/>
                         <Route component={Portfolio} path='/portfolio/:login'/>

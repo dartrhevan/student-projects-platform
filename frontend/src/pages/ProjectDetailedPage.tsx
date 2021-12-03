@@ -126,7 +126,7 @@ const RoleSpecificButton = ({project, onSubmit, enabled, isNew}:
                                 Найти участника
                             </Button>
                             <Button color='inherit'
-                                    href={`/project_plan?projectId=${project.id}&workspaceId=${project.workspaceId}`}>
+                                    href={`/project-plan?projectId=${project.id}&workspaceId=${project.workspaceId}`}>
                                 Просмотр плана
                             </Button>
                             <Button color='inherit' onClick={() => setDeleteDialog(true)}>
@@ -165,7 +165,7 @@ const RoleSpecificButton = ({project, onSubmit, enabled, isNew}:
 
 
                 <Button color='inherit'
-                        href={`/project_plan?projectId=${project.id}&workspaceId=${project.workspaceId}`}>
+                        href={`/project-plan?projectId=${project.id}&workspaceId=${project.workspaceId}`}>
                     Просмотр плана
                 </Button>
 
@@ -174,7 +174,7 @@ const RoleSpecificButton = ({project, onSubmit, enabled, isNew}:
         case ProjectRole.PARTICIPANT:
             return (
                 <Button color='inherit'
-                        href={`/project_plan?projectId=${project.id}&workspaceId=${project.workspaceId}`}>
+                        href={`/project-plan?projectId=${project.id}&workspaceId=${project.workspaceId}`}>
                     Просмотр плана
                 </Button>);
         default:
