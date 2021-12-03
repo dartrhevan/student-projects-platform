@@ -46,7 +46,7 @@ const tableColumns = [
         sorting: false,
         filtering: false,
         render: (row: Score) => <TextField type='number' sx={{padding: '2px', maxWidth: '25px'}}
-                       defaultValue={row.backlogScore} variant='standard'/>
+                                           defaultValue={row.backlogScore} variant='standard'/>
     },
     {
         title: 'Итог',

@@ -57,7 +57,7 @@ export default function Notifications() {
         window.location.reload();
     };
 
-    const tableActions: ((n:Notification) => Action<Notification>)[] = [
+    const tableActions: ((n: Notification) => Action<Notification>)[] = [
         (rowData: Notification) => ({
             icon: () => <Check/>,
             onClick: (event: React.EventHandler<any>, objectData: Notification | Notification[]) =>

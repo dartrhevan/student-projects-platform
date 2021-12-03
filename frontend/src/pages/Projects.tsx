@@ -179,6 +179,12 @@ export default function Projects() {
                                        </IconButton>
                                    </Tooltip>
                                </> : <>
+                                   <Tooltip title='Участники'>
+                                       <IconButton href={`/users?workspaceId=${workspaceId}`}
+                                                   className={classes.button}>
+                                           <GroupIcon/>
+                                       </IconButton>
+                                   </Tooltip>
                                    <Tooltip title='Оценки'>
                                        <IconButton href={`/scores/${workspaceId}`} className={classes.button}>
                                            <MenuBookIcon/>

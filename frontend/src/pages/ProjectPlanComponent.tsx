@@ -227,7 +227,6 @@ export default function ProjectPlanComponent() {
         }).then(r => success("Изменения успешно применены")).catch(error);
     }
 
-
     return (
         <Paper className={classes.paper} sx={{minHeight: '100px', ...ElementsStyle}} color='inherit' elevation={8}>
             <Typography align='center' paragraph variant='h4'>План проекта {projectPlan?.projectTitle}</Typography>

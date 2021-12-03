@@ -6,7 +6,6 @@ import ProjectParticipation from "../model/ProjectParticipation";
 import {getPortfolio} from "../api/users";
 import {Link} from "@mui/material";
 import {labelColors} from "../model/Project";
-import Pageable from "../model/Pageable";
 
 interface LoginParam {
     login: string
@@ -54,5 +53,5 @@ export default function () {
 //TODO: лучше выводить ФИ пользователя
     return (
         <Table title={`Портфолио пользователя ${login}`} filtering={false} data={data} tableColumns={tableColumns}
-            paging={false} />);
+               paging={false}/>);
 }

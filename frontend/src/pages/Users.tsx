@@ -8,7 +8,6 @@ import {allNotEmpty} from "../utils/utils";
 import ViewableText from "../components/elements/ViewableText";
 import {Dialog, DialogActions, DialogTitle} from "@mui/material";
 import {getUsers, inviteToProject} from "../api/users";
-import Pageable from "../model/Pageable";
 import UserRow from "../model/UserRow";
 import RolesInput from "../components/elements/RolesInput";
 import {useSuccess} from "../hooks/logging";
@@ -80,8 +79,6 @@ export default function Users() {
     const invite = allNotEmpty(workspaceId, projectId);
 
     const data = (query: Query<UserRow>) => {
-        console.log(`query`);
-        console.log(query);
         return getUsers(workspaceId as string, query);
     };
     const tableActions: Action<UserRow>[] = [

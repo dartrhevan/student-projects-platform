@@ -121,18 +121,18 @@ const RoleSpecificButton = ({project, onSubmit, enabled, isNew}:
                     <ConfirmationDialog open={deleteDialog} onClose={() => setDeleteDialog(false)}
                                         label="удалить проект" onSubmit={onDelete}/>
                     {!isNew ? (<>
-                            <Button color='inherit'
-                                    href={`/users?projectId=${project.id}&workspaceId=${project.workspaceId}`}>
-                                Найти участника
-                            </Button>
-                            <Button color='inherit'
-                                    href={`/project_plan?projectId=${project.id}&workspaceId=${project.workspaceId}`}>
-                                Просмотр плана
-                            </Button>
-                            <Button color='inherit' onClick={() => setDeleteDialog(true)}>
-                                Удалить
-                            </Button>
-                        </>) : (<></>)}
+                        <Button color='inherit'
+                                href={`/users?projectId=${project.id}&workspaceId=${project.workspaceId}`}>
+                            Найти участника
+                        </Button>
+                        <Button color='inherit'
+                                href={`/project_plan?projectId=${project.id}&workspaceId=${project.workspaceId}`}>
+                            Просмотр плана
+                        </Button>
+                        <Button color='inherit' onClick={() => setDeleteDialog(true)}>
+                            Удалить
+                        </Button>
+                    </>) : (<></>)}
                     <Button color='inherit' variant='contained' disabled={!enabled} onClick={onSubmit}>
                         Подтвердить изменения
                     </Button>
@@ -327,7 +327,10 @@ export default function ProjectDetailedPage() {
                             <ListItemText primary={`${p.name} (${p.role})`}/>
                             {project?.projectRole === ProjectRole.OWNER ?
                                 <IconButton
-                                    onClick={() => setRemoveParticipantDialog({open: true, participant: p.username})}>
+                                    onClick={() => setRemoveParticipantDialog({
+                                        open: true,
+                                        participant: p.username
+                                    })}>
                                     <Clear/>
                                 </IconButton> : <></>}
                         </ListItemButton>))}

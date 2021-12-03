@@ -46,6 +46,9 @@ export function getUsers(workspaceId: string, query: Query<UserRow>) {
             "Authorization": "Bearer " + sessionStorage.getItem(StorageKeys.AccessToken)
         }
     }).then(getDefaultDownloadHandler()).then(res => {
-        return new PagedResponse<UserRow>(res.data.participants, query.page, res.data.totalCount);
+        return new PagedResponse<UserRow>(res.data.participants.map((p: any) => {
+            p.roles = p.roles.join(" ");
+            return p;
+        }), query.page, res.data.totalCount);
     });
 }
