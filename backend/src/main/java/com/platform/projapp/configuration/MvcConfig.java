@@ -14,10 +14,10 @@ public class MvcConfig implements WebMvcConfigurer {
     private static final String FORWARD = "forward:/";
 
     @Override
-    public void addViewControllers(ViewControllerRegistry registry) {
-        registry.addViewController("/{x:[.]+}")
+    public void addViewControllers(ViewControllerRegistry registry) {        
+        registry.addViewController("/{x:[\\wА-ЯЁа-яё\\W]+}")
                 .setViewName(FORWARD);
-        registry.addViewController("/{x:^(?!api$).*$}/**/{y:[.]+}")
+        registry.addViewController("/{x:^(?!api$).*$}/**/{y:[\\wА-ЯЁа-яё\\W]+}")
                 .setViewName(FORWARD);
     }
 }
