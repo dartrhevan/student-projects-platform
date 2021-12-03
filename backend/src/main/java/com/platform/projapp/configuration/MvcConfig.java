@@ -15,9 +15,9 @@ public class MvcConfig implements WebMvcConfigurer {
 
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {        
-        registry.addViewController("/{x:[\\wА-ЯЁа-яё\\W]+}")
+        registry.addViewController("/{x:[\\wА-ЯЁа-яё\\-\\%]+}")
                 .setViewName(FORWARD);
-        registry.addViewController("/{x:^(?!api$).*$}/**/{y:[\\wА-ЯЁа-яё\\W]+}")
+        registry.addViewController("/{x:^(?!api$).*$}/**/{y:[\\wА-ЯЁа-яё\\-\\%]+}")
                 .setViewName(FORWARD);
     }
 }
