@@ -97,7 +97,7 @@ export default function UserProfileComponent({user, title}: UserProfileProps) {
     const passwordLabels = getPasswordLabel(user);
 
     const error = useError();
-    // const success = useSuccess();
+    const success = useSuccess();
 
     const dispatch = useDispatch();
     const onRegister = () => register(new UserProfile(name, surname, username, email, messenger, comment, group, roles, tags), password)
@@ -121,8 +121,7 @@ export default function UserProfileComponent({user, title}: UserProfileProps) {
     function onUpdate() {
         update(new UserProfile(name, surname, username, email, messenger, comment, group, roles, tags), password, newPassword)
             .then(r => {
-                // alert('Success');
-                window.location.href = '/';
+                success("Настройки профиля были изменены");
             }).catch(error);
     }
 
