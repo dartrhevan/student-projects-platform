@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import ArrowForwardIosSharpIcon from '@mui/icons-material/ArrowForwardIosSharp';
 import {Button, makeStyles, Typography} from "@material-ui/core";
 import Sprint, {ProjectPlan} from "../model/Sprint";
-import {addSprint, getProjectPlan, removeSprint, updateSprint, uploadPresentation} from "../api/projectPlan";
+import {addSprint, getProjectPlan, removeSprint, updateSprint} from "../api/projectPlan";
 import AddIcon from '@mui/icons-material/Add';
 import ListItemProps from "../props.common/ListItemProps";
 import FileUploadIcon from '@mui/icons-material/FileUpload';
@@ -221,7 +221,7 @@ export default function ProjectPlanComponent() {
     }
 
     function onSprintUpdate(s: Sprint, pr?: File) {
-        updateSprint(s).then(() => {
+        updateSprint(s, pr).then(() => {
             (projectPlan as ProjectPlan).plan = projectPlan?.plan.map(sp => s.id === sp.id ? s : sp) as Sprint[];
             setProjectPlan(projectPlan);
         }).then(r => success("Изменения успешно применены")).catch(error);

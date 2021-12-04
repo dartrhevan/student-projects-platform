@@ -32,7 +32,7 @@ import {useSelector} from "react-redux";
 import getTagsRef, {getTagsReferenceMap} from "../hooks/getTagsRef";
 import ConfirmationDialog from "../components/util/ConfirmationDialog";
 import THEME, {ElementsStyle} from "../theme";
-import RolesInput from "../components/elements/RolesInput";
+import RoleInput from "../components/elements/RoleInput";
 import {addRoleToReference, getRolesReference} from "../api/reference";
 
 const useStyles = makeStyles(theme => ({
@@ -121,18 +121,18 @@ const RoleSpecificButton = ({project, onSubmit, enabled, isNew}:
                     <ConfirmationDialog open={deleteDialog} onClose={() => setDeleteDialog(false)}
                                         label="удалить проект" onSubmit={onDelete}/>
                     {!isNew ? (<>
-                        <Button color='inherit'
-                                href={`/users?projectId=${project.id}&workspaceId=${project.workspaceId}`}>
-                            Найти участника
-                        </Button>
-                        <Button color='inherit'
-                                href={`/project_plan?projectId=${project.id}&workspaceId=${project.workspaceId}`}>
-                            Просмотр плана
-                        </Button>
-                        <Button color='inherit' onClick={() => setDeleteDialog(true)}>
-                            Удалить
-                        </Button>
-                    </>) : (<></>)}
+                            <Button color='inherit'
+                                    href={`/users?projectId=${project.id}&workspaceId=${project.workspaceId}`}>
+                                Найти участника
+                            </Button>
+                            <Button color='inherit'
+                                    href={`/project-plan?projectId=${project.id}&workspaceId=${project.workspaceId}`}>
+                                Просмотр плана
+                            </Button>
+                            <Button color='inherit' onClick={() => setDeleteDialog(true)}>
+                                Удалить
+                            </Button>
+                        </>) : (<></>)}
                     <Button color='inherit' variant='contained' disabled={!enabled} onClick={onSubmit}>
                         Подтвердить изменения
                     </Button>
@@ -142,7 +142,7 @@ const RoleSpecificButton = ({project, onSubmit, enabled, isNew}:
                 <Dialog open={openAttachDialog} onClose={onAttachDialogClosed}>
                     <DialogTitle>Присоединиться в роли</DialogTitle>
                     <DialogContent dividers>
-                        <RolesInput reference={rolesReference} onChange={onAttachRoleChange} multiple={false}/>
+                        <RoleInput reference={rolesReference} onChange={onAttachRoleChange} multiple={false}/>
                     </DialogContent>
                     <DialogActions>
                         <Button disabled={!attachRole || attachRole === ''} onClick={onAttach}>Подтвердить</Button>
@@ -157,7 +157,7 @@ const RoleSpecificButton = ({project, onSubmit, enabled, isNew}:
                 <Dialog open={openAttachDialog} onClose={onAttachDialogClosed}>
                     <DialogTitle>Присоединиться в роли</DialogTitle>
                     <DialogContent dividers>
-                        <RolesInput reference={rolesReference} onChange={onAttachRoleChange} multiple={false}/>
+                        <RoleInput reference={rolesReference} onChange={onAttachRoleChange} multiple={false}/>
                     </DialogContent>
                     <DialogActions>
                         <Button disabled={attachRole === ''} onClick={onAttach}>Подтвердить</Button>
@@ -166,7 +166,7 @@ const RoleSpecificButton = ({project, onSubmit, enabled, isNew}:
 
 
                 <Button color='inherit'
-                        href={`/project_plan?projectId=${project.id}&workspaceId=${project.workspaceId}`}>
+                        href={`/project-plan?projectId=${project.id}&workspaceId=${project.workspaceId}`}>
                     Просмотр плана
                 </Button>
 
@@ -175,7 +175,7 @@ const RoleSpecificButton = ({project, onSubmit, enabled, isNew}:
         case ProjectRole.PARTICIPANT:
             return (
                 <Button color='inherit'
-                        href={`/project_plan?projectId=${project.id}&workspaceId=${project.workspaceId}`}>
+                        href={`/project-plan?projectId=${project.id}&workspaceId=${project.workspaceId}`}>
                     Просмотр плана
                 </Button>);
         default:

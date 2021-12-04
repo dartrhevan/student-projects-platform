@@ -144,8 +144,9 @@ public class UserService {
         //user.setLogin(req.getLogin());
         user.setInterests(req.getInterests());
         user.setEmail(req.getEmail());
-        user.getRoles().addAll(req.getRoles().stream().map(projectRoleService::createProjectRole).collect(Collectors.toList()));
+        user.setRoles(req.getRoles().stream().map(projectRoleService::createProjectRole).collect(Collectors.toSet()));
         user.setGroupp(req.getGroup());
+        user.setMessenger(req.getMessenger());
         user.setSkills(req.getSkills().stream().map(tags -> {
             Tags tgs = tags;
             tgs = tagsRepository.getById(tgs.getId());

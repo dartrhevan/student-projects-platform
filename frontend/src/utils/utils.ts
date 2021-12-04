@@ -6,7 +6,7 @@ export function getOnFieldChange(setter: (v: string) => void) {
 }
 
 export function allNotEmpty(...values: any[]) {
-    return values.every(e => e && e !== '');
+    return values.every(e => e && e.length > 0);
 }
 
 export function randomInt(min: number = 0, max: number) {
@@ -51,3 +51,16 @@ export function getDefaultUploadHandler(template = 'Ошибка отправк�
         }
     };
 }
+
+export function toBase64(file: File) {
+    return new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => {
+            const result = reader.result as string;
+            const base64Index = result.indexOf('base64')
+            resolve(result.substr(base64Index + 7));
+        };
+        reader.onerror = error => reject(error);
+    })
+};

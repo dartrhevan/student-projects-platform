@@ -9,7 +9,7 @@ import ViewableText from "../components/elements/ViewableText";
 import {Dialog, DialogActions, DialogTitle} from "@mui/material";
 import {getUsers, inviteToProject} from "../api/users";
 import UserRow from "../model/UserRow";
-import RolesInput from "../components/elements/RolesInput";
+import RoleInput from "../components/elements/RoleInput";
 import {useSuccess} from "../hooks/logging";
 import {addRoleToReference, getRolesReference} from "../api/reference";
 
@@ -134,7 +134,7 @@ export default function Users() {
         <Dialog open={openInviteDialog} onClose={onInviteAborted}>
             <DialogTitle>Пригласить участника</DialogTitle>
             <DialogContent dividers>
-                <RolesInput reference={rolesReference} onChange={onRoleChange} multiple={false}/>
+                <RoleInput reference={rolesReference} onChange={onRoleChange} multiple={false}/>
             </DialogContent>
             <DialogActions>
                 <Button disabled={!inviteRole || inviteRole === ''} onClick={onInvite}>Подтвердить</Button>

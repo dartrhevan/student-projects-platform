@@ -65,7 +65,7 @@ export default function TagsPanel(
                 let newTag = tagsReference?.find(t => t.name === tag);
                 if (newTag === undefined) {
                     newTag = new Tag(-1, tag);
-                    addTagToReference(newTag.name, newTag.colour)
+                    addTagToReference(newTag.name, newTag.color)
                         .then(r => {
                             (newTag as Tag).id = r.data;
                             const newTags = [...tags, newTag as Tag];

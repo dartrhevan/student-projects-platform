@@ -39,9 +39,11 @@ public class User implements UserDetails {
     private String email;
     private String groupp;
 
+    @ToString.Exclude
     @ManyToMany(cascade = {PERSIST, MERGE, DETACH, REFRESH, PERSIST})
     private Set<ProjectRole> roles;
 
+    @ToString.Exclude
     @ManyToMany(cascade = {PERSIST, MERGE, DETACH, REFRESH, PERSIST})
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @JoinTable(
