@@ -128,9 +128,10 @@ export default function Projects() {
 
     return (<BadgePage checkBoxes={[new CheckBoxInfo('Показать только активные', activeUpdate)]}
                        titleAlign='left'
-                       additionalButtons={(<>
-                           <WorkspaceSettings workspaceId={workspaceId}/>
-                           {role === WorkspaceAssociation.ORGANIZER ?
+                       additionalButtons={(
+                           <>
+                               <WorkspaceSettings workspaceId={workspaceId}/>
+                               {role === WorkspaceAssociation.ORGANIZER &&
                                <>
                                    <Dialog open={openInvite} onClose={closeInvite}>
                                        <DialogTitle>Добавить в рабочее пространство</DialogTitle>
@@ -153,6 +154,11 @@ export default function Projects() {
                                    <Tooltip title='Оценки'>
                                        <IconButton href={`/scores/${workspaceId}`} className={classes.button}>
                                            <MenuBookIcon/>
+                                       </IconButton>
+                                   </Tooltip>
+                                   <Tooltip title='Оценить'>
+                                       <IconButton href={`/scoring/${workspaceId}`} className={classes.button}>
+                                           <Filter5Icon/>
                                        </IconButton>
                                    </Tooltip>
                                    <Tooltip title='Участники'>
@@ -178,26 +184,40 @@ export default function Projects() {
                                            <DeleteIcon/>
                                        </IconButton>
                                    </Tooltip>
-                               </> : <>
+                               </>
+                               || role === WorkspaceAssociation.MENTOR &&
+                               <>
+                                   <Tooltip title='Оценки'>
+                                       <IconButton href={`/scores/${workspaceId}`} className={classes.button}>
+                                           <MenuBookIcon/>
+                                       </IconButton>
+                                   </Tooltip>
+                                   <Tooltip title='Оценить'>
+                                       <IconButton href={`/scoring/${workspaceId}`} className={classes.button}>
+                                           <Filter5Icon/>
+                                       </IconButton>
+                                   </Tooltip>
                                    <Tooltip title='Участники'>
                                        <IconButton href={`/users?workspaceId=${workspaceId}`}
                                                    className={classes.button}>
                                            <GroupIcon/>
                                        </IconButton>
                                    </Tooltip>
+                               </>
+                               || <>
                                    <Tooltip title='Оценки'>
                                        <IconButton href={`/scores/${workspaceId}`} className={classes.button}>
                                            <MenuBookIcon/>
                                        </IconButton>
                                    </Tooltip>
-                                   {role === WorkspaceAssociation.MENTOR ?
-                                       <Tooltip title='Оценить'>
-                                           <IconButton href={`/scoring/${workspaceId}`} className={classes.button}>
-                                               <Filter5Icon/>
-                                           </IconButton>
-                                       </Tooltip> : <></>}
+                                   <Tooltip title='Участники'>
+                                       <IconButton href={`/users?workspaceId=${workspaceId}`}
+                                                   className={classes.button}>
+                                           <GroupIcon/>
+                                       </IconButton>
+                                   </Tooltip>
                                </>}
-                       </>)}
+                           </>)}
                        title={workspaceTitle ? `Проекты из "${workspaceTitle}"` : `Проекты "${user?.user.username}"`}
                        badgeData={data} squared={false}
                        href={i => `/project?projectId=${i.id}&workspaceId=${workspaceId}`}
