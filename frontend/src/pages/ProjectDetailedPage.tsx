@@ -80,7 +80,7 @@ const RoleSpecificButton = ({project, onSubmit, enabled, isNew}:
 
     function onDelete() {
         deleteProject(project?.id as string)
-            .then(r => window.location.href = '/workspaces/') //TODO: rederect to projects in workspace
+            .then(r => window.history.back())
             .catch(error);
     }
 
@@ -149,7 +149,8 @@ const RoleSpecificButton = ({project, onSubmit, enabled, isNew}:
                     </DialogActions>
                 </Dialog>
 
-                <Button color='inherit' onClick={() => setOpenAttachDialog(true)}>Присоединиться</Button>
+                <Button disabled={project?.maxParticipantsCount <= project?.participants.length} color='inherit'
+                        onClick={() => setOpenAttachDialog(true)}>Присоединиться</Button>
             </>);
         case ProjectRole.MENTOR:
             return (<>
@@ -223,9 +224,10 @@ export default function ProjectDetailedPage() {
     // const params = useLocation<ProjectParams>().state;
     const params = queryString.parse(window.location.search);
     const workspaceId = params?.workspaceId, projectId = params?.projectId;
-    const isNew = params?.isNew !== undefined;
     const classes = useStyles();
     const [project, setProject] = useState(new DetailedProject(workspaceId as string));
+    const [isNew, setIsNew] = useState(params?.isNew !== undefined);
+    const [maxParticipantsCount, setMaxParticipantsCount] = useState(project?.maxParticipantsCount || 5);
     const [removeParticipantDialog, setRemoveParticipantDialog] = useState({open: false, participant: ""});
 
     const tagsReference = useSelector(getTagsReferenceMap);
@@ -235,14 +237,14 @@ export default function ProjectDetailedPage() {
                     .then(r => {
                         const proj: DetailedProject = DetailedProject.fromObject(r.data);
                         proj.tags = r.data.tags.map(t => tagsReference[t.toString()]).filter(t => t !== undefined);
+                        setMaxParticipantsCount(proj.maxParticipantsCount);
                         setProject(proj);
                     }).catch(console.log)
             }
         }, //TODO: catch
         [projectId, isNew, tagsReference]);
 
-    console.log('render with')
-    console.log(project)
+
     const allFilled = !isNew || project?.isNewFilled;//allNotEmpty(username, password);
 
     const success = useSuccess();
@@ -252,7 +254,7 @@ export default function ProjectDetailedPage() {
     function onSubmit() {
         if (isNew)
             addProject(project as DetailedProject)
-                .then(r => window.location.href = '/workspaces')
+                .then(r => setIsNew(false))
                 .catch(r => error(`Error ${r}`));
         else
             editProject(project as DetailedProject)
@@ -338,7 +340,12 @@ export default function ProjectDetailedPage() {
                 <div className={classes.butGr} style={{justifyContent: 'start'}}>
                     <Typography sx={{margin: '10px'}} color='inherit'>Максимальное кол-во участников</Typography>
                     <TextField disabled={!(isNew || project?.projectRole === ProjectRole.OWNER)}
-                               sx={{width: '40px'}} type='number' variant='standard'/>
+                               sx={{width: '40px'}} type='number' variant='standard'
+                               onChange={e => {
+                                   setMaxParticipantsCount(parseInt(e.target.value))
+                                   project ? project.maxParticipantsCount = parseInt(e.target.value) : null
+                               }}
+                               value={maxParticipantsCount}/>
                 </div>
 
                 {!isNew ? (<div className={classes.butGr} style={{justifyContent: 'start'}}>
