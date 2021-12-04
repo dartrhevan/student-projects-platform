@@ -36,7 +36,7 @@ public class ProjectService {
     public static ProjectRole toProjectRole(WorkspaceRole role, Project project, User user) {
         if (project.getOwnerLogin().equals(user.getLogin())) return ProjectRole.OWNER;
         return switch (role) {
-            case MENTOR, ORGANIZER -> !project.hasUser(user.getLogin()) ? ProjectRole.STRANGER : ProjectRole.MENTOR;
+            case MENTOR, ORGANIZER -> !project.hasUser(user.getLogin()) ? ProjectRole.MENTOR : ProjectRole.PARTICIPANT;
             case STUDENT -> !project.hasUser(user.getLogin()) ? ProjectRole.STRANGER : ProjectRole.PARTICIPANT;
         };
     }

@@ -2,7 +2,7 @@ import UserProfile from "../model/UserProfile";
 import GenericResponse from "../model/dto/GenericResponse";
 import {Login, LoginState} from "../store/state/LoginState";
 import {StorageKeys} from "../utils/StorageKeys";
-import {getDefaultDownloadHandler} from "../utils/utils";
+import {getDefaultDownloadHandler, getDefaultUploadHandler} from "../utils/utils";
 import RefreshToken from "../model/dto/RefreshToken";
 
 /**
@@ -74,8 +74,43 @@ export function register(user: UserProfile, password: string) {
  * @return current username
  */
 export function update(user: UserProfile, password?: string, newPassword?: string) {
-    console.log(user);
-    return new Promise<string>((res, rej) => res("vovan")); //TODO: implement
+    let user_json;
+    if (newPassword) {
+        user_json = {
+            login: user.username,
+            name: user.name,
+            surname: user.surname,
+            group: user.group,
+            interests: user.comment,
+            email: user.email,
+            roles: user.roles,
+            skills: user.skills,
+            messenger: user.messenger,
+            password: password,
+            newPassword: newPassword
+        }
+    } else {
+        user_json = {
+            login: user.username,
+            name: user.name,
+            surname: user.surname,
+            group: user.group,
+            interests: user.comment,
+            email: user.email,
+            roles: user.roles,
+            skills: user.skills,
+            messenger: user.messenger,
+            password: password
+        }
+    }
+    return fetch(`/api/users/`, {
+        method: "PUT",
+        headers: {
+            'Content-Type': 'application/json',
+            "Authorization": "Bearer " + sessionStorage.getItem(StorageKeys.AccessToken)
+        },
+        body: JSON.stringify(user_json)
+    }).then(getDefaultUploadHandler());
 }
 
 
