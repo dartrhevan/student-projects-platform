@@ -32,7 +32,7 @@ import {useSelector} from "react-redux";
 import getTagsRef, {getTagsReferenceMap} from "../hooks/getTagsRef";
 import ConfirmationDialog from "../components/util/ConfirmationDialog";
 import THEME, {ElementsStyle} from "../theme";
-import RolesInput from "../components/elements/RolesInput";
+import RoleInput from "../components/elements/RoleInput";
 import {addRoleToReference, getRolesReference} from "../api/reference";
 
 const useStyles = makeStyles(theme => ({
@@ -142,7 +142,7 @@ const RoleSpecificButton = ({project, onSubmit, enabled, isNew}:
                 <Dialog open={openAttachDialog} onClose={onAttachDialogClosed}>
                     <DialogTitle>Присоединиться в роли</DialogTitle>
                     <DialogContent dividers>
-                        <RolesInput reference={rolesReference} onChange={onAttachRoleChange} multiple={false}/>
+                        <RoleInput reference={rolesReference} onChange={onAttachRoleChange} multiple={false}/>
                     </DialogContent>
                     <DialogActions>
                         <Button disabled={!attachRole || attachRole === ''} onClick={onAttach}>Подтвердить</Button>
@@ -156,7 +156,7 @@ const RoleSpecificButton = ({project, onSubmit, enabled, isNew}:
                 <Dialog open={openAttachDialog} onClose={onAttachDialogClosed}>
                     <DialogTitle>Присоединиться в роли</DialogTitle>
                     <DialogContent dividers>
-                        <RolesInput reference={rolesReference} onChange={onAttachRoleChange} multiple={false}/>
+                        <RoleInput reference={rolesReference} onChange={onAttachRoleChange} multiple={false}/>
                     </DialogContent>
                     <DialogActions>
                         <Button disabled={attachRole === ''} onClick={onAttach}>Подтвердить</Button>

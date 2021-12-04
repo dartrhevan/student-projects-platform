@@ -1,6 +1,6 @@
 import UserProfile from "../model/UserProfile";
 import GenericResponse from "../model/dto/GenericResponse";
-import {Login, LoginState} from "../store/state/LoginState";
+import {getTokenHeader, Login, LoginState} from "../store/state/LoginState";
 import {StorageKeys} from "../utils/StorageKeys";
 import {getDefaultDownloadHandler, getDefaultUploadHandler} from "../utils/utils";
 import RefreshToken from "../model/dto/RefreshToken";
@@ -11,9 +11,7 @@ import RefreshToken from "../model/dto/RefreshToken";
 export function getCurrentUser() {
     if (sessionStorage.getItem(StorageKeys.AccessToken))
         return fetch('/api/users/currentuser', {
-            headers: {
-                "Authorization": "Bearer " + sessionStorage.getItem(StorageKeys.AccessToken)
-            }
+            headers: getTokenHeader()
         }).then(getDefaultDownloadHandler('Not authorized'));
 }
 
@@ -22,9 +20,7 @@ export function getCurrentUser() {
  */
 export function getCurrentUserProfile(): Promise<GenericResponse<UserProfile>> {
     return fetch('/api/users/', {
-        headers: {
-            "Authorization": "Bearer " + sessionStorage.getItem(StorageKeys.AccessToken)
-        }
+        headers: getTokenHeader()
     }).then(r => r.json())
 }
 
@@ -107,7 +103,7 @@ export function update(user: UserProfile, password?: string, newPassword?: strin
         method: "PUT",
         headers: {
             'Content-Type': 'application/json',
-            "Authorization": "Bearer " + sessionStorage.getItem(StorageKeys.AccessToken)
+            ...getTokenHeader()
         },
         body: JSON.stringify(user_json)
     }).then(getDefaultUploadHandler());
@@ -119,19 +115,19 @@ export function refreshToken(): Promise<GenericResponse<RefreshToken>> {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            "Authorization": "Bearer " + sessionStorage.getItem(StorageKeys.AccessToken)
+            ...getTokenHeader()
         },
-        body: `{"tokenRefresh": "${sessionStorage.getItem(StorageKeys.RefreshToken)}"}`
+        body: `{"tokenRefresh": "${localStorage.getItem(StorageKeys.RefreshToken)}"}`
     }).then(getDefaultDownloadHandler()).catch(console.log);
 }
 
 const REFRESH_TOKEN_TIMEOUT = 2000000;
 
 function refreshTokenScheduler() {
-    if (sessionStorage.getItem(StorageKeys.AccessToken) !== null) {
+    if (localStorage.getItem(StorageKeys.AccessToken) !== null) {
         refreshToken().then(r => r.data).then(r => {
-            sessionStorage.setItem(StorageKeys.AccessToken, r.accessToken);
-            sessionStorage.setItem(StorageKeys.RefreshToken, r.refreshToken);
+            localStorage.setItem(StorageKeys.AccessToken, r.accessToken);
+            localStorage.setItem(StorageKeys.RefreshToken, r.refreshToken);
             console.log(`Token refreshed access: ${r.accessToken} refresh: ${r.refreshToken}`);
         });
     }

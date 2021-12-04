@@ -5,6 +5,7 @@ import ProjectsResponse from "../model/dto/ProjectsResponse";
 import GenericResponse from "../model/dto/GenericResponse";
 import {StorageKeys} from "../utils/StorageKeys";
 import {getDefaultUploadHandler, getDefaultDownloadHandler} from "../utils/utils";
+import {getTokenHeader} from "../store/state/LoginState";
 
 
 export function addProject(project: DetailedProject): Promise<CommonResponse> {
@@ -12,7 +13,7 @@ export function addProject(project: DetailedProject): Promise<CommonResponse> {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            "Authorization": "Bearer " + sessionStorage.getItem(StorageKeys.AccessToken)
+            ...getTokenHeader()
         },
         body: JSON.stringify({
             name: project.title,
@@ -38,7 +39,7 @@ export function editProject(project: DetailedProject): Promise<CommonResponse> {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
-            "Authorization": "Bearer " + sessionStorage.getItem(StorageKeys.AccessToken)
+            ...getTokenHeader()
         },
         body: JSON.stringify({
             name: project.title,
@@ -54,9 +55,7 @@ export function editProject(project: DetailedProject): Promise<CommonResponse> {
 
 export function getProjectsForWorkspace(query: ProjectQuery): Promise<GenericResponse<ProjectsResponse>> {
     return fetch(`/api/projects?workspaceId=${query.workspaceId}&tag=${query.tags.join(",")}&page=${query.pageable.pageNumber}&size=${query.pageable.pageSize}&active=${query.showOnlyActive}`, {
-        headers: {
-            "Authorization": "Bearer " + sessionStorage.getItem(StorageKeys.AccessToken)
-        }
+        headers: getTokenHeader()
     }).then(getDefaultDownloadHandler());
 }
 
@@ -64,17 +63,13 @@ export function deleteProject(projectId: string) {
     console.log('Delete project ', projectId);
     return fetch(`/api/projects/${projectId}`, {
         method: 'DELETE',
-        headers: {
-            "Authorization": "Bearer " + sessionStorage.getItem(StorageKeys.AccessToken)
-        }
+        headers: getTokenHeader()
     }).then(getDefaultUploadHandler());
 }
 
 export function getProjectInfo(projectId: string): Promise<GenericResponse<DetailedProject>> {
     return fetch(`/api/projects/${projectId}`, {
-        headers: {
-            "Authorization": "Bearer " + sessionStorage.getItem(StorageKeys.AccessToken)
-        }
+        headers: getTokenHeader()
     }).then(r => r.json());
 }
 
@@ -83,7 +78,7 @@ export function requestAttachToProject(projectId: string, role: string) {
         method: "POST",
         headers: {
             'Content-Type': 'application/json',
-            "Authorization": "Bearer " + sessionStorage.getItem(StorageKeys.AccessToken)
+            ...getTokenHeader()
         },
         body: JSON.stringify({projectId, role})
     }).then(getDefaultUploadHandler());
@@ -92,8 +87,6 @@ export function requestAttachToProject(projectId: string, role: string) {
 export function removeParticipant(participantUsername: string, projectId: string) {
     return fetch(`/api/projects/${projectId}/participants?participantUsername=${participantUsername}`, {
         method: 'DELETE',
-        headers: {
-            "Authorization": "Bearer " + sessionStorage.getItem(StorageKeys.AccessToken)
-        }
+        headers: getTokenHeader()
     }).then(getDefaultUploadHandler());
 }

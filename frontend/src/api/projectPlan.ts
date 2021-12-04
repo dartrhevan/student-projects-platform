@@ -3,6 +3,7 @@ import Sprint, {ProjectPlan, ResultComment} from "../model/Sprint";
 import CommonResponse from "../model/dto/CommonResponse";
 import {StorageKeys} from "../utils/StorageKeys";
 import {getDefaultDownloadHandler, getDefaultUploadHandler, toDateString} from "../utils/utils";
+import {getTokenHeader} from "../store/state/LoginState";
 
 /**
  *
@@ -12,9 +13,7 @@ import {getDefaultDownloadHandler, getDefaultUploadHandler, toDateString} from "
  */
 export function getProjectPlan(projectId: string) {//TODO: implement
     return fetch(`/api/sprints?projectId=${projectId}`, {
-        headers: {
-            "Authorization": "Bearer " + sessionStorage.getItem(StorageKeys.AccessToken)
-        }
+        headers: getTokenHeader()
     }).then(getDefaultDownloadHandler());
     // return new Promise<GenericResponse<ProjectPlan>>((res, rej) => res(
     //     new GenericResponse(new ProjectPlan(
@@ -29,9 +28,7 @@ export function getProjectPlan(projectId: string) {//TODO: implement
 export function removeSprint(sprintId: string) {
     return fetch(`/api/sprints?sprintId=${sprintId}`, {
         method: 'DELETE',
-        headers: {
-            "Authorization": "Bearer " + sessionStorage.getItem(StorageKeys.AccessToken)
-        }
+        headers: getTokenHeader()
     }).then(getDefaultUploadHandler());
     // return new Promise<CommonResponse>(resolve => resolve(new CommonResponse())); //TODO: implement
 }
@@ -49,7 +46,7 @@ export function addSprint(projectId: string, orderNum: string, sprint: Sprint) {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            "Authorization": "Bearer " + sessionStorage.getItem(StorageKeys.AccessToken)
+            ...getTokenHeader()
         },
         body: JSON.stringify({
             ['number']: orderNum,
@@ -75,7 +72,7 @@ export function updateSprint(sprint: Sprint) {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
-            "Authorization": "Bearer " + sessionStorage.getItem(StorageKeys.AccessToken)
+            ...getTokenHeader()
         },
         body: JSON.stringify({
             sprintId: sprint.id,

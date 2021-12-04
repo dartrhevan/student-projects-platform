@@ -6,13 +6,12 @@ import Invite from "../model/dto/Invite";
 import ScoreDTO from "../model/dto/ScoreDTO";
 import {StorageKeys} from "../utils/StorageKeys";
 import {getDefaultUploadHandler, getDefaultDownloadHandler} from "../utils/utils";
+import {getTokenHeader} from "../store/state/LoginState";
 
 
 export function getUsersWorkspaces(pageable: Pageable): Promise<GenericResponse<{ totalCount: number, workspaces: Workspace[] }>> {
     return fetch(`/api/workspaces?page=${pageable.pageNumber}&size=${pageable.pageSize}`, {
-        headers: {
-            "Authorization": "Bearer " + sessionStorage.getItem(StorageKeys.AccessToken)
-        }
+        headers: getTokenHeader()
     }).then(getDefaultDownloadHandler('Ошибка загрузки'));
 }
 
@@ -29,7 +28,7 @@ export function addNewWorkspace(title: string, sprintsCount: number, sprintsLeng
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            "Authorization": "Bearer " + sessionStorage.getItem(StorageKeys.AccessToken)
+            ...getTokenHeader()
         },
         body: JSON.stringify({
             title,
@@ -54,7 +53,7 @@ export function updateWorkspace(id: string, title: string, sprintsCount: number,
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
-            "Authorization": "Bearer " + sessionStorage.getItem(StorageKeys.AccessToken)
+            ...getTokenHeader()
         },
         body: JSON.stringify({
             title: title,
@@ -71,32 +70,26 @@ export function deleteWorkspace(id: string) {
         method: 'DELETE',
         headers: {
             'Content-Type': 'application/json',
-            "Authorization": "Bearer " + sessionStorage.getItem(StorageKeys.AccessToken)
+            ...getTokenHeader()
         }
     }).then(getDefaultUploadHandler());
 }
 
 export function attachToWorkspace(code: string) {
     return fetch(`/api/workspaces/participants?code=${code}`, {
-        headers: {
-            "Authorization": "Bearer " + sessionStorage.getItem(StorageKeys.AccessToken)
-        }
+        headers: getTokenHeader()
     }).then(getDefaultUploadHandler());
 }
 
 export function getWorkspaceById(id: string) {
     return fetch(`/api/workspaces/${id}/settings`, {
-        headers: {
-            "Authorization": "Bearer " + sessionStorage.getItem(StorageKeys.AccessToken)
-        }
+        headers: getTokenHeader()
     }).then(getDefaultDownloadHandler());
 }
 
 export function getInviteForWorkspace(id: string): Promise<GenericResponse<Invite>> {
     return fetch(`/api/workspaces/${id}`, {
-        headers: {
-            "Authorization": "Bearer " + sessionStorage.getItem(StorageKeys.AccessToken)
-        }
+        headers: getTokenHeader()
     }).then(getDefaultDownloadHandler());
 }
 

@@ -4,12 +4,11 @@ import PagedResponse from "../model/dto/PagedResponse";
 import Pageable from "../model/Pageable";
 import {StorageKeys} from "../utils/StorageKeys";
 import {getDefaultUploadHandler, getDefaultDownloadHandler} from "../utils/utils";
+import {getTokenHeader} from "../store/state/LoginState";
 
 export function getAllNotifications(pageable: Pageable) {
     return fetch(`/api/notifications?page=${pageable.pageNumber}&size=${pageable.pageSize}`, {
-        headers: {
-            "Authorization": "Bearer " + sessionStorage.getItem(StorageKeys.AccessToken)
-        }
+        headers: getTokenHeader()
     }).then(getDefaultDownloadHandler()).then(res => {
         return new PagedResponse<Notification>(res.data.notifications, pageable.pageNumber, res.data.totalCount);
     });
@@ -20,7 +19,7 @@ export function apply(id: string) {
         method: "POST",
         headers: {
             'Content-Type': 'application/json',
-            "Authorization": "Bearer " + sessionStorage.getItem(StorageKeys.AccessToken)
+            ...getTokenHeader()
         },
         body: JSON.stringify({answer: true})
     }).then(getDefaultUploadHandler());
@@ -31,7 +30,7 @@ export function markRead(id: string) {
         method: "POST",
         headers: {
             'Content-Type': 'application/json',
-            "Authorization": "Bearer " + sessionStorage.getItem(StorageKeys.AccessToken)
+            ...getTokenHeader()
         },
         body: JSON.stringify({})
     }).then(getDefaultUploadHandler());
@@ -42,7 +41,7 @@ export function deny(id: string) {
         method: "POST",
         headers: {
             'Content-Type': 'application/json',
-            "Authorization": "Bearer " + sessionStorage.getItem(StorageKeys.AccessToken)
+            ...getTokenHeader()
         },
         body: JSON.stringify({answer: false})
     }).then(getDefaultUploadHandler());

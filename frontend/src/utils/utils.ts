@@ -6,7 +6,7 @@ export function getOnFieldChange(setter: (v: string) => void) {
 }
 
 export function allNotEmpty(...values: any[]) {
-    return values.every(e => e && e !== '');
+    return values.every(e => e && e.length > 0);
 }
 
 export function randomInt(min: number = 0, max: number) {

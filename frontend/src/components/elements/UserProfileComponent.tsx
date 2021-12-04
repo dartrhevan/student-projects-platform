@@ -18,7 +18,7 @@ import TagsPanel from "../../components/util/TagsPanel";
 import clsx from 'clsx';
 import Card from "@material-ui/core/Card";
 import Tag from "../../model/Tag";
-import RolesInput from "./RolesInput";
+import RoleInput, {RolesInput} from "./RoleInput";
 import {useError, useSuccess} from "../../hooks/logging";
 import GenericResponse from "../../model/dto/GenericResponse";
 import {Login} from "../../store/state/LoginState";
@@ -87,7 +87,7 @@ export default function UserProfileComponent({user, title}: UserProfileProps) {
             setUsername(user?.username);
             setSurname(user?.surname);
             setName(user?.name);
-            setTags(user?.skills.map(t => new Tag(t.id, t.name, t.colour)));
+            setTags(user?.skills.map(t => new Tag(t.id, t.name, t.color)));
             setGroup(user?.group);
             setComment(user?.comment);
             setRoles(user?.roles);
@@ -103,7 +103,7 @@ export default function UserProfileComponent({user, title}: UserProfileProps) {
     const onRegister = () => register(new UserProfile(name, surname, username, email, messenger, comment, group, roles, tags), password)
         .then((r: GenericResponse<Login>) => {
             dispatch(setLoginAction(r.data));
-            window.location.href = '/';
+            window.location.href = '/profile';
         }).catch(error);
 
     const required = [];
@@ -125,6 +125,7 @@ export default function UserProfileComponent({user, title}: UserProfileProps) {
             }).catch(error);
     }
 
+    const allFilled = allNotEmpty(messenger, username, surname, name, tags, group, comment, roles, email);
 
     return (
         <Centered additionalClasses={[classes.container]}>
@@ -132,6 +133,10 @@ export default function UserProfileComponent({user, title}: UserProfileProps) {
                 <Typography variant="h5">
                     {title}
                 </Typography>
+                {user !== undefined && !allFilled ?
+                    <Typography color='textSecondary' variant='body2'>
+                        В вашем профиле остались незаполненные поля.
+                    </Typography> : ''}
                 <CssBaseline/>
 
                 <TextField label="Имя" value={name} className={classes.def} onChange={getOnFieldChange(setName)}
@@ -142,18 +147,21 @@ export default function UserProfileComponent({user, title}: UserProfileProps) {
                            onChange={getOnFieldChange(setUsername)} fullWidth={true}/>
                 <TextField label="Email" value={email} className={classes.def}
                            onChange={getOnFieldChange(setEmail)} fullWidth={true}/>
-                <TextField label="Мэсэнджер" value={messenger} className={classes.def}
-                           onChange={getOnFieldChange(setMessenger)} fullWidth={true}/>
                 <TextField label="Группа" value={group} className={classes.def}
                            onChange={getOnFieldChange(setGroup)} fullWidth={true}/>
-                <TextField label='Кратко опишите ваши интерересы' multiline={true} focused className={classes.def}
-                           onChange={getOnFieldChange(setComment)} fullWidth={true} value={comment}/>
                 <CssBaseline/>
-                <div className={clsx(classes.def, classes.skills)}>
-                    <Typography className={classes.def} align='center'>Введи ваши навыки</Typography>
-                    <TagsPanel values={tags} label='skill' tagInputClasses={[classes.tagInput]} onSetTag={setTags}/>
-                </div>
-                <RolesInput onChange={s => setRoles(s as string[])} defRoles={roles} />
+                {user !== undefined ? (<>
+                    <TextField label="Мэсэнджер" value={messenger} className={classes.def}
+                               onChange={getOnFieldChange(setMessenger)} fullWidth={true}/>
+                    <TextField label='Кратко опишите ваши интерересы' multiline={true}
+                               focused className={classes.def} onChange={getOnFieldChange(setComment)}
+                               fullWidth={true} value={comment}/>
+                    <div className={clsx(classes.def, classes.skills)}>
+                        <Typography className={classes.def} align='center'>Введи ваши навыки</Typography>
+                        <TagsPanel values={tags} label='skill' tagInputClasses={[classes.tagInput]} onSetTag={setTags}/>
+                    </div>
+                    <RolesInput onChange={s => setRoles(s as string[])} defRoles={roles}/>
+                </>) : <></>}
                 {user ?
                     <TextField label="Текущий пароль" className={classes.def}
                                onChange={getOnFieldChange(setPassword)}
