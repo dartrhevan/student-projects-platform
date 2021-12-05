@@ -84,18 +84,22 @@ const RoleSpecificButton = ({project, onSubmit, enabled, isNew}:
             .catch(error);
     }
 
-    function onAttach() {
-        if (!rolesReference.includes(attachRole)) { //TODO: move to back
-            addRoleToReference(attachRole)
-                .then(r => setRolesReference([...rolesReference, attachRole]))
+    function onAttach(role = attachRole) {
+        if (!rolesReference.includes(role)) { //TODO: move to back
+            addRoleToReference(role)
+                .then(r => setRolesReference([...rolesReference, role]))
                 .catch(console.log);
         }
-        requestAttachToProject(project?.id as string, attachRole)
+        requestAttachToProject(project?.id as string, role)
             .then(r => {
                 setOpenAttachDialog(false);
                 success("Запрос на присоединение отправлен");
             })
             .catch(error);
+    }
+
+    function onMentorAttach() {
+        onAttach("Ментор");
     }
 
     const [rolesReference, setRolesReference] = useState([] as string[]);
@@ -121,18 +125,19 @@ const RoleSpecificButton = ({project, onSubmit, enabled, isNew}:
                     <ConfirmationDialog open={deleteDialog} onClose={() => setDeleteDialog(false)}
                                         label="удалить проект" onSubmit={onDelete}/>
                     {!isNew ? (<>
-                            <Button color='inherit'
-                                    href={`/users?projectId=${project.id}&workspaceId=${project.workspaceId}`}>
+                        {project.maxParticipantsCount > project.participants.length ?
+                            (<Button color='inherit'
+                                     href={`/users?projectId=${project.id}&workspaceId=${project.workspaceId}`}>
                                 Найти участника
-                            </Button>
-                            <Button color='inherit'
-                                    href={`/project-plan?projectId=${project.id}&workspaceId=${project.workspaceId}`}>
-                                Просмотр плана
-                            </Button>
-                            <Button color='inherit' onClick={() => setDeleteDialog(true)}>
-                                Удалить
-                            </Button>
-                        </>) : (<></>)}
+                            </Button>) : <></>}
+                        <Button color='inherit'
+                                href={`/project-plan?projectId=${project.id}&workspaceId=${project.workspaceId}`}>
+                            Просмотр плана
+                        </Button>
+                        <Button color='inherit' onClick={() => setDeleteDialog(true)}>
+                            Удалить
+                        </Button>
+                    </>) : (<></>)}
                     <Button color='inherit' variant='contained' disabled={!enabled} onClick={onSubmit}>
                         Подтвердить изменения
                     </Button>
@@ -145,34 +150,26 @@ const RoleSpecificButton = ({project, onSubmit, enabled, isNew}:
                         <RoleInput reference={rolesReference} onChange={onAttachRoleChange} multiple={false}/>
                     </DialogContent>
                     <DialogActions>
-                        <Button disabled={!attachRole || attachRole === ''} onClick={onAttach}>Подтвердить</Button>
+                        <Button disabled={!attachRole || attachRole === ''}
+                                onClick={() => onAttach()}>Подтвердить</Button>
                     </DialogActions>
                 </Dialog>
 
                 <Button disabled={project?.maxParticipantsCount <= project?.participants.length} color='inherit'
                         onClick={() => setOpenAttachDialog(true)}>Присоединиться</Button>
             </>);
+
         case ProjectRole.MENTOR:
             return (<>
-                <Dialog open={openAttachDialog} onClose={onAttachDialogClosed}>
-                    <DialogTitle>Присоединиться в роли</DialogTitle>
-                    <DialogContent dividers>
-                        <RoleInput reference={rolesReference} onChange={onAttachRoleChange} multiple={false}/>
-                    </DialogContent>
-                    <DialogActions>
-                        <Button disabled={attachRole === ''} onClick={onAttach}>Подтвердить</Button>
-                    </DialogActions>
-                </Dialog>
-
-
                 <Button color='inherit'
                         href={`/project-plan?projectId=${project.id}&workspaceId=${project.workspaceId}`}>
                     Просмотр плана
                 </Button>
-
-                <Button color='inherit' onClick={() => setOpenAttachDialog(true)}>Присоединиться</Button>
+                <Button disabled={project?.maxParticipantsCount <= project?.participants.length}
+                        color='inherit' onClick={onMentorAttach}>Присоединиться</Button>
             </>);
         case ProjectRole.PARTICIPANT:
+        case ProjectRole.MENTOR_PARTICIPANT:
             return (
                 <Button color='inherit'
                         href={`/project-plan?projectId=${project.id}&workspaceId=${project.workspaceId}`}>
@@ -341,9 +338,14 @@ export default function ProjectDetailedPage() {
                     <Typography sx={{margin: '10px'}} color='inherit'>Максимальное кол-во участников</Typography>
                     <TextField disabled={!(isNew || project?.projectRole === ProjectRole.OWNER)}
                                sx={{width: '40px'}} type='number' variant='standard'
+                               onInput={e => {
+                                   const target = (e.target as HTMLInputElement);
+                                   const val = parseInt(target.value);
+                                   if (val < 1) target.value = '1';
+                               }}
                                onChange={e => {
                                    setMaxParticipantsCount(parseInt(e.target.value))
-                                   project ? project.maxParticipantsCount = parseInt(e.target.value) : null
+                                   project.maxParticipantsCount = parseInt(e.target.value);
                                }}
                                value={maxParticipantsCount}/>
                 </div>

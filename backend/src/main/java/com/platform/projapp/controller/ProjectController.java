@@ -114,8 +114,8 @@ public class ProjectController {
             return workspaceErrorResponseEntity;
         var errorResponseEntity = ErrorUtils.getIncompleteOrIncorrectErrorResponseEntity(bindingResult);
         if (errorResponseEntity != null) return errorResponseEntity;
-        projectService.createProject(user, workspace, projectRequest);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return ResponseEntity.ok(new GeneralResponse<Long>().withData(
+                projectService.createProject(user, workspace, projectRequest)));
     }
 
     @PutMapping("/{projectId}")

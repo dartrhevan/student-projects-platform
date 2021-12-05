@@ -69,7 +69,7 @@ function App() {
             dispatch(logoutAction());
             window.location.href = '/';
         }); // TODO: may be move somewhere
-    }, [error, dispatch]);
+    }, []);
 
     const log = useSelector(getLogState);
 

@@ -4,5 +4,6 @@ public enum ProjectRole {
     OWNER,
     PARTICIPANT,
     MENTOR,
-    STRANGER
+    STRANGER,
+    MENTOR_PARTICIPANT
 }

@@ -1,6 +1,5 @@
 import React from 'react';
-import {Dialog, DialogActions, DialogContent, DialogTitle, TextField} from "@mui/material";
-import Centered from "./Centered";
+import {Dialog, DialogActions, DialogTitle} from "@mui/material";
 import {Button} from "@material-ui/core";
 
 interface ConfirmProps {
