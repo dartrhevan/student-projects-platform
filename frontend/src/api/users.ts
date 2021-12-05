@@ -30,9 +30,11 @@ export function inviteToProject(username: string, projectId: string[] | string |
     }).then(getDefaultUploadHandler());
 }
 
-export function getUsers(workspaceId: string, query: Query<UserRow>) {
-    const query_param = query.filters.map(x => `${x.column.field}=${x.value}`).join("&")
+export function getUsers(workspaceId: string, query: Query<UserRow>, projectId: string | null) {
+    let query_param = query.filters.map(x => `${x.column.field}=${x.value}`).join("&");
     console.log(query_param);
+    if (projectId)
+        query_param += `&projectId=${projectId}`;
     return fetch(`/api/user?workspaceId=${workspaceId}&page=${query.page}&size=${query.pageSize}&${query_param}`, {
         headers: getTokenHeader()
     }).then(getDefaultDownloadHandler()).then(res => {

@@ -31,8 +31,8 @@ import {getAllProjectsUsers} from "../api/users";
 
 
 interface ProjectsParams {//TODO: remove
-    workspaceId: string,
-    workspaceTitle: string
+    workspaceId?: string,
+    workspaceTitle?: string
 }
 
 const useStyles = makeStyles(theme => ({
@@ -62,18 +62,18 @@ export default function Projects() {
     const error = useError();
 
     function updateData(tags: Tag[] = [], active = false) {
-        getProjectsForWorkspace(new ProjectQuery(tags.map(t => t.id), new Pageable(pageNumber, pageSize), workspaceId, active))
+        getProjectsForWorkspace(new ProjectQuery(tags.map(t => t.id), new Pageable(pageNumber, pageSize), workspaceId as string, active))
             .then(r => {
-                setData(r.data.projects.map(p => new Project(p.id, p.workSpaceId, p.title, p.description, p.tags, p.status)));
+                setData(r.data.projects.map((p: any) => new Project(p.id, p.workSpaceId, p.title, p.shortDescription, p.tags, p.status)));
                 setRole(r.data.role);
                 dispatch(initPaging(r.data.totalCount, pageSize, pageNumber));
             }).catch(error);
     }
 
     function updateDataForProjects(tags: Tag[] = [], active = false) {
-        getAllProjectsUsers(new ProjectQuery(tags.map(t => t.id), new Pageable(pageNumber, pageSize), workspaceId, active))
+        getAllProjectsUsers(new ProjectQuery(tags.map(t => t.id), new Pageable(pageNumber, pageSize), workspaceId as string, active))
             .then(r => {
-                setData(r.data.projects.map((p: any) => new Project(p.projectId, "", p.title, p.description, p.tags, p.status)));
+                setData(r.data.projects.map((p: any) => new Project(p.projectId, "", p.title, p.shortDescription, p.tags, p.status)));
                 setRole(r.data.role);
                 dispatch(initPaging(r.data.totalCount, pageSize, pageNumber));
             }).catch(error);
@@ -84,7 +84,7 @@ export default function Projects() {
             updateData();
         else
             updateDataForProjects();
-    }, [workspaceId, pageNumber, pageSize]);//TODO: call back here
+    }, [workspaceId, pageNumber, pageSize]);
 
     const [openInvite, setOpenInvite] = useState(false);
     const [invite, setInvite] = useState(null as Invite | null);
@@ -93,7 +93,7 @@ export default function Projects() {
         if (invite)
             setOpenInvite(true);
         else
-            getInviteForWorkspace(workspaceId).then(r => {
+            getInviteForWorkspace(workspaceId as string).then(r => {
                 setInvite(r.data);
                 setOpenInvite(true);
             })
@@ -120,7 +120,7 @@ export default function Projects() {
     }
 
     function onDelete() {
-        deleteWorkspace(workspaceId)
+        deleteWorkspace(workspaceId as string)
             .then(r => window.location.href = '/workspaces')
             .catch(error);
 
@@ -205,11 +205,12 @@ export default function Projects() {
                                    </Tooltip>
                                </>
                                || <>
-                                   <Tooltip title='Оценки'>
+                                   {workspaceId &&
+                                   (<Tooltip title='Оценки'>
                                        <IconButton href={`/scores/${workspaceId}`} className={classes.button}>
                                            <MenuBookIcon/>
                                        </IconButton>
-                                   </Tooltip>
+                                   </Tooltip>)}
                                    <Tooltip title='Участники'>
                                        <IconButton href={`/users?workspaceId=${workspaceId}`}
                                                    className={classes.button}>

@@ -79,7 +79,7 @@ export default function Users() {
     const invite = allNotEmpty(workspaceId, projectId);
 
     const data = (query: Query<UserRow>) => {
-        return getUsers(workspaceId as string, query);
+        return getUsers(workspaceId as string, query, projectId as string | null);
     };
     const tableActions: Action<UserRow>[] = [
         {
