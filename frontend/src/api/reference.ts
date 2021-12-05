@@ -28,28 +28,39 @@ export function addTagToReference(tagName: string, color: number): Promise<Gener
 }
 
 export function getRolesReference() {
-    return fetch("/api/roles", {
-        headers: getTokenHeader()
-    }).then(getDefaultDownloadHandler())
-        .then(res => {
-            return {data: res.data.roles.filter((r: any) => r !== null).map((role: any) => role.name)};
-        });
+    return new Promise<GenericResponse<string[]>>(res => res(new GenericResponse(
+        [
+            'backend',
+            'frontend',
+            'analytic',
+            'tester',
+            'UI/UX',
+            'Dev/Ops'
+        ] //TODO: review
+    )));
+    // return fetch("/api/roles", {
+    //     headers: getTokenHeader()
+    // }).then(getDefaultDownloadHandler())
+    //     .then(res => {
+    //         return {data: res.data.roles.filter((r: any) => r !== null).map((role: any) => role.name)};
+    //     });
 }
 
 export function addRoleToReference(roles: string) {
-    if (!roles) return new Promise(res => res({}));
-    return fetch("/api/roles", {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            ...getTokenHeader()
-        },
-        body: JSON.stringify({roleName: roles})
-    }).then(res => {
-        if (res.ok) {
-            return res.json();
-        } else {
-            return defErrorHandler(res, 'Ошибка отправки данных');
-        }
-    });
+    return new Promise(res => res({}));
+    // if (!roles) return new Promise(res => res({}));
+    // return fetch("/api/roles", {
+    //     method: 'POST',
+    //     headers: {
+    //         'Content-Type': 'application/json',
+    //         ...getTokenHeader()
+    //     },
+    //     body: JSON.stringify({roleName: roles})
+    // }).then(res => {
+    //     if (res.ok) {
+    //         return res.json();
+    //     } else {
+    //         return defErrorHandler(res, 'Ошибка отправки данных');
+    //     }
+    // });
 }

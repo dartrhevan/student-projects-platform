@@ -21,7 +21,7 @@ export default function RoleInput({onChange, reference}: RolesProps) {
 
     useEffect(() => {
         if (!reference)
-            getRolesReference().then(r => setRolesReference(r.data)).catch(console.log);
+            getRolesReference().then((r: any) => setRolesReference(r.data)).catch(console.log);
     }, []);
 
 
@@ -62,11 +62,11 @@ export function RolesInput({defRoles, onChange, reference}: RolesProps) {
         setRoles(newRoles);
         if (b.length === 0) return;
         const newRole = newRoles[newRoles.length - 1];
-        if (!rolesReference.includes(newRole)) {
-            addRoleToReference(newRole)
-                .then(r => setRolesReference([...rolesReference, newRole]))
-                .catch(console.log);
-        }
+        // if (!rolesReference.includes(newRole)) {
+        //     addRoleToReference(newRole)
+        //         .then(r => setRolesReference([...rolesReference, newRole]))
+        //         .catch(console.log);
+        // }
     };
 
     return (<Autocomplete multiple freeSolo onChange={onChangeRoles}
