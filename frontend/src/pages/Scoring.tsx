@@ -6,6 +6,7 @@ import {Query, QueryResult} from "material-table";
 import {getScores} from "../api/scoring";
 import {TextField, Link} from "@mui/material";
 import {useParams} from "react-router-dom";
+import {correctNumericInput} from "../utils/utils";
 
 const tableColumns = [
     {
@@ -32,6 +33,7 @@ const tableColumns = [
         field: "presentationScore",
         sorting: false,
         render: (row: Score) => <TextField type='number' sx={{padding: '2px', maxWidth: '25px'}}
+                                           onInput={correctNumericInput}
                                            variant='standard' defaultValue={row.presentationScore}/>
     },
     {
@@ -46,6 +48,7 @@ const tableColumns = [
         sorting: false,
         filtering: false,
         render: (row: Score) => <TextField type='number' sx={{padding: '2px', maxWidth: '25px'}}
+                                           onInput={correctNumericInput}
                                            defaultValue={row.backlogScore} variant='standard'/>
     },
     {

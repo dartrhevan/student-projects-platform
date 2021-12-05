@@ -18,7 +18,7 @@ public class UserProjectResponseBody {
     private Long workspaceId;
     private Long projectId;
     private String title;
-    private String description;
+    private String shortDescription;
     private ProjectStatus status;
     private Set<Long> tags;
 

@@ -34,6 +34,7 @@ import ConfirmationDialog from "../components/util/ConfirmationDialog";
 import THEME, {ElementsStyle} from "../theme";
 import RoleInput from "../components/elements/RoleInput";
 import {addRoleToReference, getRolesReference} from "../api/reference";
+import {correctNumericInput} from "../utils/utils";
 
 const useStyles = makeStyles(theme => ({
     paper: {
@@ -338,11 +339,7 @@ export default function ProjectDetailedPage() {
                     <Typography sx={{margin: '10px'}} color='inherit'>Максимальное кол-во участников</Typography>
                     <TextField disabled={!(isNew || project?.projectRole === ProjectRole.OWNER)}
                                sx={{width: '40px'}} type='number' variant='standard'
-                               onInput={e => {
-                                   const target = (e.target as HTMLInputElement);
-                                   const val = parseInt(target.value);
-                                   if (val < 1) target.value = '1';
-                               }}
+                               onInput={correctNumericInput}
                                onChange={e => {
                                    setMaxParticipantsCount(parseInt(e.target.value))
                                    project.maxParticipantsCount = parseInt(e.target.value);

@@ -51,8 +51,8 @@ export default function Table<T extends object>(
 
     };
     return (
-        <>
-            <Typography className={classes.title} variant='h3'>{title}</Typography>
+        // <>
+        //     <Typography className={classes.title} variant='h3'>{title}</Typography>
 
             <MaterialTable
                 tableRef={tableRef}
@@ -79,8 +79,9 @@ export default function Table<T extends object>(
                     headerStyle: ElementsStyle
                 }}
                 style={{
-                    width: mobile ? '90%' : '70%', margin: 15,
+                    width:'90%', margin: '20px 0px',
+                    minHeight: '80%',
                     ...ElementsStyle
-                }}/>
-        </>);
+                }}/>);
+        // </>);
 }

@@ -33,7 +33,7 @@ import THEME, {BackgroundStyle} from './theme';
 
 const useStyles = makeStyles(theme => ({
     main: {
-        width: '100vw',
+        width: '100%',
         paddingTop: '60px',
         maxWidth: '100vw',
         ...BackgroundStyle
