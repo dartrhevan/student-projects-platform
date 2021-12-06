@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import clsx from 'clsx';
 import {createStyles, makeStyles, Theme} from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
@@ -16,6 +16,8 @@ import EmailIcon from '@mui/icons-material/Email';
 import getUsername from "../../hooks/getUsername";
 import AutoAwesomeMosaicIcon from '@mui/icons-material/AutoAwesomeMosaic';
 import THEME, {HeaderStyle} from "../../theme";
+import {Badge} from "@mui/material";
+import {hasNewNotifications} from "../../api/notifications";
 
 const drawerWidth = 240;
 
@@ -83,6 +85,7 @@ export default function MiniDrawer() {
     const classes = useStyles();
     const mobile = isMobile();
     const open = useSelector(getMainMenuOpen, shallowEqual);
+    const [hasNewNotifs, setNewNotifs] = useState(false);
     const drawerClasses = {
         [classes.drawerOpen]: open,
         [classes.drawerHidden]: !open && mobile,
@@ -91,35 +94,45 @@ export default function MiniDrawer() {
 
     const login = useSelector(getUsername);
 
-    return !login ? (<></>) :
-        (<Drawer
-            variant="permanent"
-            className={clsx(classes.drawer, drawerClasses)}
-            classes={{
-                paper: clsx(drawerClasses, classes.paper)
-            }}>
+    useEffect(() => {
+        if (login) {
+            hasNewNotifications().then(r => setNewNotifs(r.data));
+        }
+    }, [login]);
 
-            <List className={classes.list}>
-                <ListItem button key={'Рабочие пространства'} onClick={() => window.location.href = '/workspaces'}>
-                    <ListItemIcon><AutoAwesomeMosaicIcon className={classes.icon}/></ListItemIcon>
-                    <ListItemText primary={'Рабочие пространства'}/>
-                </ListItem>
-                <ListItem button key={'Мои проекты'} onClick={() => window.location.href = '/projects'}>
-                    <ListItemIcon><Apps className={classes.icon}/></ListItemIcon>
-                    <ListItemText primary={'Мои проекты'}/>
-                </ListItem>
-                <ListItem button key={'Моё портфолио'} onClick={() => window.location.href = `/portfolio/${login?.user.username}`}>
-                    <ListItemIcon><FormatAlignJustifyIcon className={classes.icon}/></ListItemIcon>
-                    <ListItemText primary={'Моё портфолио'}/>
-                </ListItem>
-                <ListItem button key={'Мой профиль'} onClick={() => window.location.href = '/profile'}>
-                    <ListItemIcon><Person className={classes.icon}/></ListItemIcon>
-                    <ListItemText primary={'Мой профиль'}/>
-                </ListItem>
-                <ListItem button key={'Уведомления'} onClick={() => window.location.href = '/notifications'}>
-                    <ListItemIcon><EmailIcon className={classes.icon}/></ListItemIcon>
-                    <ListItemText primary={'Уведомления'}/>
-                </ListItem>
-            </List>
-        </Drawer>);
+    return login && (<Drawer
+        variant="permanent"
+        className={clsx(classes.drawer, drawerClasses)}
+        classes={{
+            paper: clsx(drawerClasses, classes.paper)
+        }}>
+
+        <List className={classes.list}>
+            <ListItem button key={'Рабочие пространства'} onClick={() => window.location.href = '/workspaces'}>
+                <ListItemIcon><AutoAwesomeMosaicIcon className={classes.icon}/></ListItemIcon>
+                <ListItemText primary={'Рабочие пространства'}/>
+            </ListItem>
+            <ListItem button key={'Мои проекты'} onClick={() => window.location.href = '/projects'}>
+                <ListItemIcon><Apps className={classes.icon}/></ListItemIcon>
+                <ListItemText primary={'Мои проекты'}/>
+            </ListItem>
+            <ListItem button key={'Моё портфолио'}
+                      onClick={() => window.location.href = `/portfolio/${login?.user.username}`}>
+                <ListItemIcon><FormatAlignJustifyIcon className={classes.icon}/></ListItemIcon>
+                <ListItemText primary={'Моё портфолио'}/>
+            </ListItem>
+            <ListItem button key={'Мой профиль'} onClick={() => window.location.href = '/profile'}>
+                <ListItemIcon><Person className={classes.icon}/></ListItemIcon>
+                <ListItemText primary={'Мой профиль'}/>
+            </ListItem>
+            <ListItem button key={'Уведомления'} onClick={() => window.location.href = '/notifications'}>
+                <ListItemIcon>
+                    <Badge color="secondary" variant="dot" invisible={!hasNewNotifs}>
+                        <EmailIcon className={classes.icon}/>
+                    </Badge>
+                </ListItemIcon>
+                <ListItemText primary={'Уведомления'}/>
+            </ListItem>
+        </List>
+    </Drawer>);
 }
