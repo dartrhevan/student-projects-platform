@@ -25,7 +25,7 @@ export function addProject(project: DetailedProject): Promise<CommonResponse> {
         })
     }).then(res => {
         if (res.ok) {
-            return {}
+            return res.json()
         } else {
             return res.json().then(r => {
                 throw new Error(`Error: ${r.message}`);

@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect} from 'react';
 import './App.css';
 import Header from "./components/elements/Header";
 import {BrowserRouter, Route, Switch} from 'react-router-dom';
@@ -29,6 +29,7 @@ import {setTagsRef} from "./store/actions/tags/tags";
 import {getTagsReference} from "./api/reference";
 import {makeStyles} from "@material-ui/core";
 import THEME, {BackgroundStyle} from './theme';
+import {getTokenHeader} from "./store/state/LoginState";
 
 
 const useStyles = makeStyles(theme => ({
@@ -67,7 +68,7 @@ function App() {
             console.log(r);
             error('Auth not valid');
             dispatch(logoutAction());
-            window.location.href = '/';
+            window.location.href = '/authentication';
         }); // TODO: may be move somewhere
     }, []);
 

@@ -221,9 +221,10 @@ const EditableField = ({
 export default function ProjectDetailedPage() {
     // const params = useLocation<ProjectParams>().state;
     const params = queryString.parse(window.location.search);
-    const workspaceId = params?.workspaceId, projectId = params?.projectId;
+    const workspaceId = params?.workspaceId;
     const classes = useStyles();
     const [project, setProject] = useState(new DetailedProject(workspaceId as string));
+    const [projectId, setProjectId] = useState(params?.projectId);
     const [isNew, setIsNew] = useState(params?.isNew !== undefined);
     const [maxParticipantsCount, setMaxParticipantsCount] = useState(project?.maxParticipantsCount || 5);
     const [removeParticipantDialog, setRemoveParticipantDialog] = useState({open: false, participant: ""});
@@ -252,7 +253,9 @@ export default function ProjectDetailedPage() {
     function onSubmit() {
         if (isNew)
             addProject(project as DetailedProject)
-                .then(r => setIsNew(false))
+                .then((r: any) => {
+                    window.location.href = `/project?projectId=${r.data}`;
+                })
                 .catch(r => error(`Error ${r}`));
         else
             editProject(project as DetailedProject)

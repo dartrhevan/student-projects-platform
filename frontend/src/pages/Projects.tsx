@@ -130,9 +130,9 @@ export default function Projects() {
                        titleAlign='left'
                        additionalButtons={(
                            <>
-                               <WorkspaceSettings workspaceId={workspaceId}/>
                                {role === WorkspaceAssociation.ORGANIZER &&
                                <>
+                                   <WorkspaceSettings workspaceId={workspaceId}/>
                                    <Dialog open={openInvite} onClose={closeInvite}>
                                        <DialogTitle>Добавить в рабочее пространство</DialogTitle>
                                        <DialogContent dividers>
@@ -204,13 +204,13 @@ export default function Projects() {
                                        </IconButton>
                                    </Tooltip>
                                </>
-                               || <>
-                                   {workspaceId &&
-                                   (<Tooltip title='Оценки'>
+                               || workspaceId &&
+                               <>
+                                   <Tooltip title='Оценки'>
                                        <IconButton href={`/scores/${workspaceId}`} className={classes.button}>
                                            <MenuBookIcon/>
                                        </IconButton>
-                                   </Tooltip>)}
+                                   </Tooltip>
                                    <Tooltip title='Участники'>
                                        <IconButton href={`/users?workspaceId=${workspaceId}`}
                                                    className={classes.button}>
