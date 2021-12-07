@@ -41,6 +41,10 @@ public class NotificationService {
         return notificationRepository.findAllByRecipient(recipient, pageable);
     }
 
+    public boolean hasNew(User recipient) {
+        return notificationRepository.existsByRecipientAndIsNew(recipient, true);
+    }
+
     public ResponseEntity<?> sendInviteNotification(User sender, NotificationInviteRequest request, NotificationType notificationType) {
         User recipient = userService.findByUserName(request.getUsername());
         Project project = projectService.findById(request.getProjectId());

@@ -8,7 +8,7 @@ import {allNotEmpty} from "../utils/utils";
 import ViewableText from "../components/elements/ViewableText";
 import {Dialog, DialogActions, DialogTitle} from "@mui/material";
 import {getUsers, inviteToProject} from "../api/users";
-import UserRow from "../model/UserRow";
+import UserRow, {UserType} from "../model/UserRow";
 import RoleInput from "../components/elements/RoleInput";
 import {useSuccess} from "../hooks/logging";
 import {addRoleToReference, getRolesReference} from "../api/reference";
@@ -49,9 +49,19 @@ const tableColumns = [
     },
     {
         title: 'Тип',
-        field: "userType",
+        field: "typeUser",
         sorting: false,
-        filtering: false
+        filtering: false,
+        render: (row: UserRow) => {
+            switch (row.typeUser) {
+                case UserType.ORGANIZER:
+                    return 'Организатор';
+                case UserType.MENTOR:
+                    return 'Ментор';
+                case UserType.STUDENT:
+                    return "Студент";
+            }
+        }
     },
     {
         title: 'Текущий проект',
