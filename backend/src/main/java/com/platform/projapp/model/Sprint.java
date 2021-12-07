@@ -9,6 +9,8 @@ import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.List;
 
+import static javax.persistence.CascadeType.ALL;
+
 @Getter
 @Setter
 @Entity
@@ -36,9 +38,8 @@ public class Sprint {
     private Long presentationId;
     @ManyToOne
     private Project project;
-    @OneToMany(mappedBy = "sprintId")
-
-    private List<Comment> comments;
+    @OneToMany(mappedBy = "sprint", cascade = ALL, orphanRemoval = true)
+    private List<Score> scores;
 
     public boolean isTomorrow() {
         return endDate.minusDays(1L).equals(LocalDate.now());
@@ -46,5 +47,14 @@ public class Sprint {
 
     public boolean isHalfTheDuration() {
         return endDate.minusWeeks(project.getWorkspace().getFrequencyOfSprints() / 2).equals(LocalDate.now());
+    }
+
+    public Float getResultScore() {
+        float result = 0f;
+        for (Score score :
+                scores) {
+            result = +score.getResultScore();
+        }
+        return result;
     }
 }

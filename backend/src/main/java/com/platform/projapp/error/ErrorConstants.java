@@ -12,6 +12,7 @@ public class ErrorConstants {
     public static ErrorInfo NOTIFICATION_NOT_FOUND = ErrorInfo.of("NotificationNotFound", "Уведомление не найдено");
     public static ErrorInfo NOTIFICATION_TYPE_NOT_VALID = ErrorInfo.of("NotificationTypeNotValid", "Тип уведомления не корректный");
     public static ErrorInfo USER_NOT_WORKSPACE_OWNER = ErrorInfo.of("UserNotWorkspaceOwner", "Пользователь не является владельцем workspace");
+    public static ErrorInfo USER_NOT_WORKSPACE_MENTOR_OR_OWNER = ErrorInfo.of("UserNotWorkspaceMentorOrOwner", "Пользователь не является ментором или организатором");
     public static ErrorInfo USER_NOT_WORKSPACE_PARTICIPANT = ErrorInfo.of("UserNotWorkspaceParticipant", "Пользователь не является участником workspace");
     public static ErrorInfo INCORRECT_NUMBER_OF_PAGES = ErrorInfo.of("IncorrectNumberOfPages", "Неверное количество страниц");
     public static ErrorInfo INVALID_DATA_TYPE = ErrorInfo.of("InvalidDataType", "Неверный тип данных");
@@ -25,7 +26,7 @@ public class ErrorConstants {
     public static String USERNAME_OR_PASSWORD_NOT_FOUND = "Пользователь с таким логином и паролем не найден";
     public static String USER_NOT_AUTH = "Пользователь не авторизован";
     public static String LOGIN_IS_BUSY = "Пользователь с таким логином уже зарегистрирован";
-//    public static String WRONG_PASSWORD = "Неправильный пароль";
+    //    public static String WRONG_PASSWORD = "Неправильный пароль";
     public static String PASSWORD_IS_EMPTY = "Поле пароль обязательно для заполнения";
     public static String TAG_IS_BUSY = "Тэг с таким именем уже существует";
 }

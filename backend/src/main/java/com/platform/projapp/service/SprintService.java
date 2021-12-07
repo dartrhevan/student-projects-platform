@@ -15,6 +15,9 @@ import java.util.List;
 public class SprintService {
     private final SprintRepository sprintRepository;
 
+    public Sprint findById(Long id){
+        return sprintRepository.findById(id).orElse(null);
+    }
     public List<Sprint> findAll() {
         return sprintRepository.findAll();
     }

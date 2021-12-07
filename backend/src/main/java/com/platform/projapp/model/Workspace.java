@@ -71,6 +71,10 @@ public class Workspace {
         return owner != null && owner.getUser().getLogin().equals(userLogin);
     }
 
+    public boolean mentorIs(String userLogin) {
+        return hasUser(userLogin) && getWorkspaceRoleByUser(userLogin).equals(WorkspaceRole.MENTOR);
+    }
+
     public WorkspaceParticipant getOwner() {
         return participants.stream().
                 filter(workspaceParticipant
@@ -82,6 +86,14 @@ public class Workspace {
     public WorkspaceRole getWorkspaceRoleByUser(User user) {
         WorkspaceParticipant participant = participants.stream()
                 .filter(workspaceParticipant -> workspaceParticipant.getUser().equals(user))
+                .findFirst()
+                .orElse(null);
+        return participant != null ? participant.getWorkspaceRole() : null;
+    }
+
+    public WorkspaceRole getWorkspaceRoleByUser(String userLogin) {
+        WorkspaceParticipant participant = participants.stream()
+                .filter(workspaceParticipant -> workspaceParticipant.getUser().getLogin().equals(userLogin))
                 .findFirst()
                 .orElse(null);
         return participant != null ? participant.getWorkspaceRole() : null;
