@@ -10,8 +10,11 @@ import StairsIcon from '@mui/icons-material/StairsTwoTone';
 import SocialDistanceIcon from '@mui/icons-material/SocialDistanceTwoTone';
 import MoreHorizTwoToneIcon from '@mui/icons-material/MoreHorizTwoTone';
 import PersonTwoToneIcon from '@mui/icons-material/PersonTwoTone';
+import {useSelector} from "react-redux";
+import getUsername from "../hooks/getUsername";
 
 export default function StartPage() {
+    const login = useSelector(getUsername);
     return (
         <Paper sx={{
             padding: '15px 5px', width: '70%', marginTop: '50px', // height: '70%',
@@ -44,9 +47,10 @@ export default function StartPage() {
                 <DescriptionElement reversed icon={<MoreHorizTwoToneIcon color='primary' fontSize='large'/>}>
                     И многое другое...
                 </DescriptionElement>
+                {!login &&
                 <DescriptionElement href='/authentication' icon={<PersonTwoToneIcon color='primary' fontSize='large'/>}>
                     Для начала работы необходимо <b>Авторизоваться</b>
-                </DescriptionElement>
+                </DescriptionElement>}
             </Centered>
         </Paper>);
 }

@@ -16,10 +16,10 @@ import EmailIcon from '@mui/icons-material/Email';
 import getUsername from "../../hooks/getUsername";
 import AutoAwesomeMosaicIcon from '@mui/icons-material/AutoAwesomeMosaic';
 import THEME, {HeaderStyle} from "../../theme";
-import {Badge} from "@mui/material";
+import {Badge, Tooltip} from "@mui/material";
 import {hasNewNotifications} from "../../api/notifications";
 
-const drawerWidth = 240;
+const drawerWidth = 270;
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -108,31 +108,49 @@ export default function MiniDrawer() {
         }}>
 
         <List className={classes.list}>
-            <ListItem button key={'Рабочие пространства'} onClick={() => window.location.href = '/workspaces'}>
-                <ListItemIcon><AutoAwesomeMosaicIcon className={classes.icon}/></ListItemIcon>
-                <ListItemText primary={'Рабочие пространства'}/>
-            </ListItem>
-            <ListItem button key={'Мои проекты'} onClick={() => window.location.href = '/projects'}>
-                <ListItemIcon><Apps className={classes.icon}/></ListItemIcon>
-                <ListItemText primary={'Мои проекты'}/>
-            </ListItem>
-            <ListItem button key={'Моё портфолио'}
-                      onClick={() => window.location.href = `/portfolio/${login?.user.username}`}>
-                <ListItemIcon><FormatAlignJustifyIcon className={classes.icon}/></ListItemIcon>
-                <ListItemText primary={'Моё портфолио'}/>
-            </ListItem>
-            <ListItem button key={'Мой профиль'} onClick={() => window.location.href = '/profile'}>
-                <ListItemIcon><Person className={classes.icon}/></ListItemIcon>
-                <ListItemText primary={'Мой профиль'}/>
-            </ListItem>
-            <ListItem button key={'Уведомления'} onClick={() => window.location.href = '/notifications'}>
-                <ListItemIcon>
-                    <Badge color="secondary" variant="dot" invisible={!hasNewNotifs}>
-                        <EmailIcon className={classes.icon}/>
-                    </Badge>
-                </ListItemIcon>
-                <ListItemText primary={'Уведомления'}/>
-            </ListItem>
+            <Tooltip title='Рабочие пространства'>
+                <ListItem button key='Рабочие пространства' onClick={() => window.open('/workspaces', '_blank')}>
+                    <ListItemIcon>
+                        <AutoAwesomeMosaicIcon className={classes.icon}/>
+                    </ListItemIcon>
+                    <ListItemText primary='Рабочие пространства'/>
+                </ListItem>
+            </Tooltip>
+            <Tooltip title='Мои проекты'>
+                <ListItem button key='Мои проекты' onClick={() => window.open('/projects', '_blank')}>
+                    <ListItemIcon>
+                        <Apps className={classes.icon}/>
+                    </ListItemIcon>
+                    <ListItemText primary='Мои проекты'/>
+                </ListItem>
+            </Tooltip>
+            <Tooltip title='Моё портфолио'>
+                <ListItem button key='Моё портфолио'
+                          onClick={() => window.open(`/portfolio/${login?.user.username}`, '_blank')}>
+                    <ListItemIcon>
+                        <FormatAlignJustifyIcon className={classes.icon}/>
+                    </ListItemIcon>
+                    <ListItemText primary='Моё портфолио'/>
+                </ListItem>
+            </Tooltip>
+            <Tooltip title='Мой профиль'>
+                <ListItem button key='Мой профиль' onClick={() => window.open('/profile', '_blank')}>
+                    <ListItemIcon>
+                        <Person className={classes.icon}/>
+                    </ListItemIcon>
+                    <ListItemText primary='Мой профиль'/>
+                </ListItem>
+            </Tooltip>
+            <Tooltip title='Уведомления'>
+                <ListItem button key='Уведомления' onClick={() => window.open('/notifications', '_blank')}>
+                    <ListItemIcon>
+                        <Badge color="secondary" variant="dot" invisible={!hasNewNotifs}>
+                            <EmailIcon className={classes.icon}/>
+                        </Badge>
+                    </ListItemIcon>
+                    <ListItemText primary='Уведомления'/>
+                </ListItem>
+            </Tooltip>
         </List>
     </Drawer>);
 }
