@@ -1,10 +1,15 @@
-import Notification, {NotificationType} from "../model/Notification";
-import CommonResponse from "../model/dto/CommonResponse";
+import Notification from "../model/Notification";
 import PagedResponse from "../model/dto/PagedResponse";
 import Pageable from "../model/Pageable";
-import {StorageKeys} from "../utils/StorageKeys";
 import {getDefaultUploadHandler, getDefaultDownloadHandler} from "../utils/utils";
 import {getTokenHeader} from "../store/state/LoginState";
+import GenericResponse from "../model/dto/GenericResponse";
+
+export function hasNewNotifications(): Promise<GenericResponse<boolean>> {
+    return fetch(`/api/notifications/hasNew`, {
+        headers: getTokenHeader()
+    }).then(getDefaultDownloadHandler());
+}
 
 export function getAllNotifications(pageable: Pageable) {
     return fetch(`/api/notifications?page=${pageable.pageNumber}&size=${pageable.pageSize}`, {

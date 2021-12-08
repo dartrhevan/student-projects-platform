@@ -92,9 +92,3 @@ export function getInviteForWorkspace(id: string): Promise<GenericResponse<Invit
         headers: getTokenHeader()
     }).then(getDefaultDownloadHandler());
 }
-
-export function getScores(workspaceId: string) {
-    //TODO; implement
-    return new Promise<GenericResponse<ScoreDTO[]>>(res => res(new GenericResponse(
-        [new ScoreDTO('Project Activities', "VT", [2, 3, 4])])));
-}

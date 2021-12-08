@@ -71,7 +71,8 @@ export default function Workspaces() {
 
     function onDialogClose() {
         attachToWorkspace(workspaceCode)
-            .then(r => window.location.reload());
+            .then(r => window.location.reload())
+            .catch(error);
     }
 
     return (<BadgePage

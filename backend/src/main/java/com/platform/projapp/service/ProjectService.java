@@ -36,7 +36,7 @@ public class ProjectService {
     public static ProjectRole toProjectRole(WorkspaceRole role, Project project, User user) {
         if (project.getOwnerLogin().equals(user.getLogin())) return ProjectRole.OWNER;
         return switch (role) {
-            case MENTOR, ORGANIZER -> !project.hasUser(user.getLogin()) ? ProjectRole.MENTOR : ProjectRole.PARTICIPANT;
+            case MENTOR, ORGANIZER -> !project.hasUser(user.getLogin()) ? ProjectRole.MENTOR : ProjectRole.MENTOR_PARTICIPANT;
             case STUDENT -> !project.hasUser(user.getLogin()) ? ProjectRole.STRANGER : ProjectRole.PARTICIPANT;
         };
     }
@@ -62,7 +62,7 @@ public class ProjectService {
                 : projectRepository.findAllByWorkspaceAndTagsInTags(workspace, tags, pageable);
     }
 
-    public void createProject(User user, Workspace workspace, ProjectRequest projectRequest) {
+    public Long createProject(User user, Workspace workspace, ProjectRequest projectRequest) {
         Project project = new Project(user.getLogin(),
                 projectRequest.getName(),
                 projectRequest.getShortDescription(),
@@ -75,8 +75,7 @@ public class ProjectService {
         project.getParticipants().add(new Participant(project, true, user, projectRoleService.createProjectRole("тимлид")));
 //        var workspace = project.getWorkspace();
         createDefaultSprints(workspace, project);
-        projectRepository.save(project);
-
+        return projectRepository.save(project).getId();
     }
 
     private void createDefaultSprints(Workspace workspace, Project project) {

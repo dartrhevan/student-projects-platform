@@ -145,7 +145,7 @@ export default function UserProfileComponent({user, title}: UserProfileProps) {
                            onChange={getOnFieldChange(setSurname)} fullWidth={true}/>
                 <TextField label="Логин" value={username} className={classes.def} required
                            onChange={getOnFieldChange(setUsername)} fullWidth={true}/>
-                <TextField label="Email" value={email} className={classes.def}
+                <TextField label="Email" value={email} className={classes.def} required
                            onChange={getOnFieldChange(setEmail)} fullWidth={true}/>
                 <TextField label="Группа" value={group} className={classes.def}
                            onChange={getOnFieldChange(setGroup)} fullWidth={true}/>

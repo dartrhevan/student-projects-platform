@@ -17,7 +17,6 @@ import Portfolio from "./pages/Portfolio";
 import ProjectPlanComponent from "./pages/ProjectPlanComponent";
 import Scores from "./pages/Scores";
 import {getCurrentUser} from "./api/auth";
-import setLoginAction from "./store/actions/auth/setLoginAction";
 import logoutAction from "./store/actions/auth/logoutAction";
 import Scoring from "./pages/Scoring";
 import {Snackbar} from "@mui/material";
@@ -34,7 +33,7 @@ import THEME, {BackgroundStyle} from './theme';
 
 const useStyles = makeStyles(theme => ({
     main: {
-        width: '100vw',
+        width: '100%',
         paddingTop: '60px',
         maxWidth: '100vw',
         ...BackgroundStyle
@@ -42,7 +41,6 @@ const useStyles = makeStyles(theme => ({
 }));
 
 function App() {
-    // const dispatch = useDispatch();
     console.log("render Start")
     const classes = useStyles();
     const dispatch = useDispatch();
@@ -65,14 +63,13 @@ function App() {
     useEffect(() => {
         getCurrentUser()?.then(r => {
             console.log(r);
-            // success('Fine');
         }).catch(r => {
             console.log(r);
             error('Auth not valid');
             dispatch(logoutAction());
             window.location.href = '/';
         }); // TODO: may be move somewhere
-    }, [error, dispatch]);
+    }, []);
 
     const log = useSelector(getLogState);
 

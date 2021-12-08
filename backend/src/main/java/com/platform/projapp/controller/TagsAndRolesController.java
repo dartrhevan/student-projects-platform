@@ -30,17 +30,17 @@ public class TagsAndRolesController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/api/roles")
-    public ResponseEntity<?> createRole(@RequestBody CreateRoleRequest req) {
-        projectRoleService.createProjectRole(req.getRoleName());
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    @GetMapping("/api/roles")
-    public ResponseEntity<?> getAllRoles() {
-        var response = projectRoleService.getAllRoles();
-        return ResponseEntity.ok(response);
-    }
+//    @PostMapping("/api/roles")
+//    public ResponseEntity<?> createRole(@RequestBody CreateRoleRequest req) {
+//        projectRoleService.createProjectRole(req.getRoleName());
+//        return new ResponseEntity<>(HttpStatus.OK);
+//    }
+//
+//    @GetMapping("/api/roles")
+//    public ResponseEntity<?> getAllRoles() {
+//        var response = projectRoleService.getAllRoles();
+//        return ResponseEntity.ok(response);
+//    }
 
 
 }

@@ -6,7 +6,8 @@ export enum ProjectRole {
     OWNER = 'OWNER',
     PARTICIPANT = 'PARTICIPANT',
     MENTOR = 'MENTOR',
-    STRANGER = 'STRANGER'
+    STRANGER = 'STRANGER',
+    MENTOR_PARTICIPANT = 'MENTOR_PARTICIPANT'
 }
 
 export enum ProjectStatus {

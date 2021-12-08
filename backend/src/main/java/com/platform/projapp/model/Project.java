@@ -18,7 +18,7 @@ import static javax.persistence.CascadeType.*;
  */
 @Getter
 @Setter
-@ToString(exclude = {"tags", "participants","sprints"})
+@ToString(exclude = {"tags", "participants", "workspace", "sprints"})
 @NoArgsConstructor
 @Entity
 public class Project {

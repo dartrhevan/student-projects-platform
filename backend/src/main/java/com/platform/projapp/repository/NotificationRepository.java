@@ -17,6 +17,8 @@ import java.util.List;
 public interface NotificationRepository extends PagingAndSortingRepository<Notification, Long> {
     Page<Notification> findAllByRecipient(User recipient, Pageable pageable);
 
+    boolean existsByRecipientAndIsNew(User recipient, boolean isNew);
+
     @Override
     List<Notification> findAll();
 }

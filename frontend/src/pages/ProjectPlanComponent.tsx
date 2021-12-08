@@ -13,11 +13,15 @@ import {
     AccordionSummary,
     Card,
     CardActionArea,
-    CardContent, Dialog, DialogActions, DialogTitle, Link,
+    CardContent,
+    Dialog,
+    DialogActions,
+    DialogTitle,
+    Link,
     Paper,
     TextField
 } from "@mui/material";
-import {getOnFieldChange, toDateString} from "../utils/utils";
+import {getOnFieldChange} from "../utils/utils";
 import {ProjectRole} from "../model/Project";
 import {ElementsStyle} from "../theme";
 import {useError, useSuccess} from "../hooks/logging";
@@ -78,7 +82,7 @@ interface SprintProps extends ListItemProps {
 
 const SprintComponent = ({sprint, number, role, onSprintUpdate, onSprintRemove}: SprintProps) => {
     const classes = useStyles();
-    const editable = true;
+    const editable = role === ProjectRole.OWNER || role === ProjectRole.MENTOR_PARTICIPANT;
 
     const [presentationFile, setPresentationFile] = useState(undefined as File | undefined);
     const [goalsDescription, setGoalsDescription] = useState(sprint.goals);
@@ -144,22 +148,24 @@ const SprintComponent = ({sprint, number, role, onSprintUpdate, onSprintRemove}:
                           sx={{margin: '10px', fontSize: '18px'}}>
                         Презентация
                     </Link>
-                    <Button className={classes.dropzone} variant='outlined' color='inherit'>
-                        <Dropzone maxFiles={1} onDrop={(acceptedFiles: File[]) =>
-                            setPresentationFile(acceptedFiles[acceptedFiles.length - 1])}>
-                            {({getRootProps, getInputProps}) => (
-                                <section {...getRootProps()} style={{width: '100%'}}>
-                                    <input {...getInputProps()} />
-                                    <FileUploadIcon fontSize='large'/>
-                                    Для загрузки нажмите и перетащите сюда
-                                    <FileUploadIcon fontSize='large'/>
-                                </section>
-                            )}
-                        </Dropzone>
-                    </Button>
-                    <Typography className={classes.label}>
-                        {presentationFile ? `Загружен файл: ${presentationFile.name}` : ''}
-                    </Typography>
+                    {editable ? (<>
+                        <Button className={classes.dropzone} variant='outlined' color='inherit'>
+                            <Dropzone maxFiles={1} onDrop={(acceptedFiles: File[]) =>
+                                setPresentationFile(acceptedFiles[acceptedFiles.length - 1])}>
+                                {({getRootProps, getInputProps}) => (
+                                    <section {...getRootProps()} style={{width: '100%'}}>
+                                        <input {...getInputProps()} />
+                                        <FileUploadIcon fontSize='large'/>
+                                        Для загрузки нажмите и перетащите сюда
+                                        <FileUploadIcon fontSize='large'/>
+                                    </section>
+                                )}
+                            </Dropzone>
+                        </Button>
+                        <Typography className={classes.label}>
+                            {presentationFile ? `Загружен файл: ${presentationFile.name}` : ''}
+                        </Typography>
+                    </>) : <></>}
                 </div>
                 <br/>
                 <Typography paragraph variant='h6'>Комментарии результатов</Typography>
@@ -176,9 +182,10 @@ const SprintComponent = ({sprint, number, role, onSprintUpdate, onSprintRemove}:
                     display: 'flex',
                     justifyContent: 'end'
                 }} className={classes.label}>
-                    {editable ?
-                        <Button color='inherit' onClick={onChangesSubmit}>Подтвердить изменения</Button> : <></>}
-                    <Button color='inherit' onClick={() => setShowConfirmDialog(true)}>Удалить</Button>
+                    {editable ? (<>
+                        <Button color='inherit' onClick={onChangesSubmit}>Подтвердить изменения</Button>
+                        <Button color='inherit' onClick={() => setShowConfirmDialog(true)}>Удалить</Button>
+                    </>) : <></>}
                 </div>
             </AccordionDetails>
         </Accordion>
@@ -227,7 +234,6 @@ export default function ProjectPlanComponent() {
         }).then(r => success("Изменения успешно применены")).catch(error);
     }
 
-
     return (
         <Paper className={classes.paper} sx={{minHeight: '100px', ...ElementsStyle}} color='inherit' elevation={8}>
             <Typography align='center' paragraph variant='h4'>План проекта {projectPlan?.projectTitle}</Typography>
@@ -235,12 +241,13 @@ export default function ProjectPlanComponent() {
             {projectPlan?.plan.map((s, i) =>
                 <SprintComponent role={projectPlan.role} sprint={s} number={i} onSprintRemove={onSprintRemove}
                                  key={s.id} onSprintUpdate={onSprintUpdate}/>)}
-            <Card sx={{margin: '30px 0', ...ElementsStyle}} onClick={addNewSprint} elevation={8}>
-                <CardActionArea>
-                    <CardContent sx={{padding: '5px'}} className={classes.card}>
-                        <AddIcon fontSize='large' color='action'/>
-                    </CardContent>
-                </CardActionArea>
-            </Card>
+            {projectPlan?.role === ProjectRole.OWNER || projectPlan?.role === ProjectRole.MENTOR_PARTICIPANT ?
+                (<Card sx={{margin: '30px 0', ...ElementsStyle}} onClick={addNewSprint} elevation={8}>
+                    <CardActionArea>
+                        <CardContent sx={{padding: '5px'}} className={classes.card}>
+                            <AddIcon fontSize='large' color='action'/>
+                        </CardContent>
+                    </CardActionArea>
+                </Card>) : <></>}
         </Paper>);
 }
