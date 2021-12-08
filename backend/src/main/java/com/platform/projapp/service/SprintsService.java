@@ -6,12 +6,14 @@ import com.platform.projapp.dto.response.body.SprintDTO;
 import com.platform.projapp.error.NotFoundException;
 import com.platform.projapp.model.Sprint;
 import com.platform.projapp.model.User;
+import com.platform.projapp.model.Workspace;
 import com.platform.projapp.repository.ProjectRepository;
 import com.platform.projapp.repository.SprintsRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.stream.Collectors;
 
@@ -22,13 +24,17 @@ public class SprintsService {
     private final SprintsRepository sprintsRepository;
     private final ProjectRepository projectRepository;
 
+    public Sprint findByWorkspaceAndDate(Workspace workspace, LocalDate date) {
+        return sprintsRepository.findAllByWorkspaceAndDate(workspace, date);
+    }
+
     public ProjectPlan getForProject(User user, long projectId) throws NotFoundException {
         var project = projectRepository.findById(projectId).orElseThrow(NotFoundException::new);
         var workspaceRole = project.getWorkspace().getWorkspaceRoleByUser(user);
         return new ProjectPlan(project.getSprints().stream().sorted(Comparator.comparing(Sprint::getOrderNumber))
                 .map(SprintDTO::new).collect(Collectors.toList()),
                 project.getName(), ProjectService.toProjectRole(workspaceRole, project, user));
-         //sprintsRepository.findAllByProjectId(projectId).stream().map(SprintDTO::new).collect(Collectors.toList());
+        //sprintsRepository.findAllByProjectId(projectId).stream().map(SprintDTO::new).collect(Collectors.toList());
     }
 
     public Long addSprint(AddOrUpdateSprintRequest addOrUpdateSprintRequest) throws NotFoundException {

@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ScoreRequest {
     private String mentorUsername;
-    private Long sprintId;
+    private Long workspaceId;
     private Float presentationScore;
     private Float trackerLinkScore;
     private String comment;

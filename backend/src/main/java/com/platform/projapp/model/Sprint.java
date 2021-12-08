@@ -15,7 +15,7 @@ import static javax.persistence.CascadeType.ALL;
 @Setter
 @Entity
 @Table
-@ToString
+@ToString(exclude = {"scores"})
 @NoArgsConstructor
 public class Sprint {
 

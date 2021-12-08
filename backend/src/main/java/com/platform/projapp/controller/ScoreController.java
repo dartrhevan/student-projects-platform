@@ -7,10 +7,8 @@ import com.platform.projapp.dto.response.body.ProjectsWithScoresResponseBody;
 import com.platform.projapp.dto.response.body.ScoreResponseBody;
 import com.platform.projapp.dto.response.body.ScoresResponseBody;
 import com.platform.projapp.error.ErrorConstants;
-import com.platform.projapp.model.Sprint;
-import com.platform.projapp.model.Workspace;
 import com.platform.projapp.service.ScoreService;
-import com.platform.projapp.service.SprintService;
+import com.platform.projapp.service.SprintsService;
 import com.platform.projapp.service.UserService;
 import com.platform.projapp.service.WorkspaceService;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -31,7 +30,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/scores")
 public class ScoreController {
     private final ScoreService scoreService;
-    private final SprintService sprintService;
+    private final SprintsService sprintsService;
     private final WorkspaceService workspaceService;
     private final UserService userService;
 
@@ -51,11 +50,12 @@ public class ScoreController {
 
     @GetMapping("/evaluate")
     public ResponseEntity<?> getTableOfScores(@RequestHeader(name = "Authorization") String token,
-                                              @RequestParam(name = "sprintId") Long sprintId) {
-        Sprint sprint = sprintService.findById(sprintId);
+                                              @RequestParam(name = "workspaceId") Long workspaceId) {
         var user = userService.parseAndFindByJwt(token);
-        Workspace workspace = sprint.getProject().getWorkspace();
-        ResponseEntity<?> workspaceErrorResponseEntity = workspaceService.getWorkspaceErrorResponseEntity(workspace,
+        var workspace = workspaceService.findById(workspaceId);
+        var sprint = sprintsService.findByWorkspaceAndDate(workspace, LocalDate.now());
+                ResponseEntity < ?>
+        workspaceErrorResponseEntity = workspaceService.getWorkspaceErrorResponseEntity(workspace,
                 user.getLogin(),
                 List.of(ErrorConstants.USER_NOT_WORKSPACE_MENTOR_OR_OWNER));
         if (workspaceErrorResponseEntity != null)
@@ -66,16 +66,16 @@ public class ScoreController {
 
     @PostMapping("/evaluate")
     public ResponseEntity<?> addScores(@RequestHeader(name = "Authorization") String token,
+                                       @RequestParam(name = "workspaceId") Long workspaceId,
                                        @RequestBody List<ScoreRequest> scoreRequestList) {
         var user = userService.parseAndFindByJwt(token);
-        Sprint sprint = sprintService.findById(scoreRequestList.get(0).getSprintId());
-        Workspace workspace = sprint.getProject().getWorkspace();
+        var workspace = workspaceService.findById(workspaceId);
         ResponseEntity<?> workspaceErrorResponseEntity = workspaceService.getWorkspaceErrorResponseEntity(workspace,
                 user.getLogin(),
                 List.of(ErrorConstants.USER_NOT_WORKSPACE_MENTOR_OR_OWNER));
         if (workspaceErrorResponseEntity != null)
             return workspaceErrorResponseEntity;
-        scoreService.addScores(scoreRequestList);
+        scoreService.addOrUpdateScores(scoreRequestList, workspace, user);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }
