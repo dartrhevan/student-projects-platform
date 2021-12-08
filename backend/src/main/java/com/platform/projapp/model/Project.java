@@ -68,7 +68,15 @@ public class Project {
                 .anyMatch(workspaceParticipant -> workspaceParticipant.getUser().getLogin().equals(userLogin));
     }
 
-    public Set<User> getMentors() {
+    public User getProjectMentor() {
+        return participants.stream()
+                .map(Participant::getUser)
+                .filter(user -> workspace.mentorIs(user.getLogin()))
+                .findFirst()
+                .orElse(null);
+    }
+
+    public Set<User> getWorkspaceMentors() {
         return workspace.getUsersByWorkspaceRole(WorkspaceRole.MENTOR);
     }
 

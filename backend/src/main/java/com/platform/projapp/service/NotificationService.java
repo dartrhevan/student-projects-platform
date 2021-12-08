@@ -82,7 +82,7 @@ public class NotificationService {
     }
 
     public void sendSprintNotification(Sprint sprint, NotificationType notificationType) {
-        Set<Notification> notifications = sprint.getProject().getMentors().stream()
+        Set<Notification> notifications = sprint.getProject().getWorkspaceMentors().stream()
                 .map(user -> new Notification(user, sprint.getProject().getOwner(), notificationType, sprint))
                 .collect(Collectors.toSet());
         notificationRepository.saveAll(notifications);

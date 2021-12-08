@@ -82,6 +82,9 @@ public class WorkspaceService {
         if (errorsInfo.contains(ErrorConstants.USER_NOT_WORKSPACE_OWNER) && !workspace.ownerIs(userLogin))
             return ResponseEntity.badRequest()
                     .body(MessageResponseBody.of(ErrorConstants.USER_NOT_WORKSPACE_OWNER.getMessage()));
+        if (errorsInfo.contains(ErrorConstants.USER_NOT_WORKSPACE_OWNER) &&  !workspace.mentorIs(userLogin) && !workspace.ownerIs(userLogin))
+            return ResponseEntity.badRequest()
+                    .body(MessageResponseBody.of(ErrorConstants.USER_NOT_WORKSPACE_MENTOR_OR_OWNER.getMessage()));
         if (errorsInfo.contains(ErrorConstants.USER_IN_WORKSPACE) && workspace.hasUser(userLogin)) {
             return ResponseEntity.badRequest()
                     .body(MessageResponseBody.of(ErrorConstants.USER_IN_WORKSPACE.getMessage()));
