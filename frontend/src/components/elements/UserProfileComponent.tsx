@@ -184,7 +184,7 @@ export default function UserProfileComponent({user, title}: UserProfileProps) {
                 <Aligned endAlign={true}>
                     <Button disabled={!(passwordConfirmed && allFilledAndValid)}
                             className={classes.def} onClick={user ? onUpdate : onRegister}>
-                        Подтвердить
+                        {user ? "Подтвердить изменения" : "Зарегистрироваться"}
                     </Button>
                 </Aligned>
             </Card>

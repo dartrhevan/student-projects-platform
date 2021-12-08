@@ -59,8 +59,8 @@ export default function Login() {
                            type="password" fullWidth={true} required/>
                 <CssBaseline/>
                 <Aligned endAlign={true}>
-                    <Button href='/registration' color='inherit' className={classes.def}>Регистрация</Button>
-                    <Button disabled={!allFilled} color='inherit' onClick={onLogin} className={classes.def}>Подтвердить</Button>
+                    <Button href='/registration' color='inherit' className={classes.def}>Зарегистрироваться</Button>
+                    <Button disabled={!allFilled} color='inherit' onClick={onLogin} className={classes.def}>Войти</Button>
                 </Aligned>
             </Card>
         </Centered>);

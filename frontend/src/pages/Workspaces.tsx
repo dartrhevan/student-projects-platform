@@ -78,9 +78,9 @@ export default function Workspaces() {
     return (<BadgePage
         showTags={false}
         showDialog={true}
-        addTitle='Создать'
+        addTitle='Создать рабочее пространство'
         addOnClick={() => dispatch(openDialog())}
-        title='Просмотр рабочих пространств'
+        title='Рабочие пространства'
         badgeData={data}
         additionalButtons={(
             <>
@@ -94,10 +94,10 @@ export default function Workspaces() {
                         <TextField value={workspaceCode} onChange={getOnFieldChange(setWorkspaceCode)}/>
                     </DialogContent>
                     <DialogActions>
-                        <Button disabled={!allNotEmpty(workspaceCode)} onClick={onDialogClose}>Подтвердить</Button>
+                        <Button disabled={!allNotEmpty(workspaceCode)} onClick={onDialogClose}>Присоединиться</Button>
                     </DialogActions>
                 </Dialog>
-                <Tooltip title='Присоединиться'>
+                <Tooltip title='Присоединиться к рабочему пространству'>
                     <IconButton className={classes.button} onClick={() => setOpenAttachDialog(true)}>
                         <GroupAddIcon/>
                     </IconButton>

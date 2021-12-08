@@ -101,7 +101,7 @@ function App() {
                                 <Route component={Login} path='/authentication'/>
                                 <Route component={Register} path='/registration'/>
                                 <Route component={Projects} path='/projects/:workspaceId/:workspaceTitle'/>
-                                <Route component={Projects} path='/projects'/>
+                                <Route component={Projects} exact path='/projects'/>
                                 <Route component={Users} path='/users'/>
                                 <Route component={Notifications} path='/notifications'/>
                                 <Route component={ProjectDetailedPage} path='/project'/>

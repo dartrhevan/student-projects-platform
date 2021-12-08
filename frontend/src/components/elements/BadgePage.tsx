@@ -27,6 +27,7 @@ const useStyles = makeStyles(theme => ({
 
 interface BadgePageProps<T extends IBadge> {
     badgeData: T[]
+    defaultMessage?: string
     onBadgeClick?: ((badge: T) => void)
     href?: ((id: IBadge) => string)
     title: string
@@ -47,7 +48,7 @@ export default function BadgePage<T extends IBadge>(
     {
         checkBoxes, badgeData, title, href, addTitle, additionalButtons, onSetTags,
         addOnClick, squared = true, showDialog = false, showTags = true, addButton = true,
-        titleAlign = 'center'
+        titleAlign = 'center', defaultMessage
     }: BadgePageProps<T>) {
     const classes = useStyles();
 
@@ -57,12 +58,15 @@ export default function BadgePage<T extends IBadge>(
                 <Centered row={true} additionalClasses={[classes.main]}>
                     <Typography className={classes.title} align={titleAlign} variant='h3'>{title}</Typography>
                     <QueryPanel buttonTitle={addTitle} buttonOnClick={addOnClick} additionalButtons={additionalButtons}
-                                showTags={showTags} showDialog={showDialog} onSetTags={onSetTags} addButton={addButton}/>
+                                showTags={showTags} showDialog={showDialog} onSetTags={onSetTags}
+                                addButton={addButton}/>
                     {checkBoxes ? <CheckBoxGroup checkBoxes={checkBoxes}/> : <></>}
-                    {badgeData.map(s => <DefaultBadge key={s.id} description={s.description} squared={squared}
-                                                      tags={s.tags} id={s.id} title={s.title}
-                                                      label={s.label} labelColor={s.labelColor}
-                                                      href={href ? href(s) : undefined}/>)}
+                    {badgeData.length > 0 ? badgeData.map(s => <DefaultBadge key={s.id} description={s.description}
+                                                                             squared={squared}
+                                                                             tags={s.tags} id={s.id} title={s.title}
+                                                                             label={s.label} labelColor={s.labelColor}
+                                                                             href={href ? href(s) : undefined}/>)
+                        : defaultMessage}
                 </Centered>
             </Container>
             <PagingPanel/>

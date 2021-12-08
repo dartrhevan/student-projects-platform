@@ -140,7 +140,7 @@ const RoleSpecificButton = ({project, onSubmit, enabled, isNew}:
                         </Button>
                     </>) : (<></>)}
                     <Button color='inherit' variant='contained' disabled={!enabled} onClick={onSubmit}>
-                        Подтвердить изменения
+                        {isNew ? "Создать проект" : "Подтвердить изменения"}
                     </Button>
                 </>);
         case ProjectRole.STRANGER:
@@ -259,7 +259,7 @@ export default function ProjectDetailedPage() {
                 .catch(r => error(`Error ${r}`));
         else
             editProject(project as DetailedProject)
-                .then(r => success('Success'))
+                .then(r => success('Настройки проекта изменены!'))
                 .catch(r => error(`Error ${r}`));
     }
 
@@ -314,30 +314,32 @@ export default function ProjectDetailedPage() {
                                    }}
                                    onChange={t => setProject((project as DetailedProject).withTrackerUrl(t))}/> : <></>}
 
-                <List
-                    sx={{width: '100%'}}
-                    component="nav"
-                    aria-labelledby="nested-list-subheader"
-                    subheader={
-                        <ListSubheader component="div" sx={{
-                            background: THEME.ELEMENTS_COLOUR,
-                        }} color='inherit'>
-                            Список участников
-                        </ListSubheader>
-                    }>
-                    {project?.participants.map(p => (
-                        <ListItemButton disableRipple sx={{cursor: 'default'}} key={p.username}>
-                            <ListItemText primary={`${p.name} (${p.role})`}/>
-                            {project?.projectRole === ProjectRole.OWNER ?
-                                <IconButton
-                                    onClick={() => setRemoveParticipantDialog({
-                                        open: true,
-                                        participant: p.username
-                                    })}>
-                                    <Clear/>
-                                </IconButton> : <></>}
-                        </ListItemButton>))}
-                </List>
+                {
+                    !isNew && <List
+                        sx={{width: '100%'}}
+                        component="nav"
+                        aria-labelledby="nested-list-subheader"
+                        subheader={
+                            <ListSubheader component="div" sx={{
+                                background: THEME.ELEMENTS_COLOUR,
+                            }} color='inherit'>
+                                Список участников
+                            </ListSubheader>
+                        }>
+                        {project?.participants.map(p => (
+                            <ListItemButton disableRipple sx={{cursor: 'default'}} key={p.username}>
+                                <ListItemText primary={`${p.name} (${p.role})`}/>
+                                {project?.projectRole === ProjectRole.OWNER ?
+                                    <IconButton
+                                        onClick={() => setRemoveParticipantDialog({
+                                            open: true,
+                                            participant: p.username
+                                        })}>
+                                        <Clear/>
+                                    </IconButton> : <></>}
+                            </ListItemButton>))}
+                    </List>
+                }
                 <div className={classes.butGr} style={{justifyContent: 'start'}}>
                     <Typography sx={{margin: '10px'}} color='inherit'>Максимальное кол-во участников</Typography>
                     <TextField disabled={!(isNew || project?.projectRole === ProjectRole.OWNER)}

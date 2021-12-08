@@ -126,7 +126,7 @@ export default function Projects() {
 
     }
 
-    return (<BadgePage checkBoxes={[new CheckBoxInfo('Показать только активные', activeUpdate)]}
+    return (<BadgePage checkBoxes={[new CheckBoxInfo('Показать только активные проекты', activeUpdate)]}
                        titleAlign='left'
                        additionalButtons={(
                            <>
@@ -151,34 +151,34 @@ export default function Projects() {
                                    </Dialog>
                                    <ConfirmationDialog open={deleteDialog} onClose={() => setDeleteDialog(false)}
                                                        label="удалить рабочее пространство" onSubmit={onDelete}/>
-                                   <Tooltip title='Оценки'>
+                                   <Tooltip title='Посмотреть оценки проектов'>
                                        <IconButton href={`/scores/${workspaceId}`} className={classes.button}>
                                            <MenuBookIcon/>
                                        </IconButton>
                                    </Tooltip>
-                                   <Tooltip title='Оценить'>
+                                   <Tooltip title='Оценить проекты'>
                                        <IconButton href={`/scoring/${workspaceId}`} className={classes.button}>
                                            <Filter5Icon/>
                                        </IconButton>
                                    </Tooltip>
-                                   <Tooltip title='Участники'>
+                                   <Tooltip title='Просмотреть участников рабочего пространства'>
                                        <IconButton href={`/users?workspaceId=${workspaceId}`}
                                                    className={classes.button}>
                                            <GroupIcon/>
                                        </IconButton>
                                    </Tooltip>
-                                   <Tooltip title='Пригласить'>
+                                   <Tooltip title='Пригласить участников'>
                                        <IconButton onClick={onInviteOpen} className={classes.button}>
                                            <GroupAddIcon/>
                                        </IconButton>
                                    </Tooltip>
-                                   <Tooltip title='Настройки'>
+                                   <Tooltip title='Настроить рабочее пространство'>
                                        <IconButton onClick={() => dispatch(openDialog())}
                                                    className={classes.button}>
                                            <SettingsIcon/>
                                        </IconButton>
                                    </Tooltip>
-                                   <Tooltip title='Удалить'>
+                                   <Tooltip title='Удалить рабочее пространство'>
                                        <IconButton onClick={() => setDeleteDialog(true)}
                                                    className={classes.button}>
                                            <DeleteIcon/>
@@ -187,17 +187,17 @@ export default function Projects() {
                                </>
                                || role === WorkspaceAssociation.MENTOR &&
                                <>
-                                   <Tooltip title='Оценки'>
+                                   <Tooltip title='Посмотреть оценки проектов'>
                                        <IconButton href={`/scores/${workspaceId}`} className={classes.button}>
                                            <MenuBookIcon/>
                                        </IconButton>
                                    </Tooltip>
-                                   <Tooltip title='Оценить'>
+                                   <Tooltip title='Оценить проекты'>
                                        <IconButton href={`/scoring/${workspaceId}`} className={classes.button}>
                                            <Filter5Icon/>
                                        </IconButton>
                                    </Tooltip>
-                                   <Tooltip title='Участники'>
+                                   <Tooltip title='Просмотреть участников рабочего пространства'>
                                        <IconButton href={`/users?workspaceId=${workspaceId}`}
                                                    className={classes.button}>
                                            <GroupIcon/>
@@ -206,12 +206,12 @@ export default function Projects() {
                                </>
                                || workspaceId &&
                                <>
-                                   <Tooltip title='Оценки'>
+                                   <Tooltip title='Посмотреть оценки проектов'>
                                        <IconButton href={`/scores/${workspaceId}`} className={classes.button}>
                                            <MenuBookIcon/>
                                        </IconButton>
                                    </Tooltip>
-                                   <Tooltip title='Участники'>
+                                   <Tooltip title='Просмотреть участников рабочего пространства'>
                                        <IconButton href={`/users?workspaceId=${workspaceId}`}
                                                    className={classes.button}>
                                            <GroupIcon/>
@@ -219,10 +219,11 @@ export default function Projects() {
                                    </Tooltip>
                                </>}
                            </>)}
-                       title={workspaceTitle ? `Проекты из "${workspaceTitle}"` : `Проекты "${user?.user.username}"`}
+                       title={workspaceTitle ? `Проекты из "${workspaceTitle}"` : `Проекты пользователя "${user?.user.surname} ${user?.user.name}"`}
                        badgeData={data} squared={false}
                        href={i => `/project?projectId=${i.id}&workspaceId=${workspaceId}`}
-                       addTitle='Создать' onSetTags={tagsUpdate}
+                       addTitle='Создать проект' onSetTags={tagsUpdate}
                        addButton={workspaceId !== undefined}
-                       addOnClick={() => window.location.href = `/project?isNew&workspaceId=${workspaceId}`}/>);
+                       addOnClick={() => window.location.href = `/project?isNew&workspaceId=${workspaceId}`}
+                       defaultMessage={workspaceTitle ? "В данном рабочем пространстве не создано ни одного проекта" : "У вас пока нет ни одного проекта"}/>);
 }
