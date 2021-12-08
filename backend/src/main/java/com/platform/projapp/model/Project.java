@@ -70,8 +70,8 @@ public class Project {
 
     public User getProjectMentor() {
         return participants.stream()
-                .filter(participant -> participant.getProjectRole().getName().toLowerCase().contains("ментор"))
                 .map(Participant::getUser)
+                .filter(user -> workspace.mentorIs(user.getLogin()))
                 .findFirst()
                 .orElse(null);
     }
