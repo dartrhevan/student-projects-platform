@@ -103,5 +103,6 @@ export default function Workspaces() {
                     </IconButton>
                 </Tooltip>
             </>)}
-        href={s => `/projects/${(s as Workspace).id}/${(s as Workspace).title}`}/>);
+        href={s => `/projects/${(s as Workspace).id}/${(s as Workspace).title}`}
+        defaultMessage={"\nСоздайте свое собственное рабочее пространство или присоединитесь к уже существующему рабочему пространству"}/>);
 }

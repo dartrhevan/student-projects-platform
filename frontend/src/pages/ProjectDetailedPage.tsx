@@ -259,7 +259,10 @@ export default function ProjectDetailedPage() {
                 .catch(r => error(`Error ${r}`));
         else
             editProject(project as DetailedProject)
-                .then(r => success('Настройки проекта изменены!'))
+                .then(r => {
+                    success('Настройки проекта изменены!');
+                    window.location.href = `/projects`;
+                })
                 .catch(r => error(`Error ${r}`));
     }
 
