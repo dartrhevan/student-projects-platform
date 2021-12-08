@@ -1,9 +1,19 @@
 import React, {useEffect, useState} from 'react';
-import {addProject, editProject, getProjectInfo} from "../api/projects";
+import {
+    addProject,
+    deleteProject,
+    editProject,
+    getProjectInfo,
+    removeParticipant,
+    requestAttachToProject
+} from "../api/projects";
 import {DetailedProject, ProjectRole, ProjectStatus} from "../model/Project";
-import {Button, makeStyles, Paper} from "@material-ui/core";
+import {Button, DialogContent, makeStyles, Paper} from "@material-ui/core";
 import queryString from 'query-string';
 import {
+    Dialog,
+    DialogActions,
+    DialogTitle,
     Divider,
     IconButton, InputLabel, Link,
     List,
@@ -17,6 +27,14 @@ import TagsPanel from "../components/util/TagsPanel";
 import Centered from "../components/util/Centered";
 import ErrorMessage from "../components/elements/ErrorMessage";
 import {Clear} from "@material-ui/icons";
+import {useError, useSuccess, useWarn} from "../hooks/logging";
+import {useSelector} from "react-redux";
+import getTagsRef, {getTagsReferenceMap} from "../hooks/getTagsRef";
+import ConfirmationDialog from "../components/util/ConfirmationDialog";
+import THEME, {ElementsStyle} from "../theme";
+import RoleInput from "../components/elements/RoleInput";
+import {addRoleToReference, getRolesReference} from "../api/reference";
+import {correctNumericInput} from "../utils/utils";
 
 const useStyles = makeStyles(theme => ({
     paper: {
@@ -24,9 +42,10 @@ const useStyles = makeStyles(theme => ({
         width: '70%',
         minHeight: '70vh',
         marginTop: '70px',
-        '&:only-child': {
-            width: '100%'
-        }
+        // '&:only-child': {
+        //     width: '100%'
+        // }
+        ...ElementsStyle
     },
     inner: {
         width: '100%',
@@ -53,31 +72,113 @@ const useStyles = makeStyles(theme => ({
 
 const RoleSpecificButton = ({project, onSubmit, enabled, isNew}:
                                 { isNew: boolean, enabled?: boolean, project?: DetailedProject, onSubmit: () => void }) => {
+
+    const [deleteDialog, setDeleteDialog] = useState(false);
+    const [openAttachDialog, setOpenAttachDialog] = useState(false);
+    const [attachRole, setAttachRole] = useState('');
+    const success = useSuccess();
+    const error = useError();
+
+    function onDelete() {
+        deleteProject(project?.id as string)
+            .then(r => window.history.back())
+            .catch(error);
+    }
+
+    function onAttach(role = attachRole) {
+        if (!rolesReference.includes(role)) { //TODO: move to back
+            addRoleToReference(role)
+                .then(r => setRolesReference([...rolesReference, role]))
+                .catch(console.log);
+        }
+        requestAttachToProject(project?.id as string, role)
+            .then(r => {
+                setOpenAttachDialog(false);
+                success("Запрос на присоединение отправлен");
+            })
+            .catch(error);
+    }
+
+    function onMentorAttach() {
+        onAttach("Ментор");
+    }
+
+    const [rolesReference, setRolesReference] = useState([] as string[]);
+
+    useEffect(() => {
+        getRolesReference().then(r => setRolesReference(r.data)).catch(console.log);
+    }, []);
+
+    function onAttachDialogClosed() {
+        setOpenAttachDialog(false);
+        setAttachRole('');
+    }
+
+    function onAttachRoleChange(s: string | string[]) {
+        const newRole = s as string;
+        setAttachRole(newRole);
+    }
+
     switch (project?.projectRole) {
         case ProjectRole.OWNER:
             return (
                 <>
-                    <Button href={`/users?projectId=${project.id}&workspaceId=${project.workSpaceId}`}>
-                        Найти участника
-                    </Button>
-                    <Button href={`/project_plan?projectId=${project.id}&workspaceId=${project.workSpaceId}`}>
-                        Просмотр плана
-                    </Button>
-                    <Button variant='contained' disabled={!enabled} onClick={onSubmit}>
+                    <ConfirmationDialog open={deleteDialog} onClose={() => setDeleteDialog(false)}
+                                        label="удалить проект" onSubmit={onDelete}/>
+                    {!isNew ? (<>
+                        {project.maxParticipantsCount > project.participants.length ?
+                            (<Button color='inherit'
+                                     href={`/users?projectId=${project.id}&workspaceId=${project.workspaceId}`}>
+                                Найти участника
+                            </Button>) : <></>}
+                        <Button color='inherit'
+                                href={`/project-plan?projectId=${project.id}&workspaceId=${project.workspaceId}`}>
+                            Просмотр плана
+                        </Button>
+                        <Button color='inherit' onClick={() => setDeleteDialog(true)}>
+                            Удалить
+                        </Button>
+                    </>) : (<></>)}
+                    <Button color='inherit' variant='contained' disabled={!enabled} onClick={onSubmit}>
                         Подтвердить изменения
                     </Button>
                 </>);
-        case ProjectRole.PARTICIPANT:
+        case ProjectRole.STRANGER:
+            return (<>
+                <Dialog open={openAttachDialog} onClose={onAttachDialogClosed}>
+                    <DialogTitle>Присоединиться в роли</DialogTitle>
+                    <DialogContent dividers>
+                        <RoleInput reference={rolesReference} onChange={onAttachRoleChange} multiple={false}/>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button disabled={!attachRole || attachRole === ''}
+                                onClick={() => onAttach()}>Подтвердить</Button>
+                    </DialogActions>
+                </Dialog>
+
+                <Button disabled={project?.maxParticipantsCount <= project?.participants.length} color='inherit'
+                        onClick={() => setOpenAttachDialog(true)}>Присоединиться</Button>
+            </>);
+
         case ProjectRole.MENTOR:
+            return (<>
+                <Button color='inherit'
+                        href={`/project-plan?projectId=${project.id}&workspaceId=${project.workspaceId}`}>
+                    Просмотр плана
+                </Button>
+                <Button disabled={project?.maxParticipantsCount <= project?.participants.length}
+                        color='inherit' onClick={onMentorAttach}>Присоединиться</Button>
+            </>);
+        case ProjectRole.PARTICIPANT:
+        case ProjectRole.MENTOR_PARTICIPANT:
             return (
-                <Button href={`/project_plan?projectId=${project.id}&workspaceId=${project.workSpaceId}`}>
+                <Button color='inherit'
+                        href={`/project-plan?projectId=${project.id}&workspaceId=${project.workspaceId}`}>
                     Просмотр плана
                 </Button>);
-        case ProjectRole.STRANGER:
-            return (<Button>Присоединиться</Button>);
         default:
             return isNew ?
-                <Button variant='contained' disabled={!enabled} onClick={onSubmit}>
+                <Button variant='contained' color='inherit' disabled={!enabled} onClick={onSubmit}>
                     Подтвердить изменения
                 </Button>
                 : <></>
@@ -121,35 +222,60 @@ export default function ProjectDetailedPage() {
     // const params = useLocation<ProjectParams>().state;
     const params = queryString.parse(window.location.search);
     const workspaceId = params?.workspaceId, projectId = params?.projectId;
-    const isNew = params?.isNew !== undefined;
     const classes = useStyles();
     const [project, setProject] = useState(new DetailedProject(workspaceId as string));
+    const [isNew, setIsNew] = useState(params?.isNew !== undefined);
+    const [maxParticipantsCount, setMaxParticipantsCount] = useState(project?.maxParticipantsCount || 5);
+    const [removeParticipantDialog, setRemoveParticipantDialog] = useState({open: false, participant: ""});
 
+    const tagsReference = useSelector(getTagsReferenceMap);
     useEffect(() => {
             if (!isNew) {
-                getProjectInfo(projectId as string, workspaceId as string)
-                    .then(r => setProject(DetailedProject.fromObject(r.data))).catch(console.log)
+                getProjectInfo(projectId as string)
+                    .then(r => {
+                        const proj: DetailedProject = DetailedProject.fromObject(r.data);
+                        proj.tags = r.data.tags.map(t => tagsReference[t.toString()]).filter(t => t !== undefined);
+                        setMaxParticipantsCount(proj.maxParticipantsCount);
+                        setProject(proj);
+                    }).catch(console.log)
             }
         }, //TODO: catch
-        [workspaceId, projectId, isNew]);
+        [projectId, isNew, tagsReference]);
 
-    console.log('render with')
-    console.log(project)
+
     const allFilled = !isNew || project?.isNewFilled;//allNotEmpty(username, password);
 
+    const success = useSuccess();
+    const warn = useWarn();
+    const error = useError();
+
     function onSubmit() {
-        (isNew ? addProject(project as DetailedProject) : editProject(project as DetailedProject))
-            .then(r => alert(!r.message ? 'Success' : r.message))
-            .catch(r => alert(`Error ${r}`));
+        if (isNew)
+            addProject(project as DetailedProject)
+                .then(r => setIsNew(false))
+                .catch(r => error(`Error ${r}`));
+        else
+            editProject(project as DetailedProject)
+                .then(r => success('Success'))
+                .catch(r => error(`Error ${r}`));
     }
 
-    function removeParticipant(participant: string) {
-        const newProj = project?.removeParticipant(participant);
-        setProject(newProj as unknown as DetailedProject);
+    function onRemoveParticipant(participantUsername: string) {
+        removeParticipant(participantUsername, projectId as string).then(r => {
+            const newProj = project?.removeParticipant(participantUsername);
+            setProject(newProj as unknown as DetailedProject);
+            setRemoveParticipantDialog({open: false, participant: ""})
+            success(`Участник ${participantUsername} исключен!`);
+        }).catch(error);
     }
 
     return (
         <Paper className={classes.paper}>
+            <ConfirmationDialog open={removeParticipantDialog.open}
+                                onClose={() => setRemoveParticipantDialog({open: false, participant: ""})}
+                                label="исключить участника"
+                                onSubmit={() => onRemoveParticipant(removeParticipantDialog.participant)}/>
+
             <Centered additionalClasses={[classes.inner]}>
                 <EditableField isNew={isNew} label='(название)' props={{variant: 'h4'}} project={project}
                                prefix={'Проект '} field={p => p?.title} inputProps={{required: true}}
@@ -157,7 +283,13 @@ export default function ProjectDetailedPage() {
                 <EditableField isNew={isNew} left label='Краткое описание' inputProps={{required: true}}
                                project={project} field={p => p?.shortDescription}
                                onChange={t => setProject((project as DetailedProject).withShortDescription(t))}/>
-                <div style={{width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'center', flexWrap: 'wrap'}}>
+                <div style={{
+                    width: '100%',
+                    display: 'flex',
+                    flexDirection: 'row',
+                    justifyContent: 'center',
+                    flexWrap: 'wrap'
+                }}>
                     <TagsPanel onSetTag={tags => setProject(project?.withTags(tags))}
                                editable={project?.projectRole === ProjectRole.OWNER} values={project?.tags}/>
                 </div>
@@ -184,7 +316,9 @@ export default function ProjectDetailedPage() {
                     component="nav"
                     aria-labelledby="nested-list-subheader"
                     subheader={
-                        <ListSubheader component="div" id="nested-list-subheader">
+                        <ListSubheader component="div" sx={{
+                            background: THEME.ELEMENTS_COLOUR,
+                        }} color='inherit'>
                             Список участников
                         </ListSubheader>
                     }>
@@ -192,27 +326,40 @@ export default function ProjectDetailedPage() {
                         <ListItemButton disableRipple sx={{cursor: 'default'}} key={p.username}>
                             <ListItemText primary={`${p.name} (${p.role})`}/>
                             {project?.projectRole === ProjectRole.OWNER ?
-                                <IconButton onClick={() => removeParticipant(p.username)}>
+                                <IconButton
+                                    onClick={() => setRemoveParticipantDialog({
+                                        open: true,
+                                        participant: p.username
+                                    })}>
                                     <Clear/>
                                 </IconButton> : <></>}
                         </ListItemButton>))}
                 </List>
                 <div className={classes.butGr} style={{justifyContent: 'start'}}>
-                    <Typography sx={{margin: '10px'}}>Максимальное кол-во участников</Typography>
-                    <TextField sx={{width: '40px'}} type='number' variant='standard'/>
+                    <Typography sx={{margin: '10px'}} color='inherit'>Максимальное кол-во участников</Typography>
+                    <TextField disabled={!(isNew || project?.projectRole === ProjectRole.OWNER)}
+                               sx={{width: '40px'}} type='number' variant='standard'
+                               onInput={correctNumericInput}
+                               onChange={e => {
+                                   setMaxParticipantsCount(parseInt(e.target.value))
+                                   project.maxParticipantsCount = parseInt(e.target.value);
+                               }}
+                               value={maxParticipantsCount}/>
                 </div>
-                <div className={classes.butGr} style={{justifyContent: 'start'}}>
+
+                {!isNew ? (<div className={classes.butGr} style={{justifyContent: 'start'}}>
                     <Typography sx={{margin: '10px'}}>Статус проекта</Typography>
                     <Select
+                        disabled={!(isNew || project?.projectRole === ProjectRole.OWNER)}
                         value={project?.status}
                         onChange={s => setProject(project?.withStatus(s.target.value as ProjectStatus))}>
-                        <MenuItem value={ProjectStatus.NEW}>Новый</MenuItem>
-                        <MenuItem value={ProjectStatus.IN_PROGRESS}>В разработке</MenuItem>
-                        <MenuItem value={ProjectStatus.ENDED}>Завершён</MenuItem>
-                        <MenuItem value={ProjectStatus.CANCELLED}>Отклонён</MenuItem>
-                        <MenuItem value={ProjectStatus.MODIFYING}>На доработке</MenuItem>
+                        <MenuItem color='inherit' value={ProjectStatus.NEW}>Новый</MenuItem>
+                        <MenuItem color='inherit' value={ProjectStatus.IN_PROGRESS}>В разработке</MenuItem>
+                        <MenuItem color='inherit' value={ProjectStatus.ENDED}>Завершён</MenuItem>
+                        <MenuItem color='inherit' value={ProjectStatus.CANCELLED}>Отклонён</MenuItem>
+                        <MenuItem color='inherit' value={ProjectStatus.MODIFYING}>На доработке</MenuItem>
                     </Select>
-                </div>
+                </div>) : (<></>)}
                 <ErrorMessage message='*Не все обязательные поля заполнены' condition={!allFilled}/>
                 <div className={classes.butGr}>
                     <RoleSpecificButton isNew={isNew} enabled={allFilled} onSubmit={onSubmit} project={project}/>

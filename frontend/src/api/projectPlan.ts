@@ -1,6 +1,6 @@
-import GenericResponse from "../model/dto/GenericResponse";
-import Sprint, {ProjectPlan, ResultComment} from "../model/Sprint";
-import CommonResponse from "../model/dto/CommonResponse";
+import Sprint from "../model/Sprint";
+import {getDefaultDownloadHandler, getDefaultUploadHandler, toBase64, toDateString} from "../utils/utils";
+import {getTokenHeader} from "../store/state/LoginState";
 
 /**
  *
@@ -8,11 +8,10 @@ import CommonResponse from "../model/dto/CommonResponse";
  * @param workspaceId
  * @return list of sprints for current project
  */
-export function getProjectPlan(projectId: string, workspaceId: string) {//TODO: implement
-    return new Promise<GenericResponse<ProjectPlan>>((res, rej) => res(
-        new GenericResponse(new ProjectPlan(
-            [new Sprint('1', new Date(), new Date(2021, 12, 19), 'To start',
-                'http://ya.ru', [new ResultComment('1', 'WERTYUI', 'YYY')])], 'My project'))));
+export function getProjectPlan(projectId: string) {//TODO: implement
+    return fetch(`/api/sprints?projectId=${projectId}`, {
+        headers: getTokenHeader()
+    }).then(getDefaultDownloadHandler());
 }
 
 /**
@@ -20,7 +19,10 @@ export function getProjectPlan(projectId: string, workspaceId: string) {//TODO: 
  * @param sprintId
  */
 export function removeSprint(sprintId: string) {
-    return new Promise<CommonResponse>(resolve => resolve(new CommonResponse())); //TODO: implement
+    return fetch(`/api/sprints?sprintId=${sprintId}`, {
+        method: 'DELETE',
+        headers: getTokenHeader()
+    }).then(getDefaultUploadHandler());
 }
 
 /**
@@ -30,34 +32,48 @@ export function removeSprint(sprintId: string) {
  * @param sprint
  * @return created sprint id
  */
-export function addSprint(projectId: string, workspaceId: string/*, sprint: Sprint*/) {
-    return new Promise<GenericResponse<string>>(resolve => resolve(new GenericResponse(""))); //TODO: implement
+export function addSprint(projectId: string, orderNum: string, sprint: Sprint) {
+
+    return fetch(`/api/sprints`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            ...getTokenHeader()
+        },
+        body: JSON.stringify({
+            ['number']: orderNum,
+            startDate: sprint.startDate,
+            endDate: sprint.endDate,
+            goals: sprint.goals,
+            projectId
+        })
+    }).then(getDefaultDownloadHandler());
 }
 
 /**
  * Update existing sprint.
- * @param projectId
- * @param workspaceId
+ *
  * @param sprint
  */
-export function updateSprint(workspaceId: string, projectId: string, sprint: Sprint) {//TODO: implement
-    console.log(sprint);
-    return new Promise<CommonResponse>(resolve => resolve(new CommonResponse()))
-}
+export function updateSprint(sprint: Sprint, presentation?: File) {
+    function sendUpdate(pr?: string) {
+        return fetch(`/api/sprints`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                ...getTokenHeader()
+            },
+            body: JSON.stringify({
+                sprintId: sprint.id,
+                // number: sprint.
+                goals: sprint.goals,
+                startDate: toDateString(new Date(sprint.startDate)),
+                endDate: toDateString(new Date(sprint.endDate)),
+                presentation: pr
+            })
 
-/**
- *
- * @param projectId
- * @param sprintId
- * @param presentation
- * @return presentation url
- */
-export function uploadPresentation(workspaceId: string, projectId: string, sprintId: string, presentation: File) {//TODO: implement
-    console.log(presentation.name);
-    return new Promise<GenericResponse<string>>(resolve => resolve(new GenericResponse("")));
-}
-
-
-export function dropPlan(workspaceId: string, projectId: string) {
-    return new Promise<CommonResponse>(resolve => resolve(new CommonResponse()));
+        }).then(getDefaultUploadHandler());
+    }
+    if (presentation) return toBase64(presentation).catch(console.log).then(pr => sendUpdate(pr as string));
+    return sendUpdate();
 }

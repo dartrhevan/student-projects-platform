@@ -2,16 +2,19 @@ import React from 'react';
 import {Card, CardActionArea, CardContent, makeStyles} from "@material-ui/core";
 import ListItemProps, {IBadge} from "../../props.common/ListItemProps";
 import Centered from "../util/Centered";
-import {useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {Typography} from "@mui/material";
 import Dot from "../util/Dot";
 import clsx from 'clsx';
+import {getTagsReferenceMap} from "../../hooks/getTagsRef";
+import THEME, {ElementsStyle} from "../../theme";
 
 const useStyles = makeStyles(theme => ({
     root: {
         margin: "30px",
         cursor: "pointer",
         boxShadow: "0 0 5px 5px rgba(50, 50, 50, 0.15)",
+        ...ElementsStyle
     },
     area: {
         width: '100%',
@@ -32,7 +35,7 @@ const useStyles = makeStyles(theme => ({
         display: 'flex',
         height: '80%',
         flexGrow: 1,
-        flexDirection: 'column'
+        flexDirection: 'column',
     }
 }));
 
@@ -41,12 +44,14 @@ interface ProjectBadgeProp extends ListItemProps, IBadge {
     squared?: boolean,
 }
 
-export default function DefaultBadge({id, title, href, description, tags, label, labelColor, squared = true}: ProjectBadgeProp) {
+export default function DefaultBadge({id, title, href, description, tags = [], label, labelColor, squared = true}: ProjectBadgeProp) {
     const classes = useStyles();
     const dispatch = useDispatch();
     // const onClick = () => {
     //     dispatch(openProjectMenuAction(id)); //TODO: change
     // };
+    const tagsReference = useSelector(getTagsReferenceMap);
+    const tagsR = tags.map(t => tagsReference[t.toString()]).filter(t => t !== undefined);
     return (
         <Card className={clsx({[classes.root]: true, [classes.squared]: squared, [classes.rectangle]: !squared})}>
             <CardActionArea className={classes.area} href={href as string}>
@@ -57,7 +62,12 @@ export default function DefaultBadge({id, title, href, description, tags, label,
                         <Typography className={classes.description} variant='subtitle2'>{description}</Typography>
                         <br/>
                     </Centered>
-                    {tags?.map(t => <Dot key={t.text} color={t.backgroundColor}/>)}
+                    <div style={{
+                        display: 'flex',
+                        flexDirection: 'row'
+                    }}>
+                        {tagsR?.map(t => <Dot key={t.name} color={t.backgroundColor}/>)}
+                    </div>
                     <Typography sx={{color: labelColor}} variant='subtitle2' align='right'>{label}</Typography>
                 </CardContent>
             </CardActionArea>

@@ -12,10 +12,7 @@ import com.platform.projapp.error.ErrorConstants;
 import com.platform.projapp.error.ErrorUtils;
 import com.platform.projapp.model.Project;
 import com.platform.projapp.model.User;
-import com.platform.projapp.service.ProjectService;
-import com.platform.projapp.service.TagsService;
-import com.platform.projapp.service.UserService;
-import com.platform.projapp.service.WorkspaceService;
+import com.platform.projapp.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -30,6 +27,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.platform.projapp.service.ProjectService.toProjectRole;
+
 /**
  * @author Yarullin Renat
  */
@@ -38,6 +37,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/projects")
 public class ProjectController {
     private final ProjectService projectService;
+    private final ParticipantService participantService;
     private final UserService userService;
     private final TagsService tagsService;
     private final WorkspaceService workspaceService;
@@ -46,8 +46,12 @@ public class ProjectController {
     public ResponseEntity<?> getProjects(@PageableDefault(size = 9) Pageable pageable,
                                          @RequestHeader(name = "Authorization") String token,
                                          @RequestParam(name = "tag", required = false) String tagsParam,
+                                         @RequestParam(name = "active", required = false) Boolean active,
                                          @RequestParam("workspaceId") Long workspaceId) {
         var response = new GeneralResponse<>();
+        if (active == null) {
+            active = false;
+        }
         var user = userService.parseAndFindByJwt(token);
         var workspace = workspaceService.findById(workspaceId);
 
@@ -60,8 +64,8 @@ public class ProjectController {
         Page<Project> page;
         if (tagsParam != null && !tagsParam.isBlank()) {
             var tags = tagsService.findByTagParam(tagsParam);
-            page = projectService.findAllByWorkspaceAndTagsInTags(workspace, tags, pageable);
-        } else page = projectService.findAllByWorkspace(workspace, pageable);
+            page = projectService.findAllByWorkspaceAndTagsInTags(workspace, tags, pageable, active);
+        } else page = projectService.findAllByWorkspace(workspace, pageable, active);
 
         var pageErrorResponseEntity = ErrorUtils.getPageErrorResponseEntity(
                 pageable.getPageNumber(),
@@ -95,14 +99,6 @@ public class ProjectController {
                 ResponseEntity.ok(response.withData(ProjectResponseBody.fromProject(project, toProjectRole(workspaceRole, project, user))));
     }
 
-    private static ProjectRole toProjectRole(WorkspaceRole role, Project project, User user) {
-        if (project.getOwnerLogin().equals(user.getLogin())) return ProjectRole.OWNER;
-        return switch (role) {
-            case MENTOR, ORGANIZER -> ProjectRole.MENTOR;
-            case STUDENT -> !project.hasUser(user.getLogin()) ? ProjectRole.STRANGER : ProjectRole.PARTICIPANT;
-        };
-    }
-
 
     @PostMapping
     public ResponseEntity<?> addProject(@RequestHeader(name = "Authorization") String token,
@@ -118,8 +114,8 @@ public class ProjectController {
             return workspaceErrorResponseEntity;
         var errorResponseEntity = ErrorUtils.getIncompleteOrIncorrectErrorResponseEntity(bindingResult);
         if (errorResponseEntity != null) return errorResponseEntity;
-        projectService.createProject(user, workspace, projectRequest);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return ResponseEntity.ok(new GeneralResponse<Long>().withData(
+                projectService.createProject(user, workspace, projectRequest)));
     }
 
     @PutMapping("/{projectId}")
@@ -131,7 +127,7 @@ public class ProjectController {
         var project = projectService.findById(projectId);
         ResponseEntity<?> projectErrorResponseEntity = projectService.getProjectErrorResponseEntity(project,
                 user.getLogin(),
-                List.of(ErrorConstants.USER_NOT_WORKSPACE_OWNER));
+                List.of(ErrorConstants.USER_NOT_WORKSPACE_PARTICIPANT));
         if (projectErrorResponseEntity != null) return projectErrorResponseEntity;
         var errorResponseEntity = ErrorUtils.getIncompleteOrIncorrectErrorResponseEntity(bindingResult);
         if (errorResponseEntity != null) return errorResponseEntity;
@@ -147,23 +143,37 @@ public class ProjectController {
         var project = projectService.findById(projectId);
         ResponseEntity<?> projectErrorResponseEntity = projectService.getProjectErrorResponseEntity(project,
                 user.getLogin(),
-                List.of(ErrorConstants.USER_NOT_WORKSPACE_OWNER));
+                List.of(ErrorConstants.USER_NOT_WORKSPACE_PARTICIPANT));
         if (projectErrorResponseEntity != null) return projectErrorResponseEntity;
         projectService.delete(project);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PostMapping("/{projectId}")
-    public ResponseEntity<?> addParticipant(@RequestHeader(name = "Authorization") String token,
-                                            @PathVariable("projectId") Long projectId,
+    public ResponseEntity<?> addParticipant(@PathVariable("projectId") Long projectId,
                                             @RequestBody ParticipantRequest request) {
-        var user = userService.parseAndFindByJwt(token);
         var project = projectService.findById(projectId);
         ResponseEntity<?> projectErrorResponseEntity = projectService.getProjectErrorResponseEntity(project,
-                request.getUserLogin(),
+                request.getUsername(),
                 List.of(ErrorConstants.USER_NOT_WORKSPACE_PARTICIPANT, ErrorConstants.USER_IN_PROJECT));
         if (projectErrorResponseEntity != null) return projectErrorResponseEntity;
         projectService.addParticipant(project, request);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{projectId}/participants")
+    public ResponseEntity<?> delParticipant(@RequestHeader(name = "Authorization") String token,
+                                            @PathVariable("projectId") Long projectId,
+                                            @RequestParam(name = "participantUsername") String participantUsername) {
+        var user = userService.parseAndFindByJwt(token);
+        var project = projectService.findById(projectId);
+        var removedParticipant = userService.findByUserName(participantUsername);
+        //TODO: доделать проверку на ошибки
+        ResponseEntity<?> projectErrorResponseEntity = projectService.getProjectErrorResponseEntity(project,
+                user.getLogin(),
+                List.of(ErrorConstants.USER_NOT_WORKSPACE_PARTICIPANT));
+        if (projectErrorResponseEntity != null) return projectErrorResponseEntity;
+        participantService.delete(project, removedParticipant);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

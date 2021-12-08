@@ -17,17 +17,19 @@ import {useDispatch} from "react-redux";
 import TagsPanel from "../../components/util/TagsPanel";
 import clsx from 'clsx';
 import Card from "@material-ui/core/Card";
-import Autocomplete from "@mui/material/Autocomplete";
 import Tag from "../../model/Tag";
-import {addRoleToReference, getRolesReference} from "../../api/reference";
-import RolesInput from "./RolesInput";
+import RoleInput, {RolesInput} from "./RoleInput";
+import {useError, useSuccess} from "../../hooks/logging";
+import GenericResponse from "../../model/dto/GenericResponse";
+import {Login} from "../../store/state/LoginState";
+import THEME, {ElementsStyle} from "../../theme";
 
 const useStyles = makeStyles(theme => ({
     def: {
         margin: "15px",
     },
     container: {
-        maxWidth: '500px'
+        maxWidth: '500px',
     },
     skills: {
         width: '100%',
@@ -41,7 +43,8 @@ const useStyles = makeStyles(theme => ({
     },
     card: {
         margin: '40px 0',
-        padding: '15px'
+        padding: '15px',
+        ...ElementsStyle
     }
 }));
 
@@ -69,12 +72,12 @@ export default function UserProfileComponent({user, title}: UserProfileProps) {
     const [name, setName] = useState('');
     const [messenger, setMessenger] = useState('');
     const [password, setPassword] = useState('');
-    const [oldPassword, setOldPassword] = useState('');
+    const [newPassword, setNewPassword] = useState('');
     const [email, setEmail] = useState('');
     const [passwordConfirm, setPasswordConfirm] = useState('');
     const [comment, setComment] = useState('');
     const [group, setGroup] = useState('');
-    const passwordConfirmed = password === passwordConfirm;
+    const passwordConfirmed = user === undefined ? password === passwordConfirm : newPassword === passwordConfirm;
     const [roles, setRoles] = useState([] as string[]);
     const [tags, setTags] = useState([] as Tag[]);
 
@@ -84,7 +87,7 @@ export default function UserProfileComponent({user, title}: UserProfileProps) {
             setUsername(user?.username);
             setSurname(user?.surname);
             setName(user?.name);
-            setTags(user?.skills);
+            setTags(user?.skills.map(t => new Tag(t.id, t.name, t.color)));
             setGroup(user?.group);
             setComment(user?.comment);
             setRoles(user?.roles);
@@ -93,27 +96,36 @@ export default function UserProfileComponent({user, title}: UserProfileProps) {
     }, [user]);
     const passwordLabels = getPasswordLabel(user);
 
-    console.log('name');
+    const error = useError();
+    const success = useSuccess();
 
-    console.log(name);
     const dispatch = useDispatch();
     const onRegister = () => register(new UserProfile(name, surname, username, email, messenger, comment, group, roles, tags), password)
-        .then(r => {//TODO: extract common part from login
-            dispatch(setLoginAction(r));
-            window.location.href = '/';
-        }).catch(alert); //TODO: implement correct catch;
+        .then((r: GenericResponse<Login>) => {
+            dispatch(setLoginAction(r.data));
+            window.location.href = '/profile';
+        }).catch(error);
 
-    const allFilledAndValid = allNotEmpty(username, password, passwordConfirm) && email.match(emailPattern) && username.length >= 6 && password.length >= 6;
+    const required = [];
 
-    function onUpdate() {
-        update(new UserProfile(name, surname, username, email, messenger, comment, group, roles, tags), password, oldPassword)
-            .then(r => {//TODO: extract common part from login
-                // dispatch(setLoginAction(r));
-                alert('Success');
-                window.location.href = '/';
-            }).catch(alert); //TODO: implement correct catch;
+    if (user === undefined) {
+        required.push();
     }
 
+    const registerFilled = allNotEmpty(username, name, surname, password, passwordConfirm);
+    const editFilled = allNotEmpty(username, name, surname, password);
+
+    const allFilledAndValid = (user === undefined ? registerFilled : editFilled)
+        && email.match(emailPattern) !== null && username.length >= 6 && password.length >= 6;
+
+    function onUpdate() {
+        update(new UserProfile(name, surname, username, email, messenger, comment, group, roles, tags), password, newPassword)
+            .then(r => {
+                success("Настройки профиля были изменены");
+            }).catch(error);
+    }
+
+    const allFilled = allNotEmpty(messenger, username, surname, name, tags, group, comment, roles, email);
 
     return (
         <Centered additionalClasses={[classes.container]}>
@@ -121,6 +133,10 @@ export default function UserProfileComponent({user, title}: UserProfileProps) {
                 <Typography variant="h5">
                     {title}
                 </Typography>
+                {user !== undefined && !allFilled ?
+                    <Typography color='textSecondary' variant='body2'>
+                        В вашем профиле остались незаполненные поля.
+                    </Typography> : ''}
                 <CssBaseline/>
 
                 <TextField label="Имя" value={name} className={classes.def} onChange={getOnFieldChange(setName)}
@@ -131,23 +147,27 @@ export default function UserProfileComponent({user, title}: UserProfileProps) {
                            onChange={getOnFieldChange(setUsername)} fullWidth={true}/>
                 <TextField label="Email" value={email} className={classes.def}
                            onChange={getOnFieldChange(setEmail)} fullWidth={true}/>
-                <TextField label="Мэсэнджер" value={messenger} className={classes.def}
-                           onChange={getOnFieldChange(setMessenger)} fullWidth={true}/>
                 <TextField label="Группа" value={group} className={classes.def}
                            onChange={getOnFieldChange(setGroup)} fullWidth={true}/>
-                <TextField label='Кратко опишите ваши интерересы' multiline={true} focused className={classes.def}
-                           onChange={getOnFieldChange(setComment)} fullWidth={true} value={comment}/>
                 <CssBaseline/>
-                <div className={clsx(classes.def, classes.skills)}>
-                    <Typography className={classes.def} align='center'>Введи ваши навыки</Typography>
-                    <TagsPanel label='skill' tagInputClasses={[classes.tagInput]} onSetTag={setTags}/>
-                </div>
-                <RolesInput onChange={s => setRoles(s as string[])} defRoles={roles} />
+                {user !== undefined ? (<>
+                    <TextField label="Мэсэнджер" value={messenger} className={classes.def}
+                               onChange={getOnFieldChange(setMessenger)} fullWidth={true}/>
+                    <TextField label='Кратко опишите ваши интерересы' multiline={true}
+                               focused className={classes.def} onChange={getOnFieldChange(setComment)}
+                               fullWidth={true} value={comment}/>
+                    <div className={clsx(classes.def, classes.skills)}>
+                        <Typography className={classes.def} align='center'>Введи ваши навыки</Typography>
+                        <TagsPanel values={tags} label='skill' tagInputClasses={[classes.tagInput]} onSetTag={setTags}/>
+                    </div>
+                    <RolesInput onChange={s => setRoles(s as string[])} defRoles={roles}/>
+                </>) : <></>}
                 {user ?
                     <TextField label="Текущий пароль" className={classes.def}
-                               onChange={getOnFieldChange(setOldPassword)}
+                               onChange={getOnFieldChange(setPassword)}
                                type="password" fullWidth={true} required/> : <></>}
-                <TextField label={passwordLabels.input} className={classes.def} onChange={getOnFieldChange(setPassword)}
+                <TextField label={passwordLabels.input} className={classes.def}
+                           onChange={getOnFieldChange(user === undefined ? setPassword : setNewPassword)}
                            type="password" fullWidth={true} required/>
                 <TextField label={passwordLabels.confirmation} className={classes.def} type="password"
                            onChange={getOnFieldChange(setPasswordConfirm)} fullWidth={true} required/>

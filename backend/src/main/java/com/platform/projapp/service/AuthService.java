@@ -39,10 +39,6 @@ public class AuthService {
     public GeneralResponse<JwtResponseBody> authUser(String login, String password) {
         GeneralResponse<JwtResponseBody> response = new GeneralResponse<>();
         try {
-            User user1 = userRepository.findByLogin(login);
-            if(user1==null)
-                return response.withError(ErrorConstants.USERNAME_NOT_FOUND);
-            else{
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(login, password));
 
@@ -55,23 +51,20 @@ public class AuthService {
             RefreshToken refreshToken = tokenService.createRefreshToken(user);
 
             return response.withData(new JwtResponseBody(jwt, refreshToken.getToken(), user));
-        }
-    } catch (BadCredentialsException e) {
-        return response.withError(ErrorConstants.WRONG_PASSWORD);
+
+        } catch (UsernameNotFoundException | BadCredentialsException e) {
+            return response.withError(ErrorConstants.USERNAME_OR_PASSWORD_NOT_FOUND);
         }
     }
 
     public GeneralResponse<MessageResponseBody> registerUser(RegisterOrUpdateUserRequest registerRequest, BindingResult bindingResult) {
 
         GeneralResponse<MessageResponseBody> response = new GeneralResponse<>();
-        if (registerRequest.getPassword()==null)
-        {
+        if (registerRequest.getPassword() == null) {
             return response.withError(ErrorConstants.PASSWORD_IS_EMPTY);
-        }
-        else if (userRepository.existsByLogin(registerRequest.getLogin())) {
+        } else if (userRepository.existsByLogin(registerRequest.getLogin())) {
             return response.withError(ErrorConstants.LOGIN_IS_BUSY);
-        }
-        else {
+        } else {
             userService.addUser(registerRequest);
             return response.withData(MessageResponseBody.of("Пользователь успешно зарегистрирован"));
         }
@@ -89,6 +82,6 @@ public class AuthService {
                     response.withData(new TokenRefreshResponseBody(accessToken, refreshToken));
                     return (response);
                 }).orElse(new GeneralResponse<TokenRefreshResponseBody>()
-                        .withErrors(List.of(ErrorConstants.RT_NOT_IN_BD)));
+                        .withError(ErrorConstants.RT_NOT_IN_BD.getMessage()));
     }
 }

@@ -8,7 +8,7 @@ export interface IBadge {
     id: string
     title: string
     description?: string
-    tags?: Tag[]
+    tags?: number[]
     label?: string
     labelColor?: string
 }

@@ -55,17 +55,17 @@ export default function WorkspaceSettings({workspaceId = ''}: WorkspaceProps) {
     const [sprintsCount, setSprintsCount] = useState(5);
     const [sprintsLength, setSprintsLength] = useState(2);
     const [startDate, setStartDate] = useState(new Date());
-    // const [endDate, setEndDate] = useState(new Date());
+
+    const existed = workspaceId !== '';
 
     useEffect(() => {
-        if (workspaceId !== '') {
-            getWorkspaceById(workspaceId).then(r => {//TODO: refactor
+        if (existed) {
+            getWorkspaceById(workspaceId).then(r => {
                 setTitle(r.data.title);
-                setStartDate(r.data.startDate);
-                // setEndDate(r.data.endDate);
+                setStartDate(new Date(r.data.startDate));
                 setSprintsLength(r.data.sprintsLength);
                 setSprintsCount(r.data.sprintsCount);
-            });
+            }).catch(console.log); //TODO: не отправлять если пользователь не владелец
         }
     }, [workspaceId]);
 
@@ -78,26 +78,18 @@ export default function WorkspaceSettings({workspaceId = ''}: WorkspaceProps) {
     const success = useSuccess();
 
     function submit() {
-        // const match = (/[^\w\s]/).exec(title);
-        // if (match && match.length > 0) {
-        //     alert('incorrect title');
-        //     return;
-        // }
-        (workspaceId !== '' ? updateWorkspace(workspaceId, title, sprintsCount, sprintsLength, startDate)
+        (existed ? updateWorkspace(workspaceId, title, sprintsCount, sprintsLength, startDate)
             : addNewWorkspace(title, sprintsCount, sprintsLength, startDate))
             .then(r => {
                 if (r.message)
                     warn(r.message)
                 else {
-                    // onCloseDialog();
                     window.location.reload();
                 }
             }).catch(r => error(r));
     }
 
-    // const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => setTitle(event.target.value);
-
-    const allFilled = allNotEmpty(title/*sprintsCount, sprintsLength, startDate*/);
+    const allFilled = allNotEmpty(title);
 
     return (
         <Dialog open={open} onClose={onCloseDialog}>
@@ -116,8 +108,6 @@ export default function WorkspaceSettings({workspaceId = ''}: WorkspaceProps) {
                 <TextField defaultValue={toDateString(startDate)} className={classes.but} type='date'
                            onChange={getOnFieldChange(s => setStartDate(new Date(s)))} required/>
                 <Typography>Дата окончания</Typography>
-                {/*<TextField defaultValue={toDateString(endDate)} className={classes.but} type='date'*/}
-                {/*           onChange={getOnFieldChange(s => setEndDate(new Date(s)))}/>*/}
                 <br/>
                 <Typography>Колличество спринтов</Typography>
                 <TextField defaultValue={sprintsCount} className={classes.but} type='number' required

@@ -1,7 +1,9 @@
 package com.platform.projapp.dto.response.body;
 
-import com.platform.projapp.enumarate.WorkspaceRole;
-import com.platform.projapp.model.*;
+import com.platform.projapp.model.Project;
+import com.platform.projapp.model.ProjectRole;
+import com.platform.projapp.model.Tags;
+import com.platform.projapp.model.WorkspaceParticipant;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -15,7 +17,7 @@ import java.util.stream.Collectors;
  */
 @Data
 @AllArgsConstructor
-public class WorkspaceParticipantInListResponseBody implements ResponseBody{
+public class WorkspaceParticipantInListResponseBody implements ResponseBody {
     private String username;
     private String name;
     private String surname;
@@ -28,10 +30,10 @@ public class WorkspaceParticipantInListResponseBody implements ResponseBody{
     private Long projectId;
     private String projectTitle;
 
-    public static WorkspaceParticipantInListResponseBody fromWorkspaceParticipant(WorkspaceParticipant workspaceParticipant, Project project){
+    public static WorkspaceParticipantInListResponseBody fromWorkspaceParticipant(WorkspaceParticipant workspaceParticipant, Project project) {
         var user = workspaceParticipant.getUser();
         Set<Tags> skills = new HashSet<>();
-        if (user.getSkills() != null){
+        if (user.getSkills() != null) {
             skills = user.getSkills();
         }
         return new WorkspaceParticipantInListResponseBody(user.getUsername(),

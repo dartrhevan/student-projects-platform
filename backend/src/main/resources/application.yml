@@ -12,6 +12,7 @@ spring:
     username: ${DB_USERNAME:project_platform}
     password: ${DB_PASS:12345}
   jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
     generate-ddl: true
     show-sql: false
     hibernate:
@@ -20,5 +21,5 @@ spring:
 app:
   jwt:
     secret: ${JWT_SECRET:ProjAppRenSecretCode}
-    expirationMs: 30000000
-    refreshExpirationMs: 60000
+    expirationMs: 3600000
+    refreshExpirationMs: 3600000

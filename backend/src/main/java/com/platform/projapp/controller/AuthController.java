@@ -3,8 +3,6 @@ package com.platform.projapp.controller;
 import com.platform.projapp.dto.request.AuthRequest;
 import com.platform.projapp.dto.request.RegisterOrUpdateUserRequest;
 import com.platform.projapp.dto.request.TokenRefreshRequest;
-import com.platform.projapp.dto.response.GeneralResponse;
-import com.platform.projapp.dto.response.body.MessageResponseBody;
 import com.platform.projapp.error.ErrorConstants;
 import com.platform.projapp.service.AuthService;
 import com.platform.projapp.service.UserService;
@@ -31,10 +29,8 @@ public class AuthController {
         var response = authService.authUser(authRequest.getLogin(), authRequest.getPassword());
         //return response.success() ? ResponseEntity.ok(response) : ResponseEntity.status(404).body(response);
         if (response.success()) return ResponseEntity.ok(response);
-        else if (response.message.equals(ErrorConstants.WRONG_PASSWORD))
+        else if (response.getMessage().equals(ErrorConstants.USERNAME_OR_PASSWORD_NOT_FOUND))
             return ResponseEntity.status(401).body(response);
-        else if (response.message.equals(ErrorConstants.USERNAME_NOT_FOUND))
-            return ResponseEntity.status(404).body(response);
         else return ResponseEntity.status(500).body(response);
     }
 

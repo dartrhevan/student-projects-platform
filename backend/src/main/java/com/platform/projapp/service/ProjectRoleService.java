@@ -1,9 +1,15 @@
 package com.platform.projapp.service;
 
+import com.platform.projapp.dto.response.GeneralResponse;
+import com.platform.projapp.dto.response.body.GetAllRolesResponseBody;
+import com.platform.projapp.dto.response.body.GetAllTagsResponseBody;
 import com.platform.projapp.model.ProjectRole;
+import com.platform.projapp.model.Tags;
 import com.platform.projapp.repository.ProjectRoleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * @author Yarullin Renat
@@ -30,5 +36,11 @@ public class ProjectRoleService {
 
     public ProjectRole findByName(String name) {
         return projectRoleRepository.findByName(name);
+    }
+
+    public GeneralResponse<GetAllRolesResponseBody> getAllRoles() {
+        GeneralResponse<GetAllRolesResponseBody> response = new GeneralResponse<>();
+        List<ProjectRole> roles = projectRoleRepository.findAll();
+        return response.withData(new GetAllRolesResponseBody(roles));
     }
 }

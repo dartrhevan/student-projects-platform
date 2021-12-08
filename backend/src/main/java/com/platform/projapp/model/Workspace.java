@@ -11,6 +11,7 @@ import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author Yarullin Renat
@@ -95,4 +96,13 @@ public class Workspace {
     public WorkspaceRole getWorkspaceRoleByCode(String code) {
         return WorkspaceRole.findByText(code.substring(0, 3));
     }
+
+    public Set<User> getUsersByWorkspaceRole(WorkspaceRole workspaceRole) {
+        return participants.stream()
+                .filter(participant -> participant.getWorkspaceRole().equals(workspaceRole))
+                .map(WorkspaceParticipant::getUser)
+                .collect(Collectors.toSet());
+    }
+
+    public LocalDate getEndDate(){return (zeroSprintDate.plusDays(frequencyOfSprints*sprintCount));}
 }

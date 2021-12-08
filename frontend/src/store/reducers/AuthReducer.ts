@@ -10,9 +10,9 @@ export default function (state: LoginState = initState, action: Action<LoginStat
             persist(action.payload as Login);
             return action.payload;
         case ActionType.Logout:
-            sessionStorage.removeItem(StorageKeys.Login)
-            sessionStorage.removeItem(StorageKeys.RefreshToken)
-            sessionStorage.removeItem(StorageKeys.AccessToken)
+            localStorage.removeItem(StorageKeys.Login)
+            localStorage.removeItem(StorageKeys.RefreshToken)
+            localStorage.removeItem(StorageKeys.AccessToken)
             return action.payload;
         default:
             return state;

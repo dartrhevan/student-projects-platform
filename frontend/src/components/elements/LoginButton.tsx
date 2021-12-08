@@ -48,10 +48,10 @@ export default function LoginButton() {
                     <Link href='/profile' underline="hover" color='inherit' variant="h6" TypographyClasses={classes.login}>
                         {username?.user?.name + ' ' + username?.user?.surname}
                     </Link>
-                    <Button onClick={onLogout}>Выйти</Button>
+                    <Button color="inherit" onClick={onLogout}>Выйти</Button>
                 </>) :
                 (<>
-                    <Button className={classes.button} href='/registration'>Регистрация</Button>
+                    <Button className={classes.button} color="inherit" href='/registration'>Регистрация</Button>
                     <Button className={classes.button} color="inherit" href='/authentication'>Войти</Button>
                 </>)}
         </>

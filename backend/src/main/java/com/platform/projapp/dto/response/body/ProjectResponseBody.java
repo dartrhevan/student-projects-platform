@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 public class ProjectResponseBody implements ResponseBody {
 
     private String id;
+    private String workspaceId;
     private String title;
     private String shortDescription;
     private String fullDescription;
@@ -50,6 +51,7 @@ public class ProjectResponseBody implements ResponseBody {
         }
 
         return new ProjectResponseBody(project.getId().toString(),
+                project.getWorkspace().getId().toString(),
                 project.getName(),
                 project.getShortDescription(),
                 project.getFullDescription(),

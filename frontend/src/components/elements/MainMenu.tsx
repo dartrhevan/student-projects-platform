@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import clsx from 'clsx';
 import {createStyles, makeStyles, Theme} from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
@@ -15,8 +15,11 @@ import FormatAlignJustifyIcon from '@mui/icons-material/FormatAlignJustify';
 import EmailIcon from '@mui/icons-material/Email';
 import getUsername from "../../hooks/getUsername";
 import AutoAwesomeMosaicIcon from '@mui/icons-material/AutoAwesomeMosaic';
+import THEME, {HeaderStyle} from "../../theme";
+import {Badge, Tooltip} from "@mui/material";
+import {hasNewNotifications} from "../../api/notifications";
 
-const drawerWidth = 240;
+const drawerWidth = 270;
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -31,6 +34,7 @@ const useStyles = makeStyles((theme: Theme) =>
             flexShrink: 0,
             whiteSpace: 'nowrap',
         },
+        paper: HeaderStyle,
         drawerOpen: {
             width: drawerWidth,
             transition: theme.transitions.create('width', {
@@ -44,9 +48,9 @@ const useStyles = makeStyles((theme: Theme) =>
                 duration: theme.transitions.duration.leavingScreen,
             }),
             overflowX: 'hidden',
-            width: theme.spacing(7) + 1,
+            width: theme.spacing(5) + 1,
             [theme.breakpoints.up('sm')]: {
-                width: theme.spacing(9) + 1,
+                width: theme.spacing(7) + 1,
             },
         },
         drawerHidden: {
@@ -69,7 +73,10 @@ const useStyles = makeStyles((theme: Theme) =>
             padding: theme.spacing(3),
         },
         list: {
-            marginTop: theme.spacing(8) //TODO: refactor
+            marginTop: theme.spacing(8),
+        },
+        icon: {
+            color: THEME.HEADER_TEXT_COLOUR
         }
     }),
 );
@@ -78,6 +85,7 @@ export default function MiniDrawer() {
     const classes = useStyles();
     const mobile = isMobile();
     const open = useSelector(getMainMenuOpen, shallowEqual);
+    const [hasNewNotifs, setNewNotifs] = useState(false);
     const drawerClasses = {
         [classes.drawerOpen]: open,
         [classes.drawerHidden]: !open && mobile,
@@ -86,35 +94,63 @@ export default function MiniDrawer() {
 
     const login = useSelector(getUsername);
 
-    return (
-        <Drawer
-            variant="permanent"
-            className={clsx(classes.drawer, drawerClasses)}
-            classes={{
-                paper: clsx(drawerClasses)
-            }}>
+    useEffect(() => {
+        if (login) {
+            hasNewNotifications().then(r => setNewNotifs(r.data));
+        }
+    }, [login]);
 
-            <List className={classes.list}>
-                <ListItem disabled={login === null} button key={'Рабочие пространства'} onClick={() => window.location.href = '/workspaces'}>
-                    <ListItemIcon><AutoAwesomeMosaicIcon/></ListItemIcon>
-                    <ListItemText primary={'Рабочие пространства'}/>
+    return login && (<Drawer
+        variant="permanent"
+        className={clsx(classes.drawer, drawerClasses)}
+        classes={{
+            paper: clsx(drawerClasses, classes.paper)
+        }}>
+
+        <List className={classes.list}>
+            <Tooltip title='Рабочие пространства'>
+                <ListItem button key='Рабочие пространства' onClick={() => window.open('/workspaces', '_blank')}>
+                    <ListItemIcon>
+                        <AutoAwesomeMosaicIcon className={classes.icon}/>
+                    </ListItemIcon>
+                    <ListItemText primary='Рабочие пространства'/>
                 </ListItem>
-                <ListItem disabled={login === null} button key={'Мои проекты'} onClick={() => window.location.href = '/projects'}>
-                    <ListItemIcon><Apps/></ListItemIcon>
-                    <ListItemText primary={'Мои проекты'}/>
+            </Tooltip>
+            <Tooltip title='Мои проекты'>
+                <ListItem button key='Мои проекты' onClick={() => window.open('/projects', '_blank')}>
+                    <ListItemIcon>
+                        <Apps className={classes.icon}/>
+                    </ListItemIcon>
+                    <ListItemText primary='Мои проекты'/>
                 </ListItem>
-                <ListItem disabled={login === null} button key={'Моё портфолио'} onClick={() => window.location.href = `/portfolio/${login}`}>
-                    <ListItemIcon><FormatAlignJustifyIcon/></ListItemIcon>
-                    <ListItemText primary={'Моё портфолио'}/>
+            </Tooltip>
+            <Tooltip title='Моё портфолио'>
+                <ListItem button key='Моё портфолио'
+                          onClick={() => window.open(`/portfolio/${login?.user.username}`, '_blank')}>
+                    <ListItemIcon>
+                        <FormatAlignJustifyIcon className={classes.icon}/>
+                    </ListItemIcon>
+                    <ListItemText primary='Моё портфолио'/>
                 </ListItem>
-                <ListItem disabled={login === null} button key={'Мой профиль'} onClick={() => window.location.href = '/profile'}>
-                    <ListItemIcon><Person/></ListItemIcon>
-                    <ListItemText primary={'Мой профиль'}/>
+            </Tooltip>
+            <Tooltip title='Мой профиль'>
+                <ListItem button key='Мой профиль' onClick={() => window.open('/profile', '_blank')}>
+                    <ListItemIcon>
+                        <Person className={classes.icon}/>
+                    </ListItemIcon>
+                    <ListItemText primary='Мой профиль'/>
                 </ListItem>
-                <ListItem disabled={login === null} button key={'Уведомления'} onClick={() => window.location.href = '/notifications'}>
-                    <ListItemIcon><EmailIcon/></ListItemIcon>
-                    <ListItemText primary={'Уведомления'}/>
+            </Tooltip>
+            <Tooltip title='Уведомления'>
+                <ListItem button key='Уведомления' onClick={() => window.open('/notifications', '_blank')}>
+                    <ListItemIcon>
+                        <Badge color="secondary" variant="dot" invisible={!hasNewNotifs}>
+                            <EmailIcon className={classes.icon}/>
+                        </Badge>
+                    </ListItemIcon>
+                    <ListItemText primary='Уведомления'/>
                 </ListItem>
-            </List>
-        </Drawer>);
+            </Tooltip>
+        </List>
+    </Drawer>);
 }

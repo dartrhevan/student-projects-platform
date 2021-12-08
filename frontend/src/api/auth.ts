@@ -1,34 +1,27 @@
 import UserProfile from "../model/UserProfile";
 import GenericResponse from "../model/dto/GenericResponse";
-import {Login, LoginState} from "../store/state/LoginState";
+import {getTokenHeader, Login, LoginState} from "../store/state/LoginState";
 import {StorageKeys} from "../utils/StorageKeys";
+import {getDefaultDownloadHandler, getDefaultUploadHandler} from "../utils/utils";
+import RefreshToken from "../model/dto/RefreshToken";
 
 /**
  * @return current username
  */
 export function getCurrentUser() {
-    if (sessionStorage.getItem(StorageKeys.AccessToken))
-        return fetch('/api/auth/currentuser', {
-            headers: {
-                "Authorization": "Bearer " + sessionStorage.getItem(StorageKeys.AccessToken)
-            }
-        }).then(r => {
-            if (!r.ok) {
-                throw new Error("Not authorized");
-            }
-            return r.json();
-        })//TODO: civil & universal error handling
+    if (localStorage.getItem(StorageKeys.AccessToken))
+        return fetch('/api/users/currentuser', {
+            headers: getTokenHeader()
+        }).then(getDefaultDownloadHandler('Not authorized'));
 }
 
 /**
  * @return current user profile
  */
 export function getCurrentUserProfile(): Promise<GenericResponse<UserProfile>> {
-    return fetch('/api/auth/userprofile', {
-        headers: {
-            "Authorization": "Bearer " + sessionStorage.getItem(StorageKeys.AccessToken)
-        }
-    }).then(r => r.json()).catch(alert);//TODO: civil & universal error handling
+    return fetch('/api/users/', {
+        headers: getTokenHeader()
+    }).then(r => r.json())
 }
 
 /**
@@ -42,28 +35,10 @@ export function login(login: string, password: string) {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({login, password})
-    }).then(r => {
-        if (r.ok) {
-            return r.json();
-        } else {
-            // const obj = (r.json() as any);
-            throw "Error auth"; //TODO: error catch
-        }
-    }).then((r: GenericResponse<Login>) => {
-        return r.success ? (alert(r.message), null) : r.data;
-    }).catch(r => (alert(r), null));
-    // return new Promise<GenericResponse<LoginState>>((res, rej) => res("vovan")); //TODO: implement
-}
-
-/**
- * @return nothing
- */
-// export function logout() {
-//     return new Promise<string>((res, rej) => res('')); //TODO: implement
-// }
-
-export function refreshToken() {
-    return new Promise<string>((res, rej) => res('')); //TODO: implement
+    }).then(getDefaultDownloadHandler('Ошибка авторизации'))
+        .then((r: GenericResponse<Login>) => {
+            return r.data;
+        });
 }
 
 /**
@@ -85,24 +60,78 @@ export function register(user: UserProfile, password: string) {
             email: user.email,
             roles: user.roles,
             skills: user.skills,
+            messenger: user.messenger,
             password
         })
-    }).then(r => {
-        if (r.ok) {
-            return r.json();
-        } else {
-            // const obj = (r.json() as any);
-            throw "Error auth";
-        }
-    }).then((r: GenericResponse<Login>) => {
-        return r.success ? (alert(r.message), null) : r.data;
-    }).catch(r => (alert(r), null));//new Promise<string>((res, rej) => res("vovan")); //TODO: implement
+    }).then(getDefaultDownloadHandler('Ошибка регистрации'));
 }
 
 /**
  * @return current username
  */
 export function update(user: UserProfile, password?: string, newPassword?: string) {
-    console.log(user);
-    return new Promise<string>((res, rej) => res("vovan")); //TODO: implement
+    let user_json;
+    if (newPassword) {
+        user_json = {
+            login: user.username,
+            name: user.name,
+            surname: user.surname,
+            group: user.group,
+            interests: user.comment,
+            email: user.email,
+            roles: user.roles,
+            skills: user.skills,
+            messenger: user.messenger,
+            password: password,
+            newPassword: newPassword
+        }
+    } else {
+        user_json = {
+            login: user.username,
+            name: user.name,
+            surname: user.surname,
+            group: user.group,
+            interests: user.comment,
+            email: user.email,
+            roles: user.roles,
+            skills: user.skills,
+            messenger: user.messenger,
+            password: password
+        }
+    }
+    return fetch(`/api/users/`, {
+        method: "PUT",
+        headers: {
+            'Content-Type': 'application/json',
+            ...getTokenHeader()
+        },
+        body: JSON.stringify(user_json)
+    }).then(getDefaultUploadHandler());
 }
+
+
+export function refreshToken(): Promise<GenericResponse<RefreshToken>> {
+    return fetch(`/api/auth/refreshtoken`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            ...getTokenHeader()
+        },
+        body: `{"tokenRefresh": "${localStorage.getItem(StorageKeys.RefreshToken)}"}`
+    }).then(getDefaultDownloadHandler()).catch(console.log);
+}
+
+const REFRESH_TOKEN_TIMEOUT = 2000000;
+
+function refreshTokenScheduler() {
+    if (localStorage.getItem(StorageKeys.AccessToken) !== null) {
+        refreshToken().then(r => r.data).then(r => {
+            localStorage.setItem(StorageKeys.AccessToken, r.accessToken);
+            localStorage.setItem(StorageKeys.RefreshToken, r.refreshToken);
+            console.log(`Token refreshed access: ${r.accessToken} refresh: ${r.refreshToken}`);
+        });
+    }
+    setTimeout(refreshTokenScheduler, REFRESH_TOKEN_TIMEOUT);
+}
+
+setTimeout(refreshTokenScheduler, REFRESH_TOKEN_TIMEOUT);

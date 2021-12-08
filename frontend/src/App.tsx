@@ -17,7 +17,6 @@ import Portfolio from "./pages/Portfolio";
 import ProjectPlanComponent from "./pages/ProjectPlanComponent";
 import Scores from "./pages/Scores";
 import {getCurrentUser} from "./api/auth";
-import setLoginAction from "./store/actions/auth/setLoginAction";
 import logoutAction from "./store/actions/auth/logoutAction";
 import Scoring from "./pages/Scoring";
 import {Snackbar} from "@mui/material";
@@ -25,27 +24,52 @@ import {Alert} from "@mui/lab";
 import {hide} from "./store/actions/log/log";
 import {getLogState, useError, useInfo, useSuccess} from "./hooks/logging";
 import StartPage from "./pages/StartPage";
+import Tag from "./model/Tag";
+import {setTagsRef} from "./store/actions/tags/tags";
+import {getTagsReference} from "./api/reference";
+import {makeStyles} from "@material-ui/core";
+import THEME, {BackgroundStyle} from './theme';
+
+
+const useStyles = makeStyles(theme => ({
+    main: {
+        width: '100%',
+        paddingTop: '60px',
+        maxWidth: '100vw',
+        ...BackgroundStyle
+    }
+}));
 
 function App() {
-    // const dispatch = useDispatch();
     console.log("render Start")
-    // const classes = useStyles();
+    const classes = useStyles();
     const dispatch = useDispatch();
 
     const error = useError();
 
 
+    function setTagsReference(r: Tag[]) {
+        dispatch(setTagsRef(r));
+    }
+
+    useEffect(() => {
+        // setTags(values);
+        getTagsReference()
+            .then(r => {
+                setTagsReference(r);
+            }).catch(console.log);
+    }, [dispatch]);
+
     useEffect(() => {
         getCurrentUser()?.then(r => {
             console.log(r);
-            // success('Fine');
         }).catch(r => {
             console.log(r);
             error('Auth not valid');
             dispatch(logoutAction());
-            // window.location.reload();
+            window.location.href = '/';
         }); // TODO: may be move somewhere
-    }, [error, dispatch]);
+    }, []);
 
     const log = useSelector(getLogState);
 
@@ -62,7 +86,7 @@ function App() {
                     {log.text}
                 </Alert>
             </Snackbar>
-            <Centered>
+            <Centered additionalClasses={[classes.main]}>
                 <BrowserRouter>
                     <Switch>
                         <Route component={Login} path='/authentication'/>
@@ -72,7 +96,7 @@ function App() {
                         <Route component={Users} path='/users'/>
                         <Route component={Notifications} path='/notifications'/>
                         <Route component={ProjectDetailedPage} path='/project'/>
-                        <Route component={ProjectPlanComponent} path='/project_plan'/>
+                        <Route component={ProjectPlanComponent} path='/project-plan'/>
                         <Route component={UserProfilePage} path='/profile'/>
                         <Route component={Scores} path='/scores/:workspaceId'/>
                         <Route component={Portfolio} path='/portfolio/:login'/>

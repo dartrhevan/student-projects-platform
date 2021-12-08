@@ -1,36 +1,46 @@
-import GenericResponse from "../model/dto/GenericResponse";
-import ProjectParticipation from "../model/ProjectParticipation";
-import {ProjectStatus} from "../model/Project";
-import CommonResponse from "../model/dto/CommonResponse";
+
 import PagedResponse from "../model/dto/PagedResponse";
 import UserRow, {UserType} from "../model/UserRow";
-import Pageable from "../model/Pageable";
+import {StorageKeys} from "../utils/StorageKeys";
+import {getDefaultUploadHandler, getDefaultDownloadHandler} from "../utils/utils";
+import {Query} from "material-table";
+import ProjectQuery from "../model/dto/ProjectQuery";
+import {getTokenHeader} from "../store/state/LoginState";
 
-//TODO: implement
 export function getPortfolio(login: string) {
-    return new Promise<GenericResponse<ProjectParticipation[]>>((res, rej) => res(new GenericResponse(
-        [new ProjectParticipation('Платформа проектного практикума', 'A', 'A', 'backend', 3, ProjectStatus.IN_PROGRESS)])));
+    return fetch(`/api/users/portfolio?username=${login}`, {
+        headers: getTokenHeader()
+    }).then(getDefaultDownloadHandler());
 }
 
-//TODO: implement
-export function inviteToProject(login: string, projectId: string, workspaceId: string) {
-    return new Promise<CommonResponse>((res, rej) => res(new CommonResponse()));
+export function getAllProjectsUsers(query: ProjectQuery) {
+    return fetch(`/api/users/projects?tag=${query.tags.join(",")}&page=${query.pageable.pageNumber}&size=${query.pageable.pageSize}&active=${query.showOnlyActive}`, {
+        headers: getTokenHeader()
+    }).then(getDefaultDownloadHandler());
 }
 
-export function getUsers(workspaceId: string, pageable: Pageable,
-                         name?: string, surname?: string, skill?: string, role?: string) {
-    //TODO: implement
-    return new Promise<PagedResponse<UserRow>>(res => res(
-        new PagedResponse<UserRow>([{
-            name: 'Vova',
-            surname: 'Satunkin',
-            roles: 'backend',
-            skills: 'Java',
-            username: 'me',
-            project: 'Project Activity',
-            email: 'mail@.ru',
-            messenger: '',
-            userType: UserType.STUDENT,
-            interests: 'Programming Programming Programming Programming Programming Programming\nProgramming Programming Programming\nProgramming Programming Programming Programming'
-        }],  0, 1)));
+export function inviteToProject(username: string, projectId: string[] | string | null | undefined, role: string) {
+    return fetch(`/api/users/invite`, {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json',
+            ...getTokenHeader()
+        },
+        body: JSON.stringify({username, projectId, role})
+    }).then(getDefaultUploadHandler());
+}
+
+export function getUsers(workspaceId: string, query: Query<UserRow>, projectId: string | null) {
+    let query_param = query.filters.map(x => `${x.column.field}=${x.value}`).join("&");
+    console.log(query_param);
+    if (projectId)
+        query_param += `&projectId=${projectId}`;
+    return fetch(`/api/user?workspaceId=${workspaceId}&page=${query.page}&size=${query.pageSize}&${query_param}`, {
+        headers: getTokenHeader()
+    }).then(getDefaultDownloadHandler()).then(res => {
+        return new PagedResponse<UserRow>(res.data.participants.map((p: any) => {
+            p.roles = p.roles.join(" ");
+            return p;
+        }), query.page, res.data.totalCount);
+    });
 }

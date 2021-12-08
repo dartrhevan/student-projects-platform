@@ -3,11 +3,14 @@ package com.platform.projapp.service;
 import com.platform.projapp.dto.request.ParticipantRequest;
 import com.platform.projapp.dto.request.ProjectRequest;
 import com.platform.projapp.dto.response.body.MessageResponseBody;
+import com.platform.projapp.enumarate.ProjectRole;
 import com.platform.projapp.enumarate.ProjectStatus;
+import com.platform.projapp.enumarate.WorkspaceRole;
 import com.platform.projapp.error.ErrorConstants;
 import com.platform.projapp.error.ErrorInfo;
 import com.platform.projapp.model.*;
 import com.platform.projapp.repository.ProjectRepository;
+import com.platform.projapp.repository.SprintsRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Stream;
 
 /**
  * @author Yarullin Renat
@@ -29,6 +33,13 @@ public class ProjectService {
     private final TagsService tagsService;
     private final ProjectRoleService projectRoleService;
 
+    public static ProjectRole toProjectRole(WorkspaceRole role, Project project, User user) {
+        if (project.getOwnerLogin().equals(user.getLogin())) return ProjectRole.OWNER;
+        return switch (role) {
+            case MENTOR, ORGANIZER -> !project.hasUser(user.getLogin()) ? ProjectRole.MENTOR : ProjectRole.MENTOR_PARTICIPANT;
+            case STUDENT -> !project.hasUser(user.getLogin()) ? ProjectRole.STRANGER : ProjectRole.PARTICIPANT;
+        };
+    }
     public Project findById(Long id) {
         return projectRepository.findById(id).orElse(null);
     }
@@ -38,15 +49,20 @@ public class ProjectService {
         projectRepository.delete(project);
     }
 
-    public Page<Project> findAllByWorkspace(Workspace workspace, Pageable pageable) {
-        return projectRepository.findAllByWorkspace(workspace, pageable);
+    private static final Set<ProjectStatus> ACTIVE_STATUSES =
+            Set.of(ProjectStatus.NEW, ProjectStatus.IN_PROGRESS, ProjectStatus.MODIFYING);
+
+    public Page<Project> findAllByWorkspace(Workspace workspace, Pageable pageable, boolean active) {
+        return active ? projectRepository.findAllByWorkspaceAndStatusIn(workspace, pageable, ACTIVE_STATUSES)
+                : projectRepository.findAllByWorkspace(workspace, pageable);
     }
 
-    public Page<Project> findAllByWorkspaceAndTagsInTags(Workspace workspace, Set<Tags> tags, Pageable pageable) {
-        return projectRepository.findAllByWorkspaceAndTagsInTags(workspace, tags, pageable);
+    public Page<Project> findAllByWorkspaceAndTagsInTags(Workspace workspace, Set<Tags> tags, Pageable pageable, boolean active) {
+        return active ? projectRepository.findAllByWorkspaceAndTagsInTags(workspace, tags, pageable, ACTIVE_STATUSES)
+                : projectRepository.findAllByWorkspaceAndTagsInTags(workspace, tags, pageable);
     }
 
-    public void createProject(User user, Workspace workspace, ProjectRequest projectRequest) {
+    public Long createProject(User user, Workspace workspace, ProjectRequest projectRequest) {
         Project project = new Project(user.getLogin(),
                 projectRequest.getName(),
                 projectRequest.getShortDescription(),
@@ -57,7 +73,16 @@ public class ProjectService {
                 workspace,
                 tagsService.findAllByIdIn(projectRequest.getTags()));
         project.getParticipants().add(new Participant(project, true, user, projectRoleService.createProjectRole("тимлид")));
-        projectRepository.save(project);
+//        var workspace = project.getWorkspace();
+        createDefaultSprints(workspace, project);
+        return projectRepository.save(project).getId();
+    }
+
+    private void createDefaultSprints(Workspace workspace, Project project) {
+        for (var sprintNumber = 0; sprintNumber < workspace.getSprintCount(); sprintNumber++) {
+            var sprintStartDate = workspace.getZeroSprintDate().plusWeeks(workspace.getFrequencyOfSprints() * sprintNumber);
+            project.getSprints().add(new Sprint(sprintNumber, "", sprintStartDate, sprintStartDate.plusWeeks(workspace.getFrequencyOfSprints()), project));
+        }
     }
 
     public void updateProject(Project project, ProjectRequest projectRequest) {
@@ -67,6 +92,7 @@ public class ProjectService {
         project.setTrackerLink(projectRequest.getTrackerLink());
         project.setMaxParticipantsCount(projectRequest.getMaxParticipantsCount());
         project.setTags(tagsService.findAllByIdIn(projectRequest.getTags()));
+        project.setStatus(projectRequest.getStatus());
         projectRepository.save(project);
     }
 

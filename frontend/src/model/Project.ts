@@ -6,7 +6,8 @@ export enum ProjectRole {
     OWNER = 'OWNER',
     PARTICIPANT = 'PARTICIPANT',
     MENTOR = 'MENTOR',
-    STRANGER = 'STRANGER'
+    STRANGER = 'STRANGER',
+    MENTOR_PARTICIPANT = 'MENTOR_PARTICIPANT'
 }
 
 export enum ProjectStatus {
@@ -26,7 +27,7 @@ labelColors.set(ProjectStatus.MODIFYING, 'purple');
 
 export default class Project implements IBadge {
     constructor(public id: string, public workSpaceId: string, public title: string, public description: string,
-                public tags: Tag[], public status = ProjectStatus.IN_PROGRESS,
+                public tags: number[], public status = ProjectStatus.IN_PROGRESS,
                 public label = status, public labelColor = labelColors.get(status) as string) {
     }
 }
@@ -37,7 +38,7 @@ export class Participant {
 }
 
 export class DetailedProject {
-    constructor(public workSpaceId: string, public id: string = '', public title: string = '',
+    constructor(public workspaceId: string, public id: string = '', public title: string = '',
                 public shortDescription: string = '', public fullDescription: string = '',
                 public trackerUrl = '', public participants: Participant[] = [], public tags: Tag[] = [],
                 public projectRole = ProjectRole.OWNER, public maxParticipantsCount = 5,
@@ -45,7 +46,7 @@ export class DetailedProject {
     }
 
     public get isNewFilled() {
-        return allNotEmpty(this.workSpaceId, this.shortDescription, this.fullDescription, this.title);
+        return allNotEmpty(this.workspaceId, this.shortDescription, this.fullDescription, this.title);
     }
 
     public withTitle(title: string) {
@@ -91,7 +92,7 @@ export class DetailedProject {
     }
 
     public clone(): any {
-        const cloneObj = new (this.constructor as any)(this.workSpaceId);
+        const cloneObj = new (this.constructor as any)(this.workspaceId);
         for (const attribute in this) {
             cloneObj[attribute] = this[attribute]
         }

@@ -7,6 +7,8 @@ import LoginButton from "./LoginButton";
 import {getMainMenuOpen} from "../../hooks/getMenuState";
 import {closeMainMenuAction, openMainMenuAction} from "../../store/actions/menu/mainMenu";
 import isMobile from "../../hooks/isMobile";
+import getUsername from "../../hooks/getUsername";
+import THEME, {ElementsStyle, HeaderStyle} from "../../theme";
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -19,8 +21,8 @@ const useStyles = makeStyles(theme => ({
         flexGrow: 2,
     },
     bar: {
-        colorDefault: "#cbcbcb",
-        zIndex: theme.zIndex.drawer + 1
+        zIndex: theme.zIndex.drawer + 1,
+        ...HeaderStyle
     }
 }));
 
@@ -33,13 +35,16 @@ export default function Header() {
 
     const onMenuButtonClicked = () => dispatch(mainMenuOpen ? closeMainMenuAction() : openMainMenuAction());
 
+    const login = useSelector(getUsername);
+
     return (
-        <AppBar position="fixed" className={classes.bar} color={"default"}>
+        <AppBar position="fixed" className={classes.bar}>
             <Toolbar>
-                <IconButton className={classes.menuButton} onClick={onMenuButtonClicked}
-                            color="inherit" aria-label="menu" edge="start">
-                    {mainMenuOpen ? <ArrowBackIcon/> : <MenuIcon/>}
-                </IconButton>
+                {!login ? (<></>) :
+                    (<IconButton className={classes.menuButton} onClick={onMenuButtonClicked}
+                                 color="inherit" aria-label="menu" edge="start">
+                        {mainMenuOpen ? <ArrowBackIcon/> : <MenuIcon/>}
+                    </IconButton>)}
                 <Typography variant="h6" align="center" className={classes.title}>
                     <Link underline='none' color='inherit' href='/'>
                         Project Activities{mobile ? '' :
