@@ -68,5 +68,9 @@ export function toBase64(file: File) {
 export function correctNumericInput(e: React.FormEvent<HTMLDivElement>) {
     const target = (e.target as HTMLInputElement);
     const val = parseInt(target.value);
-    if (val < 1) target.value = '1';
+    if (val < 1) {
+        target.value = '1';
+        return 1;
+    }
+    return val;
 }

@@ -66,6 +66,7 @@ export default function Table<T extends object>(
                 </Typography>
                 <Typography
                     variant="body2"
+                    // sx={{color: ElementsStyle.color}}
                     // sx={ElementsStyle}
                     gutterBottom>
                     {subHeader}
@@ -80,7 +81,7 @@ export default function Table<T extends object>(
                 pageSize: 10,
                 pageSizeOptions: [10, 20, 30],
                 debounceInterval: 500,
-                toolbarButtonAlignment: 'right',
+                toolbarButtonAlignment: 'left',
                 draggable: false,
                 search: false,
                 filtering: filtering,

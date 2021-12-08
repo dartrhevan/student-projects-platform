@@ -2,12 +2,12 @@ import React, {useEffect, useState} from 'react';
 
 import Table from '@mui/material/Table';
 import {useParams} from "react-router-dom";
-import {getScores} from "../api/workspaces";
 import ScoreDTO from "../model/dto/ScoreDTO";
 import {Paper, TableCell, TableContainer, TableHead, TableRow, Typography} from '@mui/material';
 import TableBody from '@material-ui/core/TableBody/TableBody';
-import THEME, {BackgroundStyle, ElementsStyle} from "../theme";
 import {makeStyles} from "@material-ui/core";
+import {getScores} from "../api/scoring";
+import {ElementsStyle} from "../theme";
 
 const useStyles = makeStyles(theme => ({
     cell: {
