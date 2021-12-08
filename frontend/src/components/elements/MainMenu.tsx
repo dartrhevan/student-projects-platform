@@ -109,7 +109,7 @@ export default function MiniDrawer() {
 
         <List className={classes.list}>
             <Tooltip title='Рабочие пространства'>
-                <ListItem button key='Рабочие пространства' onClick={() => window.open('/workspaces', '_blank')}>
+                <ListItem button key='Рабочие пространства' onClick={() => window.location.href = '/workspaces'}>
                     <ListItemIcon>
                         <AutoAwesomeMosaicIcon className={classes.icon}/>
                     </ListItemIcon>
@@ -117,7 +117,7 @@ export default function MiniDrawer() {
                 </ListItem>
             </Tooltip>
             <Tooltip title='Мои проекты'>
-                <ListItem button key='Мои проекты' onClick={() => window.open('/projects', '_blank')}>
+                <ListItem button key='Мои проекты' onClick={() => window.location.href ='/projects'}>
                     <ListItemIcon>
                         <Apps className={classes.icon}/>
                     </ListItemIcon>
@@ -126,7 +126,7 @@ export default function MiniDrawer() {
             </Tooltip>
             <Tooltip title='Моё портфолио'>
                 <ListItem button key='Моё портфолио'
-                          onClick={() => window.open(`/portfolio/${login?.user.username}`, '_blank')}>
+                          onClick={() => window.location.href =`/portfolio/${login?.user.username}`}>
                     <ListItemIcon>
                         <FormatAlignJustifyIcon className={classes.icon}/>
                     </ListItemIcon>
@@ -134,7 +134,7 @@ export default function MiniDrawer() {
                 </ListItem>
             </Tooltip>
             <Tooltip title='Мой профиль'>
-                <ListItem button key='Мой профиль' onClick={() => window.open('/profile', '_blank')}>
+                <ListItem button key='Мой профиль' onClick={() => window.location.href ='/profile'}>
                     <ListItemIcon>
                         <Person className={classes.icon}/>
                     </ListItemIcon>
@@ -142,7 +142,7 @@ export default function MiniDrawer() {
                 </ListItem>
             </Tooltip>
             <Tooltip title='Уведомления'>
-                <ListItem button key='Уведомления' onClick={() => window.open('/notifications', '_blank')}>
+                <ListItem button key='Уведомления' onClick={() => window.location.href ='/notifications'}>
                     <ListItemIcon>
                         <Badge color="secondary" variant="dot" invisible={!hasNewNotifs}>
                             <EmailIcon className={classes.icon}/>

@@ -62,6 +62,9 @@ export default function DefaultBadge({id, title, href, description, tags = [], l
                         <Typography className={classes.description} variant='subtitle2'>{description}</Typography>
                         <br/>
                     </Centered>
+                    <div hidden={tags.length <= 0} style={{color: ElementsStyle.color, marginBottom: '5px', marginLeft: '10px'}}>
+                        Тэги:
+                    </div>
                     <div style={{
                         display: 'flex',
                         flexDirection: 'row'
