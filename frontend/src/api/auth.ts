@@ -9,7 +9,7 @@ import RefreshToken from "../model/dto/RefreshToken";
  * @return current username
  */
 export function getCurrentUser() {
-    if (sessionStorage.getItem(StorageKeys.AccessToken))
+    if (localStorage.getItem(StorageKeys.AccessToken))
         return fetch('/api/users/currentuser', {
             headers: getTokenHeader()
         }).then(getDefaultDownloadHandler('Not authorized'));

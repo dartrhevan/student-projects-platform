@@ -34,6 +34,7 @@ import ConfirmationDialog from "../components/util/ConfirmationDialog";
 import THEME, {ElementsStyle} from "../theme";
 import RoleInput from "../components/elements/RoleInput";
 import {addRoleToReference, getRolesReference} from "../api/reference";
+import {correctNumericInput} from "../utils/utils";
 
 const useStyles = makeStyles(theme => ({
     paper: {
@@ -80,22 +81,26 @@ const RoleSpecificButton = ({project, onSubmit, enabled, isNew}:
 
     function onDelete() {
         deleteProject(project?.id as string)
-            .then(r => window.location.href = '/workspaces/') //TODO: rederect to projects in workspace
+            .then(r => window.history.back())
             .catch(error);
     }
 
-    function onAttach() {
-        if (!rolesReference.includes(attachRole)) { //TODO: move to back
-            addRoleToReference(attachRole)
-                .then(r => setRolesReference([...rolesReference, attachRole]))
+    function onAttach(role = attachRole) {
+        if (!rolesReference.includes(role)) { //TODO: move to back
+            addRoleToReference(role)
+                .then(r => setRolesReference([...rolesReference, role]))
                 .catch(console.log);
         }
-        requestAttachToProject(project?.id as string, attachRole)
+        requestAttachToProject(project?.id as string, role)
             .then(r => {
                 setOpenAttachDialog(false);
                 success("Запрос на присоединение отправлен");
             })
             .catch(error);
+    }
+
+    function onMentorAttach() {
+        onAttach("Ментор");
     }
 
     const [rolesReference, setRolesReference] = useState([] as string[]);
@@ -121,18 +126,19 @@ const RoleSpecificButton = ({project, onSubmit, enabled, isNew}:
                     <ConfirmationDialog open={deleteDialog} onClose={() => setDeleteDialog(false)}
                                         label="удалить проект" onSubmit={onDelete}/>
                     {!isNew ? (<>
-                            <Button color='inherit'
-                                    href={`/users?projectId=${project.id}&workspaceId=${project.workspaceId}`}>
+                        {project.maxParticipantsCount > project.participants.length ?
+                            (<Button color='inherit'
+                                     href={`/users?projectId=${project.id}&workspaceId=${project.workspaceId}`}>
                                 Найти участника
-                            </Button>
-                            <Button color='inherit'
-                                    href={`/project-plan?projectId=${project.id}&workspaceId=${project.workspaceId}`}>
-                                Просмотр плана
-                            </Button>
-                            <Button color='inherit' onClick={() => setDeleteDialog(true)}>
-                                Удалить
-                            </Button>
-                        </>) : (<></>)}
+                            </Button>) : <></>}
+                        <Button color='inherit'
+                                href={`/project-plan?projectId=${project.id}&workspaceId=${project.workspaceId}`}>
+                            Просмотр плана
+                        </Button>
+                        <Button color='inherit' onClick={() => setDeleteDialog(true)}>
+                            Удалить
+                        </Button>
+                    </>) : (<></>)}
                     <Button color='inherit' variant='contained' disabled={!enabled} onClick={onSubmit}>
                         Подтвердить изменения
                     </Button>
@@ -145,33 +151,26 @@ const RoleSpecificButton = ({project, onSubmit, enabled, isNew}:
                         <RoleInput reference={rolesReference} onChange={onAttachRoleChange} multiple={false}/>
                     </DialogContent>
                     <DialogActions>
-                        <Button disabled={!attachRole || attachRole === ''} onClick={onAttach}>Подтвердить</Button>
+                        <Button disabled={!attachRole || attachRole === ''}
+                                onClick={() => onAttach()}>Подтвердить</Button>
                     </DialogActions>
                 </Dialog>
 
-                <Button color='inherit' onClick={() => setOpenAttachDialog(true)}>Присоединиться</Button>
+                <Button disabled={project?.maxParticipantsCount <= project?.participants.length} color='inherit'
+                        onClick={() => setOpenAttachDialog(true)}>Присоединиться</Button>
             </>);
+
         case ProjectRole.MENTOR:
             return (<>
-                <Dialog open={openAttachDialog} onClose={onAttachDialogClosed}>
-                    <DialogTitle>Присоединиться в роли</DialogTitle>
-                    <DialogContent dividers>
-                        <RoleInput reference={rolesReference} onChange={onAttachRoleChange} multiple={false}/>
-                    </DialogContent>
-                    <DialogActions>
-                        <Button disabled={attachRole === ''} onClick={onAttach}>Подтвердить</Button>
-                    </DialogActions>
-                </Dialog>
-
-
                 <Button color='inherit'
                         href={`/project-plan?projectId=${project.id}&workspaceId=${project.workspaceId}`}>
                     Просмотр плана
                 </Button>
-
-                <Button color='inherit' onClick={() => setOpenAttachDialog(true)}>Присоединиться</Button>
+                <Button disabled={project?.maxParticipantsCount <= project?.participants.length}
+                        color='inherit' onClick={onMentorAttach}>Присоединиться</Button>
             </>);
         case ProjectRole.PARTICIPANT:
+        case ProjectRole.MENTOR_PARTICIPANT:
             return (
                 <Button color='inherit'
                         href={`/project-plan?projectId=${project.id}&workspaceId=${project.workspaceId}`}>
@@ -223,9 +222,10 @@ export default function ProjectDetailedPage() {
     // const params = useLocation<ProjectParams>().state;
     const params = queryString.parse(window.location.search);
     const workspaceId = params?.workspaceId, projectId = params?.projectId;
-    const isNew = params?.isNew !== undefined;
     const classes = useStyles();
     const [project, setProject] = useState(new DetailedProject(workspaceId as string));
+    const [isNew, setIsNew] = useState(params?.isNew !== undefined);
+    const [maxParticipantsCount, setMaxParticipantsCount] = useState(project?.maxParticipantsCount || 5);
     const [removeParticipantDialog, setRemoveParticipantDialog] = useState({open: false, participant: ""});
 
     const tagsReference = useSelector(getTagsReferenceMap);
@@ -235,14 +235,14 @@ export default function ProjectDetailedPage() {
                     .then(r => {
                         const proj: DetailedProject = DetailedProject.fromObject(r.data);
                         proj.tags = r.data.tags.map(t => tagsReference[t.toString()]).filter(t => t !== undefined);
+                        setMaxParticipantsCount(proj.maxParticipantsCount);
                         setProject(proj);
                     }).catch(console.log)
             }
         }, //TODO: catch
         [projectId, isNew, tagsReference]);
 
-    console.log('render with')
-    console.log(project)
+
     const allFilled = !isNew || project?.isNewFilled;//allNotEmpty(username, password);
 
     const success = useSuccess();
@@ -252,7 +252,7 @@ export default function ProjectDetailedPage() {
     function onSubmit() {
         if (isNew)
             addProject(project as DetailedProject)
-                .then(r => window.location.href = '/workspaces')
+                .then(r => setIsNew(false))
                 .catch(r => error(`Error ${r}`));
         else
             editProject(project as DetailedProject)
@@ -327,7 +327,10 @@ export default function ProjectDetailedPage() {
                             <ListItemText primary={`${p.name} (${p.role})`}/>
                             {project?.projectRole === ProjectRole.OWNER ?
                                 <IconButton
-                                    onClick={() => setRemoveParticipantDialog({open: true, participant: p.username})}>
+                                    onClick={() => setRemoveParticipantDialog({
+                                        open: true,
+                                        participant: p.username
+                                    })}>
                                     <Clear/>
                                 </IconButton> : <></>}
                         </ListItemButton>))}
@@ -335,7 +338,13 @@ export default function ProjectDetailedPage() {
                 <div className={classes.butGr} style={{justifyContent: 'start'}}>
                     <Typography sx={{margin: '10px'}} color='inherit'>Максимальное кол-во участников</Typography>
                     <TextField disabled={!(isNew || project?.projectRole === ProjectRole.OWNER)}
-                               sx={{width: '40px'}} type='number' variant='standard'/>
+                               sx={{width: '40px'}} type='number' variant='standard'
+                               onInput={correctNumericInput}
+                               onChange={e => {
+                                   setMaxParticipantsCount(parseInt(e.target.value))
+                                   project.maxParticipantsCount = parseInt(e.target.value);
+                               }}
+                               value={maxParticipantsCount}/>
                 </div>
 
                 {!isNew ? (<div className={classes.butGr} style={{justifyContent: 'start'}}>

@@ -41,12 +41,17 @@ public class NotificationService {
         return notificationRepository.findAllByRecipient(recipient, pageable);
     }
 
+    public boolean hasNew(User recipient) {
+        return notificationRepository.existsByRecipientAndIsNew(recipient, true);
+    }
+
     public ResponseEntity<?> sendInviteNotification(User sender, NotificationInviteRequest request, NotificationType notificationType) {
         User recipient = userService.findByUserName(request.getUsername());
         Project project = projectService.findById(request.getProjectId());
-        ProjectRole role = projectRoleService.findByName(request.getRole());
-        ResponseEntity<?> notFoundErrors = ErrorUtils.getNotFoundErrorResponseEntity(List.of(recipient, project, role));
-        if (notFoundErrors != null) return notFoundErrors;
+        ProjectRole role = projectRoleService.createProjectRole(request.getRole());
+//        ResponseEntity<?> notFoundErrors = ErrorUtils.getNotFoundErrorResponseEntity(List.of(recipient, project, role));
+//        if (notFoundErrors != null) return notFoundErrors;
+//        if (role == null) role = projectRoleService.createProjectRole(request.getRole());
         Notification notification = new Notification(recipient, sender, notificationType, project, role);
         notificationRepository.save(notification);
         return new ResponseEntity<>(HttpStatus.OK);
@@ -54,9 +59,9 @@ public class NotificationService {
 
     public ResponseEntity<?> sendReqNotification(User sender, NotificationReqRequest request, NotificationType notificationType) {
         Project project = projectService.findById(request.getProjectId());
-        ProjectRole role = projectRoleService.findByName(request.getRole());
-        ResponseEntity<?> notFoundErrors = ErrorUtils.getNotFoundErrorResponseEntity(List.of(project, role));
-        if (notFoundErrors != null) return notFoundErrors;
+        ProjectRole role = projectRoleService.createProjectRole(request.getRole());
+//        ResponseEntity<?> notFoundErrors = ErrorUtils.getNotFoundErrorResponseEntity(List.of(project, role));
+        //if (role == null) role = projectRoleService.createProjectRole(request.getRole());
         Notification notification = new Notification(project.getOwner(), sender, notificationType, project, role);
         notificationRepository.save(notification);
         return new ResponseEntity<>(HttpStatus.OK);

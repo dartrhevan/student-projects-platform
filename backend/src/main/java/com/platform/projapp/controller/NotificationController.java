@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Comparator;
 import java.util.stream.Collectors;
 
 /**
@@ -35,9 +36,18 @@ public class NotificationController {
         ResponseEntity<?> pageErrorResponseEntity = ErrorUtils.getPageErrorResponseEntity(page.getNumber(), page.getTotalPages());
         if (pageErrorResponseEntity != null) return pageErrorResponseEntity;
         var notificationResponseBodies = page.getContent().stream()
+                .sorted(Comparator.comparing(Notification::isNew)//.reversed()
+                        .thenComparing(Notification::getDate).reversed()
+                        .thenComparing(Notification::getType))
                 .map(NotificationResponseBody::fromNotification)
-                .collect(Collectors.toSet());
+                .collect(Collectors.toList());
         return ResponseEntity.ok(response.withData(NotificationsResponseBody.of(page.getTotalElements(), notificationResponseBodies)));
+    }
+
+    @GetMapping("/hasNew")
+    public ResponseEntity<GeneralResponse<Boolean>> hasNew(@RequestHeader(name = "Authorization") String token) {
+        var user = userService.parseAndFindByJwt(token);
+        return ResponseEntity.ok(new GeneralResponse<Boolean>().withData(notificationService.hasNew(user)));
     }
 
     @PostMapping ResponseEntity<?> markViewed(@RequestParam(name = "notificationId") Long notificationId) {

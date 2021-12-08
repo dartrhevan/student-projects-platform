@@ -19,6 +19,7 @@ export default function Notifications() {
         {
             title: 'Новые',
             field: "new",
+            sorting: false,
             filtering: false,
             render: (row: Notification) =>
                 <Checkbox sx={{height: '40px', width: '40px'}} icon={<></>} checked={row.isNew} onClick={() => {
@@ -33,7 +34,7 @@ export default function Notifications() {
         {
             title: 'Дата',
             field: "date",
-            sorting: true,
+            sorting: false,
             filtering: false,
         },
         {
@@ -57,7 +58,7 @@ export default function Notifications() {
         window.location.reload();
     };
 
-    const tableActions: ((n:Notification) => Action<Notification>)[] = [
+    const tableActions: ((n: Notification) => Action<Notification>)[] = [
         (rowData: Notification) => ({
             icon: () => <Check/>,
             onClick: (event: React.EventHandler<any>, objectData: Notification | Notification[]) =>
@@ -75,6 +76,6 @@ export default function Notifications() {
     ];
     const data = (query: Query<Notification>) => getAllNotifications(new Pageable(query.page, query.pageSize));
 
-    return (<Table title='Уведомления' filtering={false} data={data} tableColumns={tableColumns}
-                   tableActions={tableActions} tableRef={tableRef}/>);
+    return (<Table title='Уведомления' subHeader='Прочитанные и отвеченные уведомления автоматически удаляются по истечении месяца'
+                   filtering={false} data={data} tableColumns={tableColumns} tableActions={tableActions} tableRef={tableRef}/>);
 }

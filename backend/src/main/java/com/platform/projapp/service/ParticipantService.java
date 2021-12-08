@@ -5,6 +5,7 @@ import com.platform.projapp.enumarate.ProjectStatus;
 import com.platform.projapp.model.Participant;
 import com.platform.projapp.model.Project;
 import com.platform.projapp.model.User;
+import com.platform.projapp.model.Workspace;
 import com.platform.projapp.repository.ParticipantRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,9 +28,9 @@ public class ParticipantService {
         participantRepository.delete(participant);
     }
 
-    public Participant findByUserAndProjectStatus(User user, Set<ProjectStatus> projectStatus) {
-        List<Participant> participants = participantRepository.findAllByUserAndProjectStatusInOrderByProjectId(user, projectStatus);
-        return participants.size() != 0 ? participants.get(0) : null;
+    public List<Participant> findByUserAndProjectStatus(User user, Workspace workspace, Set<ProjectStatus> projectStatus) {
+        return participantRepository.findAllByUserAndProjectWorkspaceAndProjectStatusInOrderByProjectId(user, workspace, projectStatus);
+//        return participants.size() != 0 ? participants.get(0) : null;
     }
 
     public Participant createParticipant(Project project, ParticipantRequest participantRequest) {

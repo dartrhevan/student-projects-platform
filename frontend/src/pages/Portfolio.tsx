@@ -6,7 +6,6 @@ import ProjectParticipation from "../model/ProjectParticipation";
 import {getPortfolio} from "../api/users";
 import {Link} from "@mui/material";
 import {labelColors} from "../model/Project";
-import Pageable from "../model/Pageable";
 
 interface LoginParam {
     login: string
@@ -17,26 +16,26 @@ const tableColumns = [
         title: 'Название проекта',
         field: "title",
         filtering: false,
-        sorting: true,
+        sorting: false,
         render: (p: ProjectParticipation) =>
             <Link href={`/project?projectId=${p.projectId}&workspaceId=${p.workspaceId}`}>{p.title}</Link>
     },
     {
         title: 'Роль на проекте',
         field: "role",
-        sorting: true,
+        sorting: false,
         filtering: false
     },
     {
         title: 'Оценка за проект',
         field: "score",
-        sorting: true,
+        sorting: false,
         filtering: false
     },
     {
         title: 'Статус проект',
         field: "status",
-        sorting: true,
+        sorting: false,
         filtering: false,
         render: (p: ProjectParticipation) => <span style={{color: labelColors.get(p.status)}}>{p.status}</span>
     }
@@ -54,5 +53,5 @@ export default function () {
 //TODO: лучше выводить ФИ пользователя
     return (
         <Table title={`Портфолио пользователя ${login}`} filtering={false} data={data} tableColumns={tableColumns}
-            paging={false} />);
+               paging={false}/>);
 }

@@ -8,8 +8,7 @@ import {allNotEmpty} from "../utils/utils";
 import ViewableText from "../components/elements/ViewableText";
 import {Dialog, DialogActions, DialogTitle} from "@mui/material";
 import {getUsers, inviteToProject} from "../api/users";
-import Pageable from "../model/Pageable";
-import UserRow from "../model/UserRow";
+import UserRow, {UserType} from "../model/UserRow";
 import RoleInput from "../components/elements/RoleInput";
 import {useSuccess} from "../hooks/logging";
 import {addRoleToReference, getRolesReference} from "../api/reference";
@@ -50,9 +49,19 @@ const tableColumns = [
     },
     {
         title: 'Тип',
-        field: "userType",
+        field: "typeUser",
         sorting: false,
-        filtering: false
+        filtering: false,
+        render: (row: UserRow) => {
+            switch (row.typeUser) {
+                case UserType.ORGANIZER:
+                    return 'Организатор';
+                case UserType.MENTOR:
+                    return 'Ментор';
+                case UserType.STUDENT:
+                    return "Студент";
+            }
+        }
     },
     {
         title: 'Текущий проект',
@@ -80,9 +89,7 @@ export default function Users() {
     const invite = allNotEmpty(workspaceId, projectId);
 
     const data = (query: Query<UserRow>) => {
-        console.log(`query`);
-        console.log(query);
-        return getUsers(workspaceId as string, query);
+        return getUsers(workspaceId as string, query, projectId as string | null);
     };
     const tableActions: Action<UserRow>[] = [
         {
@@ -112,11 +119,11 @@ export default function Users() {
     }, []);
 
     function onInvite() {
-        if (!rolesReference.includes(inviteRole)) {//TODO: move to back
-            addRoleToReference(inviteRole)
-                .then(r => setRolesReference([...rolesReference, inviteRole]))
-                .catch(console.log);
-        }
+        // if (!rolesReference.includes(inviteRole)) {//TODO: move to back
+        //     addRoleToReference(inviteRole)
+        //         .then(r => setRolesReference([...rolesReference, inviteRole]))
+        //         .catch(console.log);
+        // }
         inviteToProject(openInviteUsername, projectId, inviteRole).then(() => {
             success('Invitation has been sent');
             setOpenInviteDialog(false)

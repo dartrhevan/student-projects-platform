@@ -22,6 +22,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -43,6 +44,7 @@ public class UserController {
     public ResponseEntity<?> getUsersInWorkspace(@RequestHeader(name = "Authorization") String token,
                                                  @RequestParam(name = "workspaceId") Long workspaceId,
                                                  @RequestParam(name = "name", required = false) String name,
+                                                 @RequestParam(name = "projectId", required = false) Long projectId,
                                                  @RequestParam(name = "surname", required = false) String surname,
                                                  @RequestParam(name = "skills", required = false) String skills,
                                                  @RequestParam(name = "roles", required = false) String roles,
@@ -57,9 +59,7 @@ public class UserController {
             return errorResponseEntity;
 
         Specification<WorkspaceParticipant> specification = byParams(workspace,
-                name,
-                surname,
-                skills != null ? StrUtils.parseStrByComma(skills) : null,
+                name, surname, skills != null ? StrUtils.parseStrByComma(skills) : null,
                 roles != null ? StrUtils.parseStrByComma(roles) : null);
         var page = workspaceParticipantService.findAll(specification, pageable);
 
@@ -71,16 +71,17 @@ public class UserController {
 
         var participantInListResponseBodies = page.getContent().stream()
                 .map(workspaceParticipant -> {
-                    Participant projectParticipant = participantService.findByUserAndProjectStatus(
-                            workspaceParticipant.getUser(),
+                    var projectParticipant = participantService.findByUserAndProjectStatus(
+                            workspaceParticipant.getUser(), workspaceParticipant.getWorkspace(),
                             Set.of(ProjectStatus.IN_PROGRESS, ProjectStatus.MODIFYING, ProjectStatus.NEW));
-                    Project project = projectParticipant != null ? projectParticipant.getProject() : null;
-                    if (project != null) {
-                        project = project.getWorkspace().equals(workspaceParticipant.getWorkspace()) ? project : null;
-                    }
+                    if (projectParticipant.stream().anyMatch(p -> p.getProject().getId().equals(projectId)))
+                        return null;
+                    var project = projectParticipant.size() != 0 ? projectParticipant.get(0).getProject() : null;
+//                    if (project != null) {
+//                        project = project.getWorkspace().equals(workspaceParticipant.getWorkspace()) ? project : null;
+//                    }
                     return WorkspaceParticipantInListResponseBody.fromWorkspaceParticipant(workspaceParticipant, project);
-                })
-                .collect(Collectors.toSet());
+                }).filter(Objects::nonNull).collect(Collectors.toSet());
 
         WorkspaceParticipantsListResponseBody participantsListResponseBody = WorkspaceParticipantsListResponseBody.of(
                 (long) page.getNumberOfElements(),

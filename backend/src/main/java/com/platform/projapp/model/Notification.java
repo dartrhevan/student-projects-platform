@@ -27,16 +27,21 @@ public class Notification {
     private LocalDate date;
     private NotificationType type;
     private Boolean answer;
+    @ToString.Exclude
     @ManyToOne
     @JoinColumn(name = "recipient_username")
     private User recipient;
+    @ToString.Exclude
     @ManyToOne
     @JoinColumn(name = "sender_username")
     private User sender;
+    @ToString.Exclude
     @ManyToOne
     private Project project;
+    @ToString.Exclude
     @ManyToOne
     private Sprint sprint;
+    @ToString.Exclude
     @ManyToOne
     @JoinColumn(name = "role_id")
     private ProjectRole projectRole;

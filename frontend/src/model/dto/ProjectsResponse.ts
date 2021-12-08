@@ -10,6 +10,6 @@ export default class ProjectsResponse{
 
 export enum WorkspaceAssociation {
     ORGANIZER = 'org',
-    MENTOR = 'ment',
+    MENTOR = 'men',
     STUDENT = 'std'
 }
