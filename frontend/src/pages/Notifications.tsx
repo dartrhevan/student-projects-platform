@@ -10,6 +10,8 @@ import {apply, deny, getAllNotifications, markRead} from "../api/notifications";
 import Notification from "../model/Notification";
 import Pageable from "../model/Pageable";
 import {useError, useSuccess} from "../hooks/logging";
+import {Typography} from "@mui/material";
+import {ElementsStyle} from "../theme";
 
 
 export default function Notifications() {
@@ -76,6 +78,18 @@ export default function Notifications() {
     ];
     const data = (query: Query<Notification>) => getAllNotifications(new Pageable(query.page, query.pageSize));
 
-    return (<Table title='Уведомления' subHeader='Прочитанные и отвеченные уведомления автоматически удаляются по истечении месяца'
-                   filtering={false} data={data} tableColumns={tableColumns} tableActions={tableActions} tableRef={tableRef}/>);
+    return (<Table title='Уведомления'
+                   subHeader='Прочитанные и отвеченные уведомления автоматически удаляются по истечении месяца'
+                   filtering={false} data={data} tableColumns={tableColumns} tableActions={tableActions}
+                   tableRef={tableRef}
+                   emptyDataSourceMessage={<Typography sx={{height: '400px', ...ElementsStyle}} component='div'>
+                       На данной странице будут отображаться уведомлеия:
+                       <Typography align='left' sx={{marginLeft: '5%', ...ElementsStyle}}>
+                           <ol>
+                               <li>Приглашение вас в команду</li>
+                               <li>Ответ на ваш запрос о вступлении в команду</li>
+                               <li>Напоминание о дате демо</li>
+                           </ol>
+                       </Typography>
+                   </Typography>}/>);
 }

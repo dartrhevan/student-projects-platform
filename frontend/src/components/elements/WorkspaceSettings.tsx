@@ -13,7 +13,6 @@ import {DialogActions, DialogContent, DialogTitle, Divider} from "@mui/material"
 import {addNewWorkspace, getWorkspaceById, updateWorkspace} from "../../api/workspaces";
 import {allNotEmpty, getOnFieldChange, toDateString} from "../../utils/utils";
 import ErrorMessage from "./ErrorMessage";
-import Workspace from "../../model/Workspace";
 import {useError, useSuccess, useWarn} from "../../hooks/logging";
 
 const useStyles = makeStyles(theme => ({
@@ -22,7 +21,7 @@ const useStyles = makeStyles(theme => ({
         margin: '10px',
         display: 'flex',
         flexDirection: 'column',
-        minWidth: '25vw'
+        minWidth: '30vw'
     },
     but: {
         margin: '15px'
@@ -45,6 +44,10 @@ const useStyles = makeStyles(theme => ({
 interface WorkspaceProps {
     workspaceId?: string
 }
+
+const today = new Date().getDate();
+
+const workspacePattern = /^[\w\s\-а-яёА-ЯЁ]*$/;
 
 export default function WorkspaceSettings({workspaceId = ''}: WorkspaceProps) {
     const classes = useStyles();
@@ -91,6 +94,12 @@ export default function WorkspaceSettings({workspaceId = ''}: WorkspaceProps) {
 
     const allFilled = allNotEmpty(title);
 
+    const endDate = new Date();
+    endDate.setDate(startDate.getDate() + sprintsCount * 7 * sprintsLength);
+
+    const titleCorrect = workspacePattern.test(title); //.exec(title) !== null && ;
+
+    // @ts-ignore
     return (
         <Dialog open={open} onClose={onCloseDialog}>
             <DialogTitle>
@@ -101,13 +110,14 @@ export default function WorkspaceSettings({workspaceId = ''}: WorkspaceProps) {
             <DialogContent dividers className={classes.main}>
                 <TextField className={classes.but} value={title} label='Название' required
                            onChange={getOnFieldChange(setTitle)}/>
-                <Typography variant='h6' paragraph>Настройки стандартного плана</Typography>
+                <Typography variant='h6' paragraph>Настройки стандартного плана проектов</Typography>
                 <Divider flexItem/>
                 <br/>
                 <Typography>Дата начала</Typography>
                 <TextField defaultValue={toDateString(startDate)} className={classes.but} type='date'
                            onChange={getOnFieldChange(s => setStartDate(new Date(s)))} required/>
                 <Typography>Дата окончания</Typography>
+                <TextField value={endDate.toLocaleDateString()} className={classes.but} disabled />
                 <br/>
                 <Typography>Колличество спринтов</Typography>
                 <TextField defaultValue={sprintsCount} className={classes.but} type='number' required
@@ -117,6 +127,8 @@ export default function WorkspaceSettings({workspaceId = ''}: WorkspaceProps) {
                 <TextField defaultValue={sprintsLength} className={classes.but} type='number' required
                            onChange={getOnFieldChange(s => setSprintsLength(Number.parseInt(s)))}/>
                 <ErrorMessage message='*Не все обязательные поля заполнены' condition={!allFilled}/>
+                <ErrorMessage message="*Название может содержать только цифры, буквы, пробел и '-'" condition={!titleCorrect}/>
+                <ErrorMessage message="*Выбрана прошедшая дата начала" condition={startDate.getDate() < today}/>
             </DialogContent>
             <DialogActions className={classes.buts}>
                 <Button disabled={!allFilled} onClick={submit}>Подтвердить</Button>
