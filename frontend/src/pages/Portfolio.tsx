@@ -53,5 +53,5 @@ export default function () {
 //TODO: лучше выводить ФИ пользователя
     return (
         <Table title={`Портфолио пользователя ${login}`} filtering={false} data={data} tableColumns={tableColumns}
-               paging={false}/>);
+               paging={false} emptyDataSourceMessage='На данной странице будут отображаться завершённые проеты с вашим участием'/>);
 }

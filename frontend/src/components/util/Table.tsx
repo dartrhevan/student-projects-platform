@@ -33,10 +33,11 @@ interface ITableProps<T extends object> {
     paging?: boolean
     subHeader?: string
     tableRef?: React.Ref<MaterialTable<T>>
+    emptyDataSourceMessage?: React.ReactNode
 }
 
 export default function Table<T extends object>(
-    {tableRef, title, data, tableColumns, tableActions, paging = true, filtering = true, subHeader}: ITableProps<T>) {
+    {tableRef, title, data, tableColumns, tableActions, paging = true, filtering = true, subHeader, emptyDataSourceMessage = 'Нет данных'}: ITableProps<T>) {
     const classes = useStyles();
     const mobile = isMobile();
 
@@ -87,6 +88,14 @@ export default function Table<T extends object>(
                 filtering: filtering,
                 actionsColumnIndex: -1,
                 headerStyle: ElementsStyle
+            }}
+            localization={{
+                header: {
+                    actions: 'Действия'
+                },
+                body: {
+                    emptyDataSourceMessage: emptyDataSourceMessage
+                }
             }}
             style={{
                 width: '90%', margin: '20px 0px',
