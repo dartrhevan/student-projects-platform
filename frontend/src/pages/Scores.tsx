@@ -20,16 +20,19 @@ const useStyles = makeStyles(theme => ({
 export default function Scores() {
     const {workspaceId} = useParams<{ workspaceId: string }>();
     const [data, setData] = useState([] as ScoreDTO[]);
+    const [sprintsCount, setSprintsCount] = useState(5);
 
     const classes = useStyles();
 
     useEffect(() => {
-        getScores(workspaceId).then(r => setData(r.data));
+        getScores(workspaceId).then(r => {
+            setData(r.projects);
+            setSprintsCount(r.sprintsCount);
+        });
     }, [workspaceId]);
 
-    const sprintsCount = Array.from({
-        length: data.map(d => d.scores.length)
-            .reduce((max, cur) => Math.max(max, cur), Number.MIN_VALUE)
+    const sprintsNumbers = Array.from({
+        length: sprintsCount
     }, (value, key) => key); //an array with length of a maximum sprints count
 
     return (<TableContainer component={Paper} style={{width: '90%', minHeight: '80%', ...ElementsStyle}}>
@@ -41,7 +44,7 @@ export default function Scores() {
                 <TableRow>
                     <TableCell className={classes.cell}>Проект</TableCell>
                     <TableCell className={classes.cell}>Ментор</TableCell>
-                    {sprintsCount.map((l, i) => <TableCell align="right">{`Спринт ${i}`}</TableCell>)}
+                    {sprintsNumbers.map((l, i) => <TableCell align="right">{`Спринт ${i}`}</TableCell>)}
                     <TableCell className={classes.cell}>Финальная оценка</TableCell>
                 </TableRow>
             </TableHead>
@@ -56,7 +59,7 @@ export default function Scores() {
                                 {row.projectTitle}
                             </TableCell>
                             <TableCell className={classes.cell} align="right">{row.mentor}</TableCell>
-                            {sprintsCount.map((l, i) => <TableCell
+                            {sprintsNumbers.map((l, i) => <TableCell
                                 align="right">{i < row.scores.length ? row.scores[i] : ''}</TableCell>)}
                             <TableCell align="right">{finalValue}</TableCell>
                         </TableRow>

@@ -45,7 +45,10 @@ public class ScoreController {
         Set<ProjectWithScoresResponseBody> projectWithScoresResponseBodies = workspace.getProjects().stream()
                 .map(ProjectWithScoresResponseBody::fromProject)
                 .collect(Collectors.toSet());
-        return ResponseEntity.ok(new GeneralResponse<>().withData(ProjectsWithScoresResponseBody.of(projectWithScoresResponseBodies.size(), projectWithScoresResponseBodies)));
+        Integer sprintsCount = projectWithScoresResponseBodies.stream()
+                .map(p -> p.getScores().size())
+                .reduce(0, Math::max);
+        return ResponseEntity.ok(new GeneralResponse<>().withData(ProjectsWithScoresResponseBody.of(sprintsCount, projectWithScoresResponseBodies)));
     }
 
     @GetMapping("/evaluate")
@@ -54,8 +57,8 @@ public class ScoreController {
         var user = userService.parseAndFindByJwt(token);
         var workspace = workspaceService.findById(workspaceId);
         var sprint = sprintsService.findByWorkspaceAndDate(workspace, LocalDate.now());
-                ResponseEntity < ?>
-        workspaceErrorResponseEntity = workspaceService.getWorkspaceErrorResponseEntity(workspace,
+        ResponseEntity <?> workspaceErrorResponseEntity = workspaceService.getWorkspaceErrorResponseEntity(
+                workspace,
                 user.getLogin(),
                 List.of(ErrorConstants.USER_NOT_WORKSPACE_MENTOR_OR_OWNER));
         if (workspaceErrorResponseEntity != null)
