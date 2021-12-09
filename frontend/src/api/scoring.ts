@@ -1,4 +1,3 @@
-import GenericResponse from "../model/dto/GenericResponse";
 import Score from "../model/Score";
 import CommonResponse from "../model/dto/CommonResponse";
 import ScoreDTO from "../model/dto/ScoreDTO";
@@ -24,13 +23,10 @@ export function getScores(workspaceId: string) {
             }
         );
     });
-    // TODO; implement
-    // return new Promise<GenericResponse<ScoreDTO[]>>(res => res(new GenericResponse(
-    //     [new ScoreDTO('Project Activities', "VT", [2, 3, 4])])));
 }
 
-export function getEvaluateTable(workspaceId: string) {
-    return fetch(`/api/scores/evaluate?workspaceId=${workspaceId}`, {
+export function getEvaluateTable(workspaceId: string, sprintNumber: number) {
+    return fetch(`/api/scores/evaluate?workspaceId=${workspaceId}&sprintNumber=${sprintNumber}`, {
         headers: getTokenHeader()
     }).then(getDefaultDownloadHandler());
     // TODO: implement

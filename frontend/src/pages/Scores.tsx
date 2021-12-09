@@ -49,11 +49,11 @@ export default function Scores() {
                 </TableRow>
             </TableHead>
             <TableBody>
-                {data.map(row => {
+                {data.length > 0 ? data.map(row => {
                     const finalValue = row.scores.reduce((acc, val) => val + acc) // row.scores.length;
                     return (
                         <TableRow
-                            key={row.projectTitle}
+                            key={row.projectId}
                             sx={{'&:last-child td, &:last-child th': {border: 0}}}>
                             <TableCell className={classes.cell} component="th" scope="row">
                                 {row.projectTitle}
@@ -64,7 +64,7 @@ export default function Scores() {
                             <TableCell align="right">{finalValue}</TableCell>
                         </TableRow>
                     );
-                })}
+                }) : <Typography align='left' sx={{marginLeft: '5%', ...ElementsStyle}}>В данном рабочем пространстве не создано ни одного проекта</Typography>}
             </TableBody>
         </Table>
     </TableContainer>);
