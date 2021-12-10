@@ -50,7 +50,7 @@ export default function Scores() {
             </TableHead>
             <TableBody>
                 {data.length > 0 ? data.map(row => {
-                    const finalValue = row.scores.reduce((acc, val) => val + acc) // row.scores.length;
+                    const finalValue = row.scores.reduce((acc, val) => val + acc, 0) // row.scores.length;
                     return (
                         <TableRow
                             key={row.projectId}
@@ -64,7 +64,7 @@ export default function Scores() {
                             <TableCell align="right">{finalValue}</TableCell>
                         </TableRow>
                     );
-                }) : <Typography align='left' sx={{marginLeft: '5%', ...ElementsStyle}}>В данном рабочем пространстве не создано ни одного проекта</Typography>}
+                }) : <Typography align='center' sx={{marginLeft: '5%', ...ElementsStyle}}>В данном рабочем пространстве не создано ни одного проекта</Typography>}
             </TableBody>
         </Table>
     </TableContainer>);

@@ -119,11 +119,6 @@ export default function Users() {
     }, []);
 
     function onInvite() {
-        // if (!rolesReference.includes(inviteRole)) {//TODO: move to back
-        //     addRoleToReference(inviteRole)
-        //         .then(r => setRolesReference([...rolesReference, inviteRole]))
-        //         .catch(console.log);
-        // }
         inviteToProject(openInviteUsername, projectId, inviteRole).then(() => {
             success('Invitation has been sent');
             setOpenInviteDialog(false)
@@ -150,7 +145,6 @@ export default function Users() {
                 <Button disabled={!inviteRole || inviteRole === ''} onClick={onInvite}>Подтвердить</Button>
             </DialogActions>
         </Dialog>
-        {/*<Button onClick={() => setOpenInviteDialog(true)}>assasa</Button>*/}
         <Table title='Поиск учасников' data={data} tableColumns={tableColumns} tableActions={tableActions}/>
     </>);
 
