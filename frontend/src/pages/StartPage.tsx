@@ -32,27 +32,27 @@ export default function StartPage() {
             </Typography>
             {login ?
                 (<>
-                        <Typography variant='h6' paragraph style={{marginLeft: '60px'}}>Теперь вы можете просматреть:</Typography>
+                        <Typography variant='h6' paragraph style={{marginLeft: '60px'}}>Вы можете просмотреть:</Typography>
                         <div style={{
                             display: 'flex',
                             flexWrap: 'wrap',
                             justifyContent: 'center'
                         }}>
-                            <ActiveDescriptionElement href='/authentication' small
+                            <ActiveDescriptionElement href='/workspaces' small
                                                       icon={<AutoAwesomeMosaicIcon color='primary'/>}>
                                 Доступные рабочие пространства
                             </ActiveDescriptionElement>
-                            <ActiveDescriptionElement href='/authentication' small icon={<Apps color='primary'/>}>
+                            <ActiveDescriptionElement href='/projects' small icon={<Apps color='primary'/>}>
                                 Ваши проекты
                             </ActiveDescriptionElement>
-                            <ActiveDescriptionElement href='/authentication' small
+                            <ActiveDescriptionElement href='/portfolio' small
                                                       icon={<FormatAlignJustifyIcon color='primary'/>}>
                                 Ваше портфолио
                             </ActiveDescriptionElement>
-                            <ActiveDescriptionElement href='/authentication' small icon={<Person color='primary'/>}>
+                            <ActiveDescriptionElement href='/profile' small icon={<Person color='primary'/>}>
                                 Ваш профиль
                             </ActiveDescriptionElement>
-                            <ActiveDescriptionElement href='/authentication' small icon={<EmailIcon color='primary'/>}>
+                            <ActiveDescriptionElement href='/notifications' small icon={<EmailIcon color='primary'/>}>
                                 Уведомления
                             </ActiveDescriptionElement>
                         </div>

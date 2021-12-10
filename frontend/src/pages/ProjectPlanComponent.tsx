@@ -169,7 +169,7 @@ const SprintComponent = ({sprint, number, role, onSprintUpdate, onSprintRemove}:
                 </div>
                 <br/>
                 <Typography paragraph variant='h6'>Комментарии результатов</Typography>
-                {sprint.comments.map((c, i) => (
+                {sprint.comments.filter(c => { return c.comment !== null }).map((c, i) => (
                     <Card sx={{padding: '5px', ...ElementsStyle}}>
                         <Typography variant='body2'>
                             {c.mentorName}
@@ -239,7 +239,7 @@ export default function ProjectPlanComponent() {
             <Typography align='center' paragraph variant='h4'>План проекта {projectPlan?.projectTitle}</Typography>
             <br/>
             {projectPlan?.plan.map((s, i) =>
-                <SprintComponent role={projectPlan.role} sprint={s} number={i} onSprintRemove={onSprintRemove}
+                <SprintComponent role={projectPlan.role} sprint={s} number={i+1} onSprintRemove={onSprintRemove}
                                  key={s.id} onSprintUpdate={onSprintUpdate}/>)}
             {projectPlan?.role === ProjectRole.OWNER || projectPlan?.role === ProjectRole.MENTOR_PARTICIPANT ?
                 (<Card sx={{margin: '30px 0', ...ElementsStyle}} onClick={addNewSprint} elevation={8}>

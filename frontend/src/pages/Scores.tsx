@@ -44,7 +44,7 @@ export default function Scores() {
                 <TableRow>
                     <TableCell className={classes.cell}>Проект</TableCell>
                     <TableCell className={classes.cell}>Ментор</TableCell>
-                    {sprintsNumbers.map((l, i) => <TableCell align="right">{`Спринт ${i}`}</TableCell>)}
+                    {sprintsNumbers.map((l, i) => <TableCell align="right">{`Спринт ${i+1}`}</TableCell>)}
                     <TableCell className={classes.cell}>Финальная оценка</TableCell>
                 </TableRow>
             </TableHead>
