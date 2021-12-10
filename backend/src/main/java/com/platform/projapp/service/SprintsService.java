@@ -14,7 +14,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -24,8 +27,24 @@ public class SprintsService {
     private final SprintsRepository sprintsRepository;
     private final ProjectRepository projectRepository;
 
-    public Sprint findByWorkspaceAndDate(Workspace workspace, LocalDate date) {
+    public Sprint findById(Long id){
+        return sprintsRepository.findById(id).orElse(null);
+    }
+
+    public Integer getCurrentSprintOrderNumberByWorkspaceAndDate(Workspace workspace, LocalDate date){
+        List<Sprint> sprints = new ArrayList<>(findAllByWorkspaceAndDate(workspace, date));
+        if (sprints.size() > 0)
+            return sprints.get(0).getOrderNumber();
+
+        return 0;
+    }
+
+    public Set<Sprint> findAllByWorkspaceAndDate(Workspace workspace, LocalDate date) {
         return sprintsRepository.findAllByWorkspaceAndDate(workspace, date);
+    }
+
+    public Set<Sprint> findAllByWorkspaceAndOrderNumber(Workspace workspace, int orderNumber) {
+        return sprintsRepository.findAllByWorkspaceAndOrderNumber(workspace, orderNumber);
     }
 
     public ProjectPlan getForProject(User user, long projectId) throws NotFoundException {

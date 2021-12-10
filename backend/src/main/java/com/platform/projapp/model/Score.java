@@ -21,7 +21,7 @@ public class Score {
     @Column(unique = true)
     private Long id;
 
-    @ManyToOne
+    @OneToOne
     private Sprint sprint;
     @ManyToOne
     @JoinColumn(name = "creator_username")

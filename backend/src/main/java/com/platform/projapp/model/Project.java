@@ -18,7 +18,7 @@ import static javax.persistence.CascadeType.*;
  */
 @Getter
 @Setter
-@ToString(exclude = {"tags", "participants", "workspace", "sprints"})
+@ToString(exclude = {"tags", "participants", "workspace", "sprints","notifications"})
 @NoArgsConstructor
 @Entity
 public class Project {
@@ -46,6 +46,9 @@ public class Project {
 
     @OneToMany(mappedBy = "project", cascade = ALL, orphanRemoval = true)
     private Set<Sprint> sprints;
+
+    @OneToMany(mappedBy = "project", cascade = ALL, orphanRemoval = true)
+    private Set<Notification> notifications;
 
     public Project(String ownerLogin, String name, String shortDescription, String fullDescription, String trackerLink,
                    ProjectStatus status, Integer maxParticipantsCount, Workspace workspace, Set<Tags> tags) {
@@ -86,5 +89,14 @@ public class Project {
                 .map(Participant::getUser)
                 .findFirst()
                 .orElse(null);
+    }
+
+    public Float getResultScore() {
+        float result = 0f;
+        for (Sprint sprint :
+                sprints) {
+            result += sprint.getScore().getResultScore();
+        }
+        return result;
     }
 }
