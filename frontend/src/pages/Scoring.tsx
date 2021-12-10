@@ -16,9 +16,11 @@ import Notification from "../model/Notification";
 export default function () {
     const {workspaceId} = useParams<{ workspaceId: string }>();
     const [sprintNumber, setSprintNumber] = useState(0);
-    // useEffect(() => {}, [sprintNumber])
     const data = () => new Promise<QueryResult<Score>>(res => getEvaluateTable(workspaceId, sprintNumber)
-        .then(r => res({data: r.data.scores, page: 0, totalCount: 1})));
+        .then(r => {
+            if (sprintNumber == 0) setSprintNumber(parseInt(r.data.currentSprintNumber) + 1);
+            res({data: r.data.scores, page: 0, totalCount: 1})
+        }));
 
 
     const [scores, setScores] = useState([] as Score[]);
@@ -38,7 +40,7 @@ export default function () {
     ];
 
     function getScore(row: Score) {
-        let score = scores.find(r => r.projectId === row.projectId);
+        let score = scores.find(r => r.sprintId === row.sprintId);
         if (!score) {
             score = row;
             scores.push(row);
@@ -88,7 +90,7 @@ export default function () {
         {
             title: 'Доска',
             sorting: false,
-            render: (row: Score) => <Link target="_blank" href={row.board}>Доска</Link>
+            render: (row: Score) => <Link target="_blank" href={row.trackerLink}>Доска</Link>
         },
         {
             title: 'Оценка',

@@ -63,9 +63,13 @@ public class ScoreController {
                 List.of(ErrorConstants.USER_NOT_WORKSPACE_MENTOR_OR_OWNER));
         if (workspaceErrorResponseEntity != null)
             return workspaceErrorResponseEntity;
-        var sprints = sprintsService.findAllByWorkspaceAndOrderNumber(workspace, sprintNumber);
-        var currentSprintOrderNumber = sprintsService.getCurrentSprintOrderNumberByWorkspaceAndDate(workspace, LocalDate.now());
-        Set<ScoreResponseBody> scoreResponseBodies = sprints.stream().map(ScoreResponseBody::fromSprint).collect(Collectors.toSet());
+        Integer currentSprintOrderNumber;
+        if (sprintNumber == -1)
+            currentSprintOrderNumber = sprintsService.getCurrentSprintOrderNumberByWorkspaceAndDate(workspace, LocalDate.now());
+        else
+            currentSprintOrderNumber = sprintNumber;
+        var sprints = sprintsService.findAllByWorkspaceAndOrderNumber(workspace, currentSprintOrderNumber);
+        Set<ScoreResponseBody> scoreResponseBodies = sprints.stream().map(s -> ScoreResponseBody.fromSprint(s, user)).collect(Collectors.toSet());
         return ResponseEntity.ok(new GeneralResponse<>().withData(ScoresResponseBody.of(currentSprintOrderNumber,scoreResponseBodies)));
     }
 

@@ -95,7 +95,7 @@ public class Project {
     public Float getResultScore() {
         float result = 0f;
         for (Sprint sprint : sprints) {
-            result += Optional.ofNullable(sprint.getScore()).map(Score::getResultScore).orElse(0f);
+            result += sprint.getScores().stream().map(Score::getResultScore).reduce(0f, Float::sum);
         }
         return result;
     }

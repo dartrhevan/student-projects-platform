@@ -8,6 +8,7 @@ import lombok.ToString;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 import static javax.persistence.CascadeType.ALL;
 
@@ -38,8 +39,8 @@ public class Sprint {
     private Long presentationId;
     @ManyToOne
     private Project project;
-    @OneToOne(mappedBy = "sprint", cascade = ALL, orphanRemoval = true)
-    private Score score;
+    @OneToMany(mappedBy = "sprint", cascade = ALL, orphanRemoval = true)
+    private Set<Score> scores;
 
     public boolean isTomorrow() {
         return endDate.minusDays(1L).equals(LocalDate.now());

@@ -2,7 +2,7 @@ import Score from "../model/Score";
 import CommonResponse from "../model/dto/CommonResponse";
 import ScoreDTO from "../model/dto/ScoreDTO";
 import {getTokenHeader} from "../store/state/LoginState";
-import {defErrorHandler, getDefaultDownloadHandler} from "../utils/utils";
+import {defErrorHandler, getDefaultDownloadHandler, getDefaultUploadHandler} from "../utils/utils";
 
 export function getScores(workspaceId: string) {
     return fetch(`/api/scores?workspaceId=${workspaceId}`, {
@@ -26,16 +26,26 @@ export function getScores(workspaceId: string) {
 }
 
 export function getEvaluateTable(workspaceId: string, sprintNumber: number) {
-    return fetch(`/api/scores/evaluate?workspaceId=${workspaceId}&sprintNumber=${sprintNumber}`, {
+    return fetch(`/api/scores/evaluate?workspaceId=${workspaceId}&sprintNumber=${sprintNumber - 1}`, {
         headers: getTokenHeader()
     }).then(getDefaultDownloadHandler());
-    // TODO: implement
-    // return new Promise<GenericResponse<Score[]>>(res => res(
-    //     new GenericResponse<Score[]>([new Score('1', 'Team', 'Jack', 'https://ya.ru', 5, 'https://ya.ru', 3, '')])))
 }
 
 export function uploadScores(scores: Score[]) {
-    console.log(scores)
-    //TODO: implement
-    return new Promise<CommonResponse>(res => res(new CommonResponse()));
+    return fetch(`/api/scores/evaluate`, {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json',
+            ...getTokenHeader()
+        },
+        body: JSON.stringify(scores.map(s => {
+            return {
+                sprintId: s.sprintId,
+                mentor: s.mentorTeam,
+                presentationScore: s.presentationScore,
+                trackerLinkScore: s.trackerScore,
+                comment: s.comment,
+            }
+        }))
+    }).then(getDefaultUploadHandler());
 }
