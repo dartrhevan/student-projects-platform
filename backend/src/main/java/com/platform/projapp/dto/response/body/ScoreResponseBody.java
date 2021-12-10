@@ -14,7 +14,7 @@ import lombok.Data;
 @AllArgsConstructor
 public class ScoreResponseBody implements ResponseBody {
     private Integer numberSprint;
-    private Long projectId;
+    private Long sprintId;
     private String projectTitle;
     private String mentorTeam;
     private String presentation;
@@ -23,21 +23,21 @@ public class ScoreResponseBody implements ResponseBody {
     private Float trackerScore;
     private String comment;
 
-    public static ScoreResponseBody fromScore(Score score) {
-        Sprint sprint = score.getSprint();
+    public static ScoreResponseBody fromSprint(Sprint sprint) {
         Project project = sprint.getProject();
+        Score score = sprint.getScore();
         String presentation = sprint.getPresentationId() != null ?
                 String.format("/api/presentation/%d", sprint.getPresentationId()) :
                 null;
         User mentor = project.getProjectMentor();
         return new ScoreResponseBody(sprint.getOrderNumber(),
-                project.getId(),
+                sprint.getId(),
                 project.getName(),
                 mentor != null ? mentor.getUsername() : null,
                 presentation,
-                score.getPresentationScore(),
+                score != null ? score.getPresentationScore() : 0,
                 project.getTrackerLink(),
-                score.getTrackerScore(),
-                score.getComment());
+                score != null ? score.getTrackerScore() : 0,
+                score != null ? score.getComment() : null);
     }
 }

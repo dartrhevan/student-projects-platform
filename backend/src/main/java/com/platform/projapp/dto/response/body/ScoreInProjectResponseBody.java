@@ -14,6 +14,6 @@ public class ScoreInProjectResponseBody implements ResponseBody {
     private Float sprintScore;
 
     public static ScoreInProjectResponseBody fromSprint(Sprint sprint) {
-        return new ScoreInProjectResponseBody(sprint.getOrderNumber(), sprint.getResultScore());
+        return new ScoreInProjectResponseBody(sprint.getOrderNumber(), sprint.getProject().getResultScore());
     }
 }
