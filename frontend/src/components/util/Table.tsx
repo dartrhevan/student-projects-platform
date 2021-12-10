@@ -34,12 +34,24 @@ interface ITableProps<T extends object> {
     subHeader?: string
     tableRef?: React.Ref<MaterialTable<T>>
     emptyDataSourceMessage?: React.ReactNode
+    buttons?: React.ReactNode
 }
 
 export default function Table<T extends object>(
-    {tableRef, title, data, tableColumns, tableActions, paging = true, filtering = true, subHeader, emptyDataSourceMessage = 'Нет данных'}: ITableProps<T>) {
-    const classes = useStyles();
-    const mobile = isMobile();
+    {
+        tableRef,
+        title,
+        data,
+        tableColumns,
+        tableActions,
+        paging = true,
+        filtering = true,
+        subHeader,
+        emptyDataSourceMessage = 'Нет данных',
+        buttons
+    }: ITableProps<T>) {
+    // const classes = useStyles();
+    // const mobile = isMobile();
 
     const icons: Icons = {
         FirstPage: forwardRef((props, ref) => <FirstPage ref={ref}/>),
@@ -53,26 +65,21 @@ export default function Table<T extends object>(
 
     };
     return (
-        // <>
-        //     <Typography className={classes.title} variant='h3'>{title}</Typography>
-
         <MaterialTable
             tableRef={tableRef}
-            title={(<>
-                <Typography
-                    variant="h6"
-                    sx={ElementsStyle}
-                    gutterBottom>
+            title={(<div style={{display: 'flex', flexDirection: buttons ? 'row' : 'column'}}>
+                <Typography variant="h6" sx={ElementsStyle} gutterBottom>
                     {title}
                 </Typography>
-                <Typography
-                    variant="body2"
-                    // sx={{color: ElementsStyle.color}}
-                    // sx={ElementsStyle}
-                    gutterBottom>
+                {buttons}
+                <Typography variant="body2" align='center' sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    margin: "0 15px"
+                }}>
                     {subHeader}
                 </Typography>
-            </>)}
+            </div>)}
             data={data}
             columns={tableColumns}
             actions={tableActions}
@@ -102,5 +109,4 @@ export default function Table<T extends object>(
                 minHeight: '80%',
                 ...ElementsStyle
             }}/>);
-    // </>);
 }

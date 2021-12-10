@@ -4,11 +4,12 @@ import ViewableText from "../components/elements/ViewableText";
 import Score from "../model/Score";
 import {QueryResult} from "material-table";
 import {getEvaluateTable, uploadScores} from "../api/scoring";
-import {TextField, Link, FormControlLabel} from "@mui/material";
+import {TextField, Link, FormControlLabel, Typography} from "@mui/material";
 import {useParams} from "react-router-dom";
 import {correctNumericInput} from "../utils/utils";
 import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
 import {useError, useSuccess} from "../hooks/logging";
+import {ProjectRole} from "../model/Project";
 
 
 export default function () {
@@ -109,5 +110,24 @@ export default function () {
     ];
 
     return (<Table paging={false} title='Оценивание' filtering={false} data={data} tableColumns={tableColumns}
-                   tableActions={actions} subHeader='Чтобы сохранить изменения, нажмите:'/>);
+                   tableActions={actions} subHeader='Чтобы сохранить изменения, нажмите:'
+                   buttons={(
+                       <>
+                           <Typography variant="body2" align='center' sx={{
+                               display: "flex",
+                               alignItems: "center",
+                               margin: "0 15px"
+                           }}>
+                               Номер оцениваемого спринта:
+                           </Typography>
+                           <TextField
+                                      sx={{width: '40px'}} type='number' variant='standard'
+                                      onInput={correctNumericInput}
+                                      onChange={e => {
+                                          // setMaxParticipantsCount(parseInt(e.target.value))
+                                          // project.maxParticipantsCount = parseInt(e.target.value);
+                                      }}
+                                      value={5}/>
+                       </>
+                   )}/>);
 }

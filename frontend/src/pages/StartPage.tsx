@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button, Paper, Typography} from "@mui/material";
+import {Button, Divider, Paper, Typography} from "@mui/material";
 import Centered from "../components/util/Centered";
 import {ElementsStyle} from "../theme";
 import DescriptionElement from "../components/elements/DescriptionElement";
@@ -9,16 +9,18 @@ import GroupAddIcon from '@mui/icons-material/GroupAddTwoTone';
 import StairsIcon from '@mui/icons-material/StairsTwoTone';
 import SocialDistanceIcon from '@mui/icons-material/SocialDistanceTwoTone';
 import MoreHorizTwoToneIcon from '@mui/icons-material/MoreHorizTwoTone';
+import AutoAwesomeMotionIcon from '@mui/icons-material/AutoAwesomeMotion';
+import ActiveDescriptionElement from '../components/elements/ActiveDescriptionElement';
 import PersonTwoToneIcon from '@mui/icons-material/PersonTwoTone';
 import {useSelector} from "react-redux";
 import getUsername from "../hooks/getUsername";
+
 
 export default function StartPage() {
     const login = useSelector(getUsername);
     return (
         <Paper sx={{
-            padding: '15px 5px', width: '70%', marginTop: '50px', // height: '70%',
-            ...ElementsStyle
+            padding: '15px 5px', width: '70%', marginTop: '50px', marginBottom: '20px', ...ElementsStyle
         }}>
             <Typography align='center' variant='h4' paragraph>
                 Платформа для организации проектной деятельности
@@ -29,28 +31,37 @@ export default function StartPage() {
                     <br/>
                     Основные возможности включают:
                 </Typography>
+                <DescriptionElement icon={<AutoAwesomeMotionIcon color='primary' fontSize='large'/>}>
+                    Организация рабочего пространства для проектов
+                </DescriptionElement>
+                <Divider flexItem/>
                 <DescriptionElement icon={<AssignmentIcon color='primary' fontSize='large'/>}>
                     Создание своего проекта
                 </DescriptionElement>
-                <DescriptionElement reversed icon={<GroupsIcon color='primary' fontSize='large'/>}>
+                <Divider flexItem/>
+                <DescriptionElement icon={<GroupsIcon color='primary' fontSize='large'/>}>
                     Формирование команды для работы над проектом
                 </DescriptionElement>
+                <Divider flexItem/>
                 <DescriptionElement icon={<GroupAddIcon color='primary' fontSize='large'/>}>
                     Присоединение к существующему проекту
                 </DescriptionElement>
-                <DescriptionElement reversed icon={<StairsIcon color='primary' fontSize='large'/>}>
+                <Divider flexItem/>
+                <DescriptionElement icon={<StairsIcon color='primary' fontSize='large'/>}>
                     Отслеживание прогресса работы над проектом
                 </DescriptionElement>
+                <Divider flexItem/>
                 <DescriptionElement icon={<SocialDistanceIcon color='primary' fontSize='large'/>}>
-                    Взаимодействие с организаторами
+                    Взаимодействие с организаторами и менторами
                 </DescriptionElement>
-                <DescriptionElement reversed icon={<MoreHorizTwoToneIcon color='primary' fontSize='large'/>}>
+                <Divider flexItem/>
+                <DescriptionElement icon={<MoreHorizTwoToneIcon color='primary' fontSize='large'/>}>
                     И многое другое...
                 </DescriptionElement>
                 {!login &&
-                <DescriptionElement href='/authentication' icon={<PersonTwoToneIcon color='primary' fontSize='large'/>}>
+                <ActiveDescriptionElement href='/authentication' icon={<PersonTwoToneIcon color='primary' fontSize='large'/>}>
                     Для начала работы необходимо <b>Авторизоваться</b>
-                </DescriptionElement>}
+                </ActiveDescriptionElement>}
             </Centered>
         </Paper>);
 }
