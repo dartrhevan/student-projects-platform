@@ -1,19 +1,24 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import Table from "../components/util/Table";
 import ViewableText from "../components/elements/ViewableText";
 import Score from "../model/Score";
 import {QueryResult} from "material-table";
 import {getEvaluateTable, uploadScores} from "../api/scoring";
-import {TextField, Link, FormControlLabel} from "@mui/material";
+import {TextField, Link, FormControlLabel, Typography} from "@mui/material";
 import {useParams} from "react-router-dom";
 import {correctNumericInput} from "../utils/utils";
 import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
 import {useError, useSuccess} from "../hooks/logging";
+import {ProjectRole} from "../model/Project";
 
 
 export default function () {
     const {workspaceId} = useParams<{ workspaceId: string }>();
-    const data = () => new Promise<QueryResult<Score>>(res => getEvaluateTable(workspaceId)
+
+    const [sprintNumber, setSprintNumber] = useState(0);
+    useEffect(() => {}, [sprintNumber])
+
+    const data = () => new Promise<QueryResult<Score>>(res => getEvaluateTable(workspaceId, sprintNumber)
         .then(r => res({data: r.data, page: 0, totalCount: 1})));
 
     const [scores, setScores] = useState([] as Score[]);
@@ -23,13 +28,13 @@ export default function () {
 
     const actions = [
         {
-            icon: () => <AssignmentTurnedInIcon fontSize='large' />,
+            icon: () => <AssignmentTurnedInIcon fontSize='large'/>,
             onClick: () => {
                 uploadScores(scores).then(r => success("Данные успешно отправлены")).catch(error);
             },
             tooltip: 'Сохранить оценки',
             isFreeAction: true,
-        },
+        }
     ];
 
     function getScore(row: Score) {
@@ -108,6 +113,15 @@ export default function () {
         }
     ];
 
-    return (<Table paging={false} title='Оценивание' filtering={false} data={data} tableColumns={tableColumns}
-                   tableActions={actions} subHeader='Чтобы сохранить изменения, нажмите:'/>);
+    return (<>
+        <Typography sx={{margin: '10px'}} color='inherit'>Номер спринта</Typography>
+        <TextField sx={{width: '40px'}} type='number' variant='standard'
+                   onInput={e => {
+                       const val = correctNumericInput(e);
+                       setSprintNumber(val)
+                   }}
+                   value={sprintNumber}/>
+        <Table paging={false} title='Оценивание' filtering={false} data={data} tableColumns={tableColumns}
+               tableActions={actions} subHeader='Чтобы сохранить изменения, нажмите:'/>
+    </>);
 }

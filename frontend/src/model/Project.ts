@@ -40,7 +40,7 @@ export class Participant {
 export class DetailedProject {
     constructor(public workspaceId: string, public id: string = '', public title: string = '',
                 public shortDescription: string = '', public fullDescription: string = '',
-                public trackerUrl = '', public participants: Participant[] = [], public tags: Tag[] = [],
+                public trackerLink = '', public participants: Participant[] = [], public tags: Tag[] = [],
                 public projectRole = ProjectRole.OWNER, public maxParticipantsCount = 5,
                 public status = ProjectStatus.NEW) {
     }
@@ -63,7 +63,7 @@ export class DetailedProject {
 
     public withTrackerUrl(url: string) {
         const project: DetailedProject = this.clone();
-        project.trackerUrl = url;
+        project.trackerLink = url;
         return project;
     }
 

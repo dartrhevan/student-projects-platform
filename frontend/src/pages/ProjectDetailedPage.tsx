@@ -306,7 +306,7 @@ export default function ProjectDetailedPage() {
                                onChange={t => setProject((project as DetailedProject).withFullDescription(t))}/>
                 <Divider flexItem/>
                 {project?.projectRole !== ProjectRole.STRANGER ?
-                    <EditableField label='Ссылка на трекер' field={p => p?.trackerUrl} project={project}
+                    <EditableField label='Ссылка на трекер' field={p => p?.trackerLink} project={project}
                                    inputProps={{variant: 'outlined', fullWidth: true}}
                                    props={{
                                        sx: {width: '100%', padding: '10px 5px'},

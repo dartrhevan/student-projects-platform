@@ -19,7 +19,7 @@ export function addProject(project: DetailedProject): Promise<CommonResponse> {
             name: project.title,
             shortDescription: project.shortDescription,
             fullDescription: project.fullDescription,
-            trackerLink: project.trackerUrl,
+            trackerLink: project.trackerLink,
             tags: project.tags.map(t => t.id),
             maxParticipantsCount: project.maxParticipantsCount
         })
@@ -45,7 +45,7 @@ export function editProject(project: DetailedProject): Promise<CommonResponse> {
             name: project.title,
             shortDescription: project.shortDescription,
             fullDescription: project.fullDescription,
-            trackerLink: project.trackerUrl,
+            trackerLink: project.trackerLink,
             tags: project.tags.map(t => t.id),
             maxParticipantsCount: project.maxParticipantsCount,
             status: project.status
