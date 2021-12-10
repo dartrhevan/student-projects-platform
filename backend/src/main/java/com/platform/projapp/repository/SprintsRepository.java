@@ -8,11 +8,15 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 @Repository
 public interface SprintsRepository extends JpaRepository<Sprint, Long> {
 //    @Query(value = "SELECT * FROM sprint WHERE project_id = :projectId", nativeQuery = true)
 //    List<Sprint> findAllByProjectId(@Param("projectId") long projectId);
     @Query(value = "SELECT s.* FROM Sprint s JOIN project p on p.id = s.project_id WHERE p.workspace_id = :workspace AND :date >= s.start_date AND :date <= s.end_date", nativeQuery = true)
-    Sprint findAllByWorkspaceAndDate(@Param("workspace") Workspace workspace, @Param("date") LocalDate date);
+    Set<Sprint> findAllByWorkspaceAndDate(@Param("workspace") Workspace workspace, @Param("date") LocalDate date);
+
+    @Query(value = "SELECT s.* FROM Sprint s JOIN project p on p.id = s.project_id WHERE p.workspace_id = :workspace AND s.order_number = :orderNumber", nativeQuery = true)
+    Set<Sprint> findAllByWorkspaceAndOrderNumber(@Param("workspace") Workspace workspace, @Param("orderNumber") int orderNumber);
 }

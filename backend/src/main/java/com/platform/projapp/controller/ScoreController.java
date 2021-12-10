@@ -53,32 +53,27 @@ public class ScoreController {
 
     @GetMapping("/evaluate")
     public ResponseEntity<?> getTableOfScores(@RequestHeader(name = "Authorization") String token,
-                                              @RequestParam(name = "workspaceId") Long workspaceId) {
+                                              @RequestParam(name = "workspaceId") Long workspaceId,
+                                              @RequestParam(name = "sprintNumber") Integer sprintNumber) {
         var user = userService.parseAndFindByJwt(token);
         var workspace = workspaceService.findById(workspaceId);
-        var sprint = sprintsService.findByWorkspaceAndDate(workspace, LocalDate.now());
-        ResponseEntity <?> workspaceErrorResponseEntity = workspaceService.getWorkspaceErrorResponseEntity(
-                workspace,
+                ResponseEntity < ?>
+        workspaceErrorResponseEntity = workspaceService.getWorkspaceErrorResponseEntity(workspace,
                 user.getLogin(),
                 List.of(ErrorConstants.USER_NOT_WORKSPACE_MENTOR_OR_OWNER));
         if (workspaceErrorResponseEntity != null)
             return workspaceErrorResponseEntity;
-        Set<ScoreResponseBody> scoreResponseBodies = scoreService.findAllBySprint(sprint).stream().map(ScoreResponseBody::fromScore).collect(Collectors.toSet());
-        return ResponseEntity.ok(new GeneralResponse<>().withData(ScoresResponseBody.of(scoreResponseBodies)));
+        var sprints = sprintsService.findAllByWorkspaceAndOrderNumber(workspace, sprintNumber);
+        var currentSprintOrderNumber = sprintsService.getCurrentSprintOrderNumberByWorkspaceAndDate(workspace, LocalDate.now());
+        Set<ScoreResponseBody> scoreResponseBodies = sprints.stream().map(ScoreResponseBody::fromSprint).collect(Collectors.toSet());
+        return ResponseEntity.ok(new GeneralResponse<>().withData(ScoresResponseBody.of(currentSprintOrderNumber,scoreResponseBodies)));
     }
 
     @PostMapping("/evaluate")
     public ResponseEntity<?> addScores(@RequestHeader(name = "Authorization") String token,
-                                       @RequestParam(name = "workspaceId") Long workspaceId,
                                        @RequestBody List<ScoreRequest> scoreRequestList) {
         var user = userService.parseAndFindByJwt(token);
-        var workspace = workspaceService.findById(workspaceId);
-        ResponseEntity<?> workspaceErrorResponseEntity = workspaceService.getWorkspaceErrorResponseEntity(workspace,
-                user.getLogin(),
-                List.of(ErrorConstants.USER_NOT_WORKSPACE_MENTOR_OR_OWNER));
-        if (workspaceErrorResponseEntity != null)
-            return workspaceErrorResponseEntity;
-        scoreService.addOrUpdateScores(scoreRequestList, workspace, user);
+        scoreService.addOrUpdateScores(scoreRequestList, user);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

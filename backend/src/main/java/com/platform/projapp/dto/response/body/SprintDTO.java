@@ -5,7 +5,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.util.List;
 import java.util.stream.Collectors;
 
 @Data
@@ -20,7 +19,7 @@ public class SprintDTO {
         if (sprint.getPresentationId() != null)
             this.presentation = String.format("/api/presentation/%d", sprint.getPresentationId());
 //        this.maxParticipantsCount = sprint.getMaxParticipantsCount();
-        this.comments = sprint.getScores().stream().map(s -> new CommentDTO(s.getUser().getName(), s.getComment())).collect(Collectors.toList());
+        this.comment = new CommentDTO(sprint.getScore().getUser().getName(), sprint.getScore().getComment());
     }
 
     private long id;
@@ -30,5 +29,5 @@ public class SprintDTO {
     private LocalDate endDate;
     private String presentation;
     //    private Integer maxParticipantsCount;
-    private List<CommentDTO> comments;
+    private CommentDTO comment;
 }

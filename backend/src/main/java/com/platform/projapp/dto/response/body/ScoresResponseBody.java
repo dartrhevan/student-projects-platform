@@ -11,5 +11,6 @@ import java.util.Set;
 @Data
 @AllArgsConstructor(staticName = "of")
 public class ScoresResponseBody implements ResponseBody {
+    private int currentSprintNumber;
     private Set<ScoreResponseBody> scores;
 }
