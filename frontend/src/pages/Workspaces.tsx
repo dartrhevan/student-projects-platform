@@ -8,10 +8,11 @@ import GroupAddIcon from '@mui/icons-material/GroupAdd';
 import getPaging from "../hooks/getPaging";
 import Workspace from "../model/Workspace";
 import {attachToWorkspace, getUsersWorkspaces} from "../api/workspaces";
-import {Dialog, DialogActions, DialogContent, DialogTitle, TextField, Typography} from "@mui/material";
+import {Dialog, DialogActions, DialogContent, DialogTitle, Slide, TextField, Typography} from "@mui/material";
 import {Button, IconButton, makeStyles, Tooltip} from "@material-ui/core";
 import {allNotEmpty, getOnFieldChange} from "../utils/utils";
 import {useError} from "../hooks/logging";
+import SlideTransition from "../components/util/SlideTransition";
 
 
 const useStyles = makeStyles(theme => ({
@@ -78,13 +79,14 @@ export default function Workspaces() {
     return (<BadgePage
         showTags={false}
         showDialog={true}
-        addTitle='Создать'
+        addTitle='Создать рабочее пространство'
         addOnClick={() => dispatch(openDialog())}
-        title='Просмотр рабочих пространств'
+        title='Рабочие пространства'
         badgeData={data}
         additionalButtons={(
             <>
-                <Dialog open={openAttachDialog} onClose={() => setOpenAttachDialog(false)}>
+                <Dialog TransitionComponent={SlideTransition} open={openAttachDialog}
+                        onClose={() => setOpenAttachDialog(false)}>
                     <DialogTitle>
                         <Typography>
                             Введите код рабочего пространства
@@ -94,14 +96,24 @@ export default function Workspaces() {
                         <TextField value={workspaceCode} onChange={getOnFieldChange(setWorkspaceCode)}/>
                     </DialogContent>
                     <DialogActions>
-                        <Button disabled={!allNotEmpty(workspaceCode)} onClick={onDialogClose}>Подтвердить</Button>
+                        <Button disabled={!allNotEmpty(workspaceCode)}
+                                onClick={onDialogClose}>Присоединиться</Button>
                     </DialogActions>
                 </Dialog>
-                <Tooltip title='Присоединиться'>
+                <Tooltip title='Присоединиться к рабочему пространству'>
                     <IconButton className={classes.button} onClick={() => setOpenAttachDialog(true)}>
                         <GroupAddIcon/>
                     </IconButton>
                 </Tooltip>
             </>)}
-        href={s => `/projects/${(s as Workspace).id}/${(s as Workspace).title}`}/>);
+        href={s => `/projects/${(s as Workspace).id}/${(s as Workspace).title}`}
+        defaultMessage={(
+            <div>На данной странице вы можете организовать рабочее для группы связанных проектов, например проектного
+                практикума магистратуры Сбера.
+                <br />
+                Здесь будут отображаться доступные вам рабочие пространства.
+                <br />
+                Для начала работы создайте свое собственное рабочее пространство или присоединитесь к уже
+                существующему.
+            </div>)}/>);
 }

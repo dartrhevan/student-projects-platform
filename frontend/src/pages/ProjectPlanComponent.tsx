@@ -16,9 +16,9 @@ import {
     CardContent,
     Dialog,
     DialogActions,
-    DialogTitle,
+    DialogTitle, Fade,
     Link,
-    Paper,
+    Paper, Slide,
     TextField
 } from "@mui/material";
 import {getOnFieldChange} from "../utils/utils";
@@ -27,6 +27,7 @@ import {ElementsStyle} from "../theme";
 import {useError, useSuccess} from "../hooks/logging";
 import queryString from "query-string";
 import GenericResponse from "../model/dto/GenericResponse";
+import SlideTransition from "../components/util/SlideTransition";
 
 const useStyles = makeStyles(theme => ({
     root: ElementsStyle,
@@ -103,7 +104,8 @@ const SprintComponent = ({sprint, number, role, onSprintUpdate, onSprintRemove}:
     }
 
     return (<>
-        <Dialog open={showConfirmDialog} onClose={() => setShowConfirmDialog(false)}>
+        <Dialog open={showConfirmDialog} TransitionComponent={SlideTransition}
+                onClose={() => setShowConfirmDialog(false)}>
             <DialogTitle>
                 Вы уверены?
             </DialogTitle>
@@ -169,7 +171,9 @@ const SprintComponent = ({sprint, number, role, onSprintUpdate, onSprintRemove}:
                 </div>
                 <br/>
                 <Typography paragraph variant='h6'>Комментарии результатов</Typography>
-                {sprint.comments.map((c, i) => (
+                {sprint.comments.filter(c => {
+                    return c.comment !== null
+                }).map((c, i) => (
                     <Card sx={{padding: '5px', ...ElementsStyle}}>
                         <Typography variant='body2'>
                             {c.mentorName}
@@ -235,19 +239,21 @@ export default function ProjectPlanComponent() {
     }
 
     return (
-        <Paper className={classes.paper} sx={{minHeight: '100px', ...ElementsStyle}} color='inherit' elevation={8}>
-            <Typography align='center' paragraph variant='h4'>План проекта {projectPlan?.projectTitle}</Typography>
-            <br/>
-            {projectPlan?.plan.map((s, i) =>
-                <SprintComponent role={projectPlan.role} sprint={s} number={i} onSprintRemove={onSprintRemove}
-                                 key={s.id} onSprintUpdate={onSprintUpdate}/>)}
-            {projectPlan?.role === ProjectRole.OWNER || projectPlan?.role === ProjectRole.MENTOR_PARTICIPANT ?
-                (<Card sx={{margin: '30px 0', ...ElementsStyle}} onClick={addNewSprint} elevation={8}>
-                    <CardActionArea>
-                        <CardContent sx={{padding: '5px'}} className={classes.card}>
-                            <AddIcon fontSize='large' color='action'/>
-                        </CardContent>
-                    </CardActionArea>
-                </Card>) : <></>}
-        </Paper>);
+        <Fade in={true}>
+            <Paper className={classes.paper} sx={{minHeight: '100px', ...ElementsStyle}} color='inherit' elevation={8}>
+                <Typography align='center' paragraph variant='h4'>План проекта {projectPlan?.projectTitle}</Typography>
+                <br/>
+                {projectPlan?.plan.map((s, i) =>
+                    <SprintComponent role={projectPlan.role} sprint={s} number={i + 1} onSprintRemove={onSprintRemove}
+                                     key={s.id} onSprintUpdate={onSprintUpdate}/>)}
+                {projectPlan?.role === ProjectRole.OWNER || projectPlan?.role === ProjectRole.MENTOR_PARTICIPANT ?
+                    (<Card sx={{margin: '30px 0', ...ElementsStyle}} onClick={addNewSprint} elevation={8}>
+                        <CardActionArea>
+                            <CardContent sx={{padding: '5px'}} className={classes.card}>
+                                <AddIcon fontSize='large' color='action'/>
+                            </CardContent>
+                        </CardActionArea>
+                    </Card>) : <></>}
+            </Paper>
+        </Fade>);
 }

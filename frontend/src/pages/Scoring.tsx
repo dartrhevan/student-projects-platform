@@ -1,20 +1,27 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import Table from "../components/util/Table";
 import ViewableText from "../components/elements/ViewableText";
 import Score from "../model/Score";
-import {QueryResult} from "material-table";
+import MaterialTable, {QueryResult} from "material-table";
 import {getEvaluateTable, uploadScores} from "../api/scoring";
-import {TextField, Link, FormControlLabel} from "@mui/material";
+import {TextField, Link, FormControlLabel, Typography} from "@mui/material";
 import {useParams} from "react-router-dom";
 import {correctNumericInput} from "../utils/utils";
 import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
 import {useError, useSuccess} from "../hooks/logging";
+import {ProjectRole} from "../model/Project";
+import Notification from "../model/Notification";
 
 
 export default function () {
     const {workspaceId} = useParams<{ workspaceId: string }>();
-    const data = () => new Promise<QueryResult<Score>>(res => getEvaluateTable(workspaceId)
-        .then(r => res({data: r.data, page: 0, totalCount: 1})));
+    const [sprintNumber, setSprintNumber] = useState(0);
+    const data = () => new Promise<QueryResult<Score>>(res => getEvaluateTable(workspaceId, sprintNumber)
+        .then(r => {
+            if (sprintNumber === 0) setSprintNumber(parseInt(r.data.currentSprintNumber) + 1);
+            res({data: r.data.scores, page: 0, totalCount: 1})
+        }));
+
 
     const [scores, setScores] = useState([] as Score[]);
 
@@ -33,7 +40,7 @@ export default function () {
     ];
 
     function getScore(row: Score) {
-        let score = scores.find(r => r.projectId === row.projectId);
+        let score = scores.find(r => r.sprintId === row.sprintId);
         if (!score) {
             score = row;
             scores.push(row);
@@ -83,7 +90,7 @@ export default function () {
         {
             title: 'Доска',
             sorting: false,
-            render: (row: Score) => <Link target="_blank" href={row.board}>Доска</Link>
+            render: (row: Score) => <Link target="_blank" href={row.trackerLink}>Доска</Link>
         },
         {
             title: 'Оценка',
@@ -108,6 +115,26 @@ export default function () {
         }
     ];
 
+    const tableRef = React.createRef<MaterialTable<Score>>();
+
     return (<Table paging={false} title='Оценивание' filtering={false} data={data} tableColumns={tableColumns}
-                   tableActions={actions} subHeader='Чтобы сохранить изменения, нажмите:'/>);
+                   tableActions={actions} subHeader='Чтобы сохранить изменения, нажмите:' tableRef={tableRef}
+                   buttons={(
+                       <>
+                           <Typography variant="body2" align='center' sx={{
+                               display: "flex",
+                               alignItems: "center",
+                               margin: "0 15px"
+                           }}>
+                               Номер оцениваемого спринта:
+                           </Typography>
+                           <TextField
+                               sx={{width: '40px'}} type='number' variant='standard'
+                               onInput={e => {
+                                   setSprintNumber(correctNumericInput(e));
+                                   (tableRef.current as any).onQueryChange();
+                               }}
+                               value={sprintNumber}/>
+                       </>
+                   )}/>);
 }

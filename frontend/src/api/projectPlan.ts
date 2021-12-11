@@ -5,7 +5,6 @@ import {getTokenHeader} from "../store/state/LoginState";
 /**
  *
  * @param projectId
- * @param workspaceId
  * @return list of sprints for current project
  */
 export function getProjectPlan(projectId: string) {//TODO: implement
@@ -28,7 +27,7 @@ export function removeSprint(sprintId: string) {
 /**
  * Create empty sprint with default values.
  * @param projectId
- * @param workspaceId
+ * @param orderNum
  * @param sprint
  * @return created sprint id
  */
@@ -54,6 +53,7 @@ export function addSprint(projectId: string, orderNum: string, sprint: Sprint) {
  * Update existing sprint.
  *
  * @param sprint
+ * @param presentation
  */
 export function updateSprint(sprint: Sprint, presentation?: File) {
     function sendUpdate(pr?: string) {
@@ -65,7 +65,6 @@ export function updateSprint(sprint: Sprint, presentation?: File) {
             },
             body: JSON.stringify({
                 sprintId: sprint.id,
-                // number: sprint.
                 goals: sprint.goals,
                 startDate: toDateString(new Date(sprint.startDate)),
                 endDate: toDateString(new Date(sprint.endDate)),

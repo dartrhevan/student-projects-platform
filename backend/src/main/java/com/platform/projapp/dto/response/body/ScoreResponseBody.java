@@ -23,9 +23,9 @@ public class ScoreResponseBody implements ResponseBody {
     private Float trackerScore;
     private String comment;
 
-    public static ScoreResponseBody fromSprint(Sprint sprint) {
+    public static ScoreResponseBody fromSprint(Sprint sprint, User user) {
         Project project = sprint.getProject();
-        Score score = sprint.getScore();
+        Score score = sprint.getScores().stream().filter(s -> s.getUser().equals(user)).findFirst().orElse(null);
         String presentation = sprint.getPresentationId() != null ?
                 String.format("/api/presentation/%d", sprint.getPresentationId()) :
                 null;

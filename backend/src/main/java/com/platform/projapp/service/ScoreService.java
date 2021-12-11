@@ -46,8 +46,7 @@ public class ScoreService {
             score.setTrackerScore(trackerLinkScore);
             score.setComment(comment);
         } else {
-            User mentor = userService.findByUserName(request.getMentor());
-            score = new Score(sprint, mentor, presentationScore, trackerLinkScore, comment);
+            score = new Score(sprint, user, presentationScore, trackerLinkScore, comment);
         }
         scoreRepository.save(score);
     }

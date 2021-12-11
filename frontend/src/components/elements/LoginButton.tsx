@@ -52,7 +52,7 @@ export default function LoginButton() {
                 </>) :
                 (<>
                     <Button className={classes.button} color="inherit" href='/registration'>Регистрация</Button>
-                    <Button className={classes.button} color="inherit" href='/authentication'>Войти</Button>
+                    <Button className={classes.button} color="inherit" href='/authentication'>Вход</Button>
                 </>)}
         </>
     );

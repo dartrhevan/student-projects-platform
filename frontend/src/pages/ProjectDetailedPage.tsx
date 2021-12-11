@@ -15,6 +15,7 @@ import {
     DialogActions,
     DialogTitle,
     Divider,
+    Fade,
     IconButton, InputLabel, Link,
     List,
     ListItemButton,
@@ -140,7 +141,7 @@ const RoleSpecificButton = ({project, onSubmit, enabled, isNew}:
                         </Button>
                     </>) : (<></>)}
                     <Button color='inherit' variant='contained' disabled={!enabled} onClick={onSubmit}>
-                        Подтвердить изменения
+                        {isNew ? "Создать проект" : "Подтвердить изменения"}
                     </Button>
                 </>);
         case ProjectRole.STRANGER:
@@ -221,9 +222,10 @@ const EditableField = ({
 export default function ProjectDetailedPage() {
     // const params = useLocation<ProjectParams>().state;
     const params = queryString.parse(window.location.search);
-    const workspaceId = params?.workspaceId, projectId = params?.projectId;
+    const workspaceId = params?.workspaceId;
     const classes = useStyles();
     const [project, setProject] = useState(new DetailedProject(workspaceId as string));
+    const [projectId, setProjectId] = useState(params?.projectId);
     const [isNew, setIsNew] = useState(params?.isNew !== undefined);
     const [maxParticipantsCount, setMaxParticipantsCount] = useState(project?.maxParticipantsCount || 5);
     const [removeParticipantDialog, setRemoveParticipantDialog] = useState({open: false, participant: ""});
@@ -252,11 +254,16 @@ export default function ProjectDetailedPage() {
     function onSubmit() {
         if (isNew)
             addProject(project as DetailedProject)
-                .then(r => setIsNew(false))
+                .then((r: any) => {
+                    window.location.href = `/project?projectId=${r.data}`;
+                })
                 .catch(r => error(`Error ${r}`));
         else
             editProject(project as DetailedProject)
-                .then(r => success('Success'))
+                .then(r => {
+                    success('Настройки проекта изменены!');
+                    window.location.href = `/projects`;
+                })
                 .catch(r => error(`Error ${r}`));
     }
 
@@ -270,101 +277,105 @@ export default function ProjectDetailedPage() {
     }
 
     return (
-        <Paper className={classes.paper}>
-            <ConfirmationDialog open={removeParticipantDialog.open}
-                                onClose={() => setRemoveParticipantDialog({open: false, participant: ""})}
-                                label="исключить участника"
-                                onSubmit={() => onRemoveParticipant(removeParticipantDialog.participant)}/>
+        <Fade in={true}>
+            <Paper className={classes.paper}>
+                <ConfirmationDialog open={removeParticipantDialog.open}
+                                    onClose={() => setRemoveParticipantDialog({open: false, participant: ""})}
+                                    label="исключить участника"
+                                    onSubmit={() => onRemoveParticipant(removeParticipantDialog.participant)}/>
 
-            <Centered additionalClasses={[classes.inner]}>
-                <EditableField isNew={isNew} label='(название)' props={{variant: 'h4'}} project={project}
-                               prefix={'Проект '} field={p => p?.title} inputProps={{required: true}}
-                               onChange={t => setProject((project as DetailedProject).withTitle(t))}/>
-                <EditableField isNew={isNew} left label='Краткое описание' inputProps={{required: true}}
-                               project={project} field={p => p?.shortDescription}
-                               onChange={t => setProject((project as DetailedProject).withShortDescription(t))}/>
-                <div style={{
-                    width: '100%',
-                    display: 'flex',
-                    flexDirection: 'row',
-                    justifyContent: 'center',
-                    flexWrap: 'wrap'
-                }}>
-                    <TagsPanel onSetTag={tags => setProject(project?.withTags(tags))}
-                               editable={project?.projectRole === ProjectRole.OWNER} values={project?.tags}/>
-                </div>
-                <Divider flexItem/>
-                <EditableField label='Описание' multiline inputProps={{required: true}}
-                               props={{className: classes.descr, sx: {width: '100%', padding: '15px'}}}
-                               project={project} field={p => p?.fullDescription} isNew={isNew}
-                               onChange={t => setProject((project as DetailedProject).withFullDescription(t))}/>
-                <Divider flexItem/>
-                {project?.projectRole !== ProjectRole.STRANGER ?
-                    <EditableField label='Ссылка на трекер' field={p => p?.trackerUrl} project={project}
-                                   inputProps={{variant: 'outlined', fullWidth: true}}
-                                   props={{
-                                       sx: {width: '100%', padding: '10px 5px'},
-                                       component(p: { children: string, className: string }) {
-                                           return <Link className={p.className} href={p.children}>Ссылка на
-                                               трекер</Link>;
-                                       }
+                <Centered additionalClasses={[classes.inner]}>
+                    <EditableField isNew={isNew} label='(название)' props={{variant: 'h4'}} project={project}
+                                   prefix={'Проект '} field={p => p?.title} inputProps={{required: true}}
+                                   onChange={t => setProject((project as DetailedProject).withTitle(t))}/>
+                    <EditableField isNew={isNew} left label='Краткое описание' inputProps={{required: true}}
+                                   project={project} field={p => p?.shortDescription}
+                                   onChange={t => setProject((project as DetailedProject).withShortDescription(t))}/>
+                    <div style={{
+                        width: '100%',
+                        display: 'flex',
+                        flexDirection: 'row',
+                        justifyContent: 'center',
+                        flexWrap: 'wrap'
+                    }}>
+                        <TagsPanel onSetTag={tags => setProject(project?.withTags(tags))}
+                                   editable={project?.projectRole === ProjectRole.OWNER} values={project?.tags}/>
+                    </div>
+                    <Divider flexItem/>
+                    <EditableField label='Описание' multiline inputProps={{required: true}}
+                                   props={{className: classes.descr, sx: {width: '100%', padding: '15px'}}}
+                                   project={project} field={p => p?.fullDescription} isNew={isNew}
+                                   onChange={t => setProject((project as DetailedProject).withFullDescription(t))}/>
+                    <Divider flexItem/>
+                    {project?.projectRole !== ProjectRole.STRANGER ?
+                        <EditableField label='Ссылка на трекер' field={p => p?.trackerLink} project={project}
+                                       inputProps={{variant: 'outlined', fullWidth: true}}
+                                       props={{
+                                           sx: {width: '100%', padding: '10px 5px'},
+                                           component(p: { children: string, className: string }) {
+                                               return <Link className={p.className} href={p.children}>Ссылка на
+                                                   трекер</Link>;
+                                           }
+                                       }}
+                                       onChange={t => setProject((project as DetailedProject).withTrackerUrl(t))}/> : <></>}
+
+                    {
+                        !isNew && <List
+                            sx={{width: '100%'}}
+                            component="nav"
+                            aria-labelledby="nested-list-subheader"
+                            subheader={
+                                <ListSubheader component="div" sx={{
+                                    background: THEME.ELEMENTS_COLOUR,
+                                }} color='inherit'>
+                                    Список участников
+                                </ListSubheader>
+                            }>
+                            {project?.participants.map(p => (
+                                <ListItemButton disableRipple sx={{cursor: 'default'}} key={p.username}>
+                                    <ListItemText primary={`${p.name} (${p.role})`}/>
+                                    {project?.projectRole === ProjectRole.OWNER ?
+                                        <IconButton
+                                            onClick={() => setRemoveParticipantDialog({
+                                                open: true,
+                                                participant: p.username
+                                            })}>
+                                            <Clear/>
+                                        </IconButton> : <></>}
+                                </ListItemButton>))}
+                        </List>
+                    }
+                    <div className={classes.butGr} style={{justifyContent: 'start'}}>
+                        <Typography sx={{margin: '10px'}} color='inherit'>Максимальное кол-во участников</Typography>
+                        <TextField disabled={!(isNew || project?.projectRole === ProjectRole.OWNER)}
+                                   sx={{width: '40px'}} type='number' variant='standard'
+                                   onInput={correctNumericInput}
+                                   onChange={e => {
+                                       setMaxParticipantsCount(parseInt(e.target.value))
+                                       project.maxParticipantsCount = parseInt(e.target.value);
                                    }}
-                                   onChange={t => setProject((project as DetailedProject).withTrackerUrl(t))}/> : <></>}
+                                   value={maxParticipantsCount}/>
+                    </div>
 
-                <List
-                    sx={{width: '100%'}}
-                    component="nav"
-                    aria-labelledby="nested-list-subheader"
-                    subheader={
-                        <ListSubheader component="div" sx={{
-                            background: THEME.ELEMENTS_COLOUR,
-                        }} color='inherit'>
-                            Список участников
-                        </ListSubheader>
-                    }>
-                    {project?.participants.map(p => (
-                        <ListItemButton disableRipple sx={{cursor: 'default'}} key={p.username}>
-                            <ListItemText primary={`${p.name} (${p.role})`}/>
-                            {project?.projectRole === ProjectRole.OWNER ?
-                                <IconButton
-                                    onClick={() => setRemoveParticipantDialog({
-                                        open: true,
-                                        participant: p.username
-                                    })}>
-                                    <Clear/>
-                                </IconButton> : <></>}
-                        </ListItemButton>))}
-                </List>
-                <div className={classes.butGr} style={{justifyContent: 'start'}}>
-                    <Typography sx={{margin: '10px'}} color='inherit'>Максимальное кол-во участников</Typography>
-                    <TextField disabled={!(isNew || project?.projectRole === ProjectRole.OWNER)}
-                               sx={{width: '40px'}} type='number' variant='standard'
-                               onInput={correctNumericInput}
-                               onChange={e => {
-                                   setMaxParticipantsCount(parseInt(e.target.value))
-                                   project.maxParticipantsCount = parseInt(e.target.value);
-                               }}
-                               value={maxParticipantsCount}/>
-                </div>
-
-                {!isNew ? (<div className={classes.butGr} style={{justifyContent: 'start'}}>
-                    <Typography sx={{margin: '10px'}}>Статус проекта</Typography>
-                    <Select
-                        disabled={!(isNew || project?.projectRole === ProjectRole.OWNER)}
-                        value={project?.status}
-                        onChange={s => setProject(project?.withStatus(s.target.value as ProjectStatus))}>
-                        <MenuItem color='inherit' value={ProjectStatus.NEW}>Новый</MenuItem>
-                        <MenuItem color='inherit' value={ProjectStatus.IN_PROGRESS}>В разработке</MenuItem>
-                        <MenuItem color='inherit' value={ProjectStatus.ENDED}>Завершён</MenuItem>
-                        <MenuItem color='inherit' value={ProjectStatus.CANCELLED}>Отклонён</MenuItem>
-                        <MenuItem color='inherit' value={ProjectStatus.MODIFYING}>На доработке</MenuItem>
-                    </Select>
-                </div>) : (<></>)}
-                <ErrorMessage message='*Не все обязательные поля заполнены' condition={!allFilled}/>
-                <div className={classes.butGr}>
-                    <RoleSpecificButton isNew={isNew} enabled={allFilled} onSubmit={onSubmit} project={project}/>
-                </div>
-            </Centered>
-        </Paper>
+                    {!isNew ? (<div className={classes.butGr} style={{justifyContent: 'start'}}>
+                        <Typography sx={{margin: '10px'}}>Статус проекта</Typography>
+                        <Select
+                            disabled={!(isNew || project?.projectRole === ProjectRole.OWNER)}
+                            value={project?.status}
+                            onChange={s => setProject(project?.withStatus(s.target.value as ProjectStatus))}>
+                            <MenuItem color='inherit' value={ProjectStatus.NEW}>Новый</MenuItem>
+                            <MenuItem color='inherit' value={ProjectStatus.IN_PROGRESS}>В разработке</MenuItem>
+                            <MenuItem color='inherit' value={ProjectStatus.ENDED}>Завершён</MenuItem>
+                            <MenuItem color='inherit' value={ProjectStatus.CANCELLED}>Отклонён</MenuItem>
+                            <MenuItem color='inherit' value={ProjectStatus.MODIFYING}>На доработке</MenuItem>
+                        </Select>
+                    </div>) : (<></>)}
+                    <ErrorMessage message='*Не все обязательные поля заполнены' condition={!allFilled}/>
+                    <div className={classes.butGr}>
+                        <RoleSpecificButton isNew={isNew} enabled={allFilled} onSubmit={onSubmit} project={project}/>
+                    </div>
+                </Centered>
+            </Paper>
+        </Fade>
     );
 }

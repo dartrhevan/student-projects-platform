@@ -1,7 +1,7 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect} from 'react';
 import './App.css';
 import Header from "./components/elements/Header";
-import {BrowserRouter, Route, Switch} from 'react-router-dom';
+import {BrowserRouter, Redirect, Route, Switch} from 'react-router-dom';
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Centered from "./components/util/Centered";
@@ -29,6 +29,7 @@ import {setTagsRef} from "./store/actions/tags/tags";
 import {getTagsReference} from "./api/reference";
 import {makeStyles} from "@material-ui/core";
 import THEME, {BackgroundStyle} from './theme';
+import getUsername from "./hooks/getUsername";
 
 
 const useStyles = makeStyles(theme => ({
@@ -46,6 +47,8 @@ function App() {
     const dispatch = useDispatch();
 
     const error = useError();
+
+    const login = useSelector(getUsername);
 
 
     function setTagsReference(r: Tag[]) {
@@ -67,7 +70,7 @@ function App() {
             console.log(r);
             error('Auth not valid');
             dispatch(logoutAction());
-            window.location.href = '/';
+            window.location.href = '/authentication';
         }); // TODO: may be move somewhere
     }, []);
 
@@ -89,20 +92,28 @@ function App() {
             <Centered additionalClasses={[classes.main]}>
                 <BrowserRouter>
                     <Switch>
+                        <Route component={StartPage} exact path='/'/>
                         <Route component={Login} path='/authentication'/>
                         <Route component={Register} path='/registration'/>
-                        <Route component={Projects} path='/projects/:workspaceId/:workspaceTitle'/>
-                        <Route component={Projects} path='/projects'/>
-                        <Route component={Users} path='/users'/>
-                        <Route component={Notifications} path='/notifications'/>
-                        <Route component={ProjectDetailedPage} path='/project'/>
-                        <Route component={ProjectPlanComponent} path='/project-plan'/>
-                        <Route component={UserProfilePage} path='/profile'/>
-                        <Route component={Scores} path='/scores/:workspaceId'/>
-                        <Route component={Portfolio} path='/portfolio/:login'/>
-                        <Route component={Scoring} path='/scoring/:workspaceId'/>
-                        <Route component={Workspaces} path='/workspaces'/>
-                        <Route component={StartPage} path='/'/>
+                        {
+                            login &&
+                            <>
+                                <Route component={Login} path='/authentication'/>
+                                <Route component={Register} path='/registration'/>
+                                <Route component={Projects} path='/projects/:workspaceId/:workspaceTitle'/>
+                                <Route component={Projects} exact path='/projects'/>
+                                <Route component={Users} path='/users'/>
+                                <Route component={Notifications} path='/notifications'/>
+                                <Route component={ProjectDetailedPage} path='/project'/>
+                                <Route component={ProjectPlanComponent} path='/project-plan'/>
+                                <Route component={UserProfilePage} path='/profile'/>
+                                <Route component={Scores} path='/scores/:workspaceId'/>
+                                <Route component={Portfolio} path='/portfolio/:login'/>
+                                <Route component={Scoring} path='/scoring/:workspaceId'/>
+                                <Route component={Workspaces} path='/workspaces'/>
+                            </>
+                            || <Redirect to={"/authentication"}/>
+                        }
                     </Switch>
                 </BrowserRouter>
             </Centered>

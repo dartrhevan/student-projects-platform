@@ -83,7 +83,7 @@ export default function Notifications() {
                    filtering={false} data={data} tableColumns={tableColumns} tableActions={tableActions}
                    tableRef={tableRef}
                    emptyDataSourceMessage={<Typography sx={{height: '400px', ...ElementsStyle}} component='div'>
-                       На данной странице будут отображаться уведомлеия:
+                       На данной странице будут отображаться уведомления:
                        <Typography align='left' sx={{marginLeft: '5%', ...ElementsStyle}}>
                            <ol>
                                <li>Приглашение вас в команду</li>

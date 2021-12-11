@@ -14,6 +14,7 @@ import {addNewWorkspace, getWorkspaceById, updateWorkspace} from "../../api/work
 import {allNotEmpty, getOnFieldChange, toDateString} from "../../utils/utils";
 import ErrorMessage from "./ErrorMessage";
 import {useError, useSuccess, useWarn} from "../../hooks/logging";
+import SlideTransition from "../util/SlideTransition";
 
 const useStyles = makeStyles(theme => ({
     main: {
@@ -101,7 +102,7 @@ export default function WorkspaceSettings({workspaceId = ''}: WorkspaceProps) {
 
     // @ts-ignore
     return (
-        <Dialog open={open} onClose={onCloseDialog}>
+        <Dialog TransitionComponent={SlideTransition} open={open} onClose={onCloseDialog}>
             <DialogTitle>
                 <Typography variant='h6'>
                     {workspaceId === '' ? 'Новое рабочее пространство' : `Рабочее пространство ${title}`}

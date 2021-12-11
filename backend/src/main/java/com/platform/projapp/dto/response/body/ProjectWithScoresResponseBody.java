@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 public class ProjectWithScoresResponseBody implements ResponseBody {
     private Long projectId;
     private String projectTitle;
-    private String mentorTeam;
+    private String mentor;
     private Set<ScoreInProjectResponseBody> scores;
 
     public static ProjectWithScoresResponseBody fromProject(Project project) {

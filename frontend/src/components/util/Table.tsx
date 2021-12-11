@@ -12,7 +12,7 @@ import {
     Search
 } from "@material-ui/icons";
 import THEME, {ElementsStyle} from '../../theme';
-import {Typography} from "@mui/material";
+import {Fade, Typography} from "@mui/material";
 import isMobile from "../../hooks/isMobile";
 
 const useStyles = makeStyles(theme => ({
@@ -34,12 +34,24 @@ interface ITableProps<T extends object> {
     subHeader?: string
     tableRef?: React.Ref<MaterialTable<T>>
     emptyDataSourceMessage?: React.ReactNode
+    buttons?: React.ReactNode
 }
 
 export default function Table<T extends object>(
-    {tableRef, title, data, tableColumns, tableActions, paging = true, filtering = true, subHeader, emptyDataSourceMessage = 'Нет данных'}: ITableProps<T>) {
-    const classes = useStyles();
-    const mobile = isMobile();
+    {
+        tableRef,
+        title,
+        data,
+        tableColumns,
+        tableActions,
+        paging = true,
+        filtering = true,
+        subHeader,
+        emptyDataSourceMessage = 'Нет данных',
+        buttons
+    }: ITableProps<T>) {
+    // const classes = useStyles();
+    // const mobile = isMobile();
 
     const icons: Icons = {
         FirstPage: forwardRef((props, ref) => <FirstPage ref={ref}/>),
@@ -53,54 +65,51 @@ export default function Table<T extends object>(
 
     };
     return (
-        // <>
-        //     <Typography className={classes.title} variant='h3'>{title}</Typography>
 
-        <MaterialTable
-            tableRef={tableRef}
-            title={(<>
-                <Typography
-                    variant="h6"
-                    sx={ElementsStyle}
-                    gutterBottom>
-                    {title}
-                </Typography>
-                <Typography
-                    variant="body2"
-                    // sx={{color: ElementsStyle.color}}
-                    // sx={ElementsStyle}
-                    gutterBottom>
-                    {subHeader}
-                </Typography>
-            </>)}
-            data={data}
-            columns={tableColumns}
-            actions={tableActions}
-            icons={icons}
-            options={{
-                paging: paging,
-                pageSize: 10,
-                pageSizeOptions: [10, 20, 30],
-                debounceInterval: 500,
-                toolbarButtonAlignment: 'left',
-                draggable: false,
-                search: false,
-                filtering: filtering,
-                actionsColumnIndex: -1,
-                headerStyle: ElementsStyle
-            }}
-            localization={{
-                header: {
-                    actions: 'Действия'
-                },
-                body: {
-                    emptyDataSourceMessage: emptyDataSourceMessage
-                }
-            }}
-            style={{
-                width: '90%', margin: '20px 0px',
-                minHeight: '80%',
-                ...ElementsStyle
-            }}/>);
-    // </>);
+        <Fade in={true}>
+            <MaterialTable
+                tableRef={tableRef}
+                title={(<div style={{display: 'flex', flexDirection: buttons ? 'row' : 'column'}}>
+                    <Typography variant="h6" sx={ElementsStyle} gutterBottom>
+                        {title}
+                    </Typography>
+                    {buttons}
+                    <Typography variant="body2" align='center' sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        margin: "0 15px"
+                    }}>
+                        {subHeader}
+                    </Typography>
+                </div>)}
+                data={data}
+                columns={tableColumns}
+                actions={tableActions}
+                icons={icons}
+                options={{
+                    paging: paging,
+                    pageSize: 10,
+                    pageSizeOptions: [10, 20, 30],
+                    debounceInterval: 500,
+                    toolbarButtonAlignment: 'left',
+                    draggable: false,
+                    search: false,
+                    filtering: filtering,
+                    actionsColumnIndex: -1,
+                    headerStyle: ElementsStyle
+                }}
+                localization={{
+                    header: {
+                        actions: 'Действия'
+                    },
+                    body: {
+                        emptyDataSourceMessage: emptyDataSourceMessage
+                    }
+                }}
+                style={{
+                    width: '90%', margin: '20px 0px',
+                    minHeight: '80%',
+                    ...ElementsStyle
+                }}/>
+        </Fade>);
 }

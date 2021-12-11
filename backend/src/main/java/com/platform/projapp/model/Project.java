@@ -9,6 +9,7 @@ import lombok.ToString;
 
 import javax.persistence.*;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 import static javax.persistence.CascadeType.*;
@@ -93,9 +94,8 @@ public class Project {
 
     public Float getResultScore() {
         float result = 0f;
-        for (Sprint sprint :
-                sprints) {
-            result += sprint.getScore().getResultScore();
+        for (Sprint sprint : sprints) {
+            result += sprint.getScores().stream().map(Score::getResultScore).reduce(0f, Float::sum);
         }
         return result;
     }

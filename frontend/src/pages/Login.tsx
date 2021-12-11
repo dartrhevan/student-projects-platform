@@ -10,6 +10,7 @@ import {LoginState} from "../store/state/LoginState";
 import {useWarn} from "../hooks/logging";
 import {ElementsStyle} from "../theme";
 import Card from "@material-ui/core/Card";
+import Fade from '@mui/material/Fade/Fade';
 
 const useStyles = makeStyles(theme => ({
     def: {
@@ -47,21 +48,25 @@ export default function Login() {
 
     return (
         <Centered additionalClasses={[classes.container]}>
-            <Card className={classes.card}>
-                <Typography variant="h5" align='center'>
-                    Вход
-                </Typography>
-                <CssBaseline/>
-                <TextField required label="Логин" className={classes.def} onChange={getOnFieldChange(setUsername)}
-                           fullWidth={true}/>
-                <CssBaseline/>
-                <TextField label="Пароль" className={classes.def} onChange={getOnFieldChange(setPassword)}
-                           type="password" fullWidth={true} required/>
-                <CssBaseline/>
-                <Aligned endAlign={true}>
-                    <Button href='/registration' color='inherit' className={classes.def}>Регистрация</Button>
-                    <Button disabled={!allFilled} color='inherit' onClick={onLogin} className={classes.def}>Подтвердить</Button>
-                </Aligned>
-            </Card>
+
+            <Fade in={true}>
+                <Card className={classes.card}>
+                    <Typography variant="h5" align='center'>
+                        Вход
+                    </Typography>
+                    <CssBaseline/>
+                    <TextField required label="Логин" className={classes.def} onChange={getOnFieldChange(setUsername)}
+                               fullWidth={true}/>
+                    <CssBaseline/>
+                    <TextField label="Пароль" className={classes.def} onChange={getOnFieldChange(setPassword)}
+                               type="password" fullWidth={true} required/>
+                    <CssBaseline/>
+                    <Aligned endAlign={true}>
+                        <Button href='/registration' color='inherit' className={classes.def}>Зарегистрироваться</Button>
+                        <Button disabled={!allFilled} color='inherit' onClick={onLogin}
+                                className={classes.def}>Войти</Button>
+                    </Aligned>
+                </Card>
+            </Fade>
         </Centered>);
 }
