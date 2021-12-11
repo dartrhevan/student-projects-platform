@@ -6,12 +6,13 @@ import Table from "../components/util/Table";
 import queryString from "query-string";
 import {allNotEmpty} from "../utils/utils";
 import ViewableText from "../components/elements/ViewableText";
-import {Dialog, DialogActions, DialogTitle} from "@mui/material";
+import {Dialog, DialogActions, DialogTitle, Slide} from "@mui/material";
 import {getUsers, inviteToProject} from "../api/users";
 import UserRow, {UserType} from "../model/UserRow";
 import RoleInput from "../components/elements/RoleInput";
 import {useSuccess} from "../hooks/logging";
 import {addRoleToReference, getRolesReference} from "../api/reference";
+import SlideTransition from "../components/util/SlideTransition";
 
 
 const tableColumns = [
@@ -136,7 +137,7 @@ export default function Users() {
     }
 
     return (<>
-        <Dialog open={openInviteDialog} onClose={onInviteAborted}>
+        <Dialog TransitionComponent={SlideTransition} open={openInviteDialog} onClose={onInviteAborted}>
             <DialogTitle>Пригласить участника</DialogTitle>
             <DialogContent dividers>
                 <RoleInput reference={rolesReference} onChange={onRoleChange} multiple={false}/>

@@ -12,7 +12,7 @@ import {
     Search
 } from "@material-ui/icons";
 import THEME, {ElementsStyle} from '../../theme';
-import {Typography} from "@mui/material";
+import {Fade, Typography} from "@mui/material";
 import isMobile from "../../hooks/isMobile";
 
 const useStyles = makeStyles(theme => ({
@@ -65,48 +65,51 @@ export default function Table<T extends object>(
 
     };
     return (
-        <MaterialTable
-            tableRef={tableRef}
-            title={(<div style={{display: 'flex', flexDirection: buttons ? 'row' : 'column'}}>
-                <Typography variant="h6" sx={ElementsStyle} gutterBottom>
-                    {title}
-                </Typography>
-                {buttons}
-                <Typography variant="body2" align='center' sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    margin: "0 15px"
-                }}>
-                    {subHeader}
-                </Typography>
-            </div>)}
-            data={data}
-            columns={tableColumns}
-            actions={tableActions}
-            icons={icons}
-            options={{
-                paging: paging,
-                pageSize: 10,
-                pageSizeOptions: [10, 20, 30],
-                debounceInterval: 500,
-                toolbarButtonAlignment: 'left',
-                draggable: false,
-                search: false,
-                filtering: filtering,
-                actionsColumnIndex: -1,
-                headerStyle: ElementsStyle
-            }}
-            localization={{
-                header: {
-                    actions: 'Действия'
-                },
-                body: {
-                    emptyDataSourceMessage: emptyDataSourceMessage
-                }
-            }}
-            style={{
-                width: '90%', margin: '20px 0px',
-                minHeight: '80%',
-                ...ElementsStyle
-            }}/>);
+
+        <Fade in={true}>
+            <MaterialTable
+                tableRef={tableRef}
+                title={(<div style={{display: 'flex', flexDirection: buttons ? 'row' : 'column'}}>
+                    <Typography variant="h6" sx={ElementsStyle} gutterBottom>
+                        {title}
+                    </Typography>
+                    {buttons}
+                    <Typography variant="body2" align='center' sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        margin: "0 15px"
+                    }}>
+                        {subHeader}
+                    </Typography>
+                </div>)}
+                data={data}
+                columns={tableColumns}
+                actions={tableActions}
+                icons={icons}
+                options={{
+                    paging: paging,
+                    pageSize: 10,
+                    pageSizeOptions: [10, 20, 30],
+                    debounceInterval: 500,
+                    toolbarButtonAlignment: 'left',
+                    draggable: false,
+                    search: false,
+                    filtering: filtering,
+                    actionsColumnIndex: -1,
+                    headerStyle: ElementsStyle
+                }}
+                localization={{
+                    header: {
+                        actions: 'Действия'
+                    },
+                    body: {
+                        emptyDataSourceMessage: emptyDataSourceMessage
+                    }
+                }}
+                style={{
+                    width: '90%', margin: '20px 0px',
+                    minHeight: '80%',
+                    ...ElementsStyle
+                }}/>
+        </Fade>);
 }

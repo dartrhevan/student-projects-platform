@@ -23,6 +23,7 @@ import {useError, useSuccess} from "../../hooks/logging";
 import GenericResponse from "../../model/dto/GenericResponse";
 import {Login} from "../../store/state/LoginState";
 import THEME, {ElementsStyle} from "../../theme";
+import Fade from '@mui/material/Fade';
 
 const useStyles = makeStyles(theme => ({
     def: {
@@ -102,8 +103,9 @@ export default function UserProfileComponent({user, title}: UserProfileProps) {
     const dispatch = useDispatch();
     const onRegister = () => register(new UserProfile(name, surname, username, email, messenger, comment, group, roles, tags), password)
         .then((r: GenericResponse<Login>) => {
+            success('Вы успешно зарегистрированы');
             dispatch(setLoginAction(r.data));
-            window.location.href = '/profile';
+            setInterval(() => window.location.href = '/profile', 500);
         }).catch(error);
 
     const required = [];
@@ -129,64 +131,67 @@ export default function UserProfileComponent({user, title}: UserProfileProps) {
 
     return (
         <Centered additionalClasses={[classes.container]}>
-            <Card className={clsx(classes.card, classes.skills)}>
-                <Typography variant="h5">
-                    {title}
-                </Typography>
-                {user !== undefined && !allFilled ?
-                    <Typography color='textSecondary' variant='body2'>
-                        В вашем профиле остались незаполненные поля.
-                    </Typography> : ''}
-                <CssBaseline/>
+            <Fade in={true}>
+                <Card className={clsx(classes.card, classes.skills)}>
+                    <Typography variant="h5">
+                        {title}
+                    </Typography>
+                    {user !== undefined && !allFilled ?
+                        <Typography color='textSecondary' variant='body2'>
+                            В вашем профиле остались незаполненные поля.
+                        </Typography> : ''}
+                    <CssBaseline/>
 
-                <TextField label="Имя" value={name} className={classes.def} onChange={getOnFieldChange(setName)}
-                           fullWidth={true} required/>
-                <TextField label="Фамилия" value={surname} className={classes.def} required
-                           onChange={getOnFieldChange(setSurname)} fullWidth={true}/>
-                <TextField label="Логин" value={username} className={classes.def} required
-                           onChange={getOnFieldChange(setUsername)} fullWidth={true}/>
-                <TextField label="Email" value={email} className={classes.def} required
-                           onChange={getOnFieldChange(setEmail)} fullWidth={true}/>
-                <TextField label="Группа" value={group} className={classes.def}
-                           onChange={getOnFieldChange(setGroup)} fullWidth={true}/>
-                <CssBaseline/>
-                {user !== undefined ? (<>
-                    <TextField label="Мэсэнджер" value={messenger} className={classes.def}
-                               onChange={getOnFieldChange(setMessenger)} fullWidth={true}/>
-                    <TextField label='Кратко опишите ваши интерересы' multiline={true}
-                               focused className={classes.def} onChange={getOnFieldChange(setComment)}
-                               fullWidth={true} value={comment}/>
-                    <div className={clsx(classes.def, classes.skills)}>
-                        <Typography className={classes.def} align='center'>Введи ваши навыки</Typography>
-                        <TagsPanel values={tags} label='skill' tagInputClasses={[classes.tagInput]} onSetTag={setTags}/>
-                    </div>
-                    <RolesInput onChange={s => setRoles(s as string[])} defRoles={roles}/>
-                </>) : <></>}
-                {user ?
-                    <TextField label="Текущий пароль" className={classes.def}
-                               onChange={getOnFieldChange(setPassword)}
-                               type="password" fullWidth={true} required/> : <></>}
-                <TextField label={passwordLabels.input} className={classes.def}
-                           onChange={getOnFieldChange(user === undefined ? setPassword : setNewPassword)}
-                           type="password" fullWidth={true} required/>
-                <TextField label={passwordLabels.confirmation} className={classes.def} type="password"
-                           onChange={getOnFieldChange(setPasswordConfirm)} fullWidth={true} required/>
+                    <TextField label="Имя" value={name} className={classes.def} onChange={getOnFieldChange(setName)}
+                               fullWidth={true} required/>
+                    <TextField label="Фамилия" value={surname} className={classes.def} required
+                               onChange={getOnFieldChange(setSurname)} fullWidth={true}/>
+                    <TextField label="Логин" value={username} className={classes.def} required
+                               onChange={getOnFieldChange(setUsername)} fullWidth={true}/>
+                    <TextField label="Email" value={email} className={classes.def} required
+                               onChange={getOnFieldChange(setEmail)} fullWidth={true}/>
+                    <TextField label="Группа" value={group} className={classes.def}
+                               onChange={getOnFieldChange(setGroup)} fullWidth={true}/>
+                    <CssBaseline/>
+                    {user !== undefined ? (<>
+                        <TextField label="Мэсэнджер" value={messenger} className={classes.def}
+                                   onChange={getOnFieldChange(setMessenger)} fullWidth={true}/>
+                        <TextField label='Кратко опишите ваши интерересы' multiline={true}
+                                   focused className={classes.def} onChange={getOnFieldChange(setComment)}
+                                   fullWidth={true} value={comment}/>
+                        <div className={clsx(classes.def, classes.skills)}>
+                            <Typography className={classes.def} align='center'>Введи ваши навыки</Typography>
+                            <TagsPanel values={tags} label='skill' tagInputClasses={[classes.tagInput]}
+                                       onSetTag={setTags}/>
+                        </div>
+                        <RolesInput onChange={s => setRoles(s as string[])} defRoles={roles}/>
+                    </>) : <></>}
+                    {user ?
+                        <TextField label="Текущий пароль" className={classes.def}
+                                   onChange={getOnFieldChange(setPassword)}
+                                   type="password" fullWidth={true} required/> : <></>}
+                    <TextField label={passwordLabels.input} className={classes.def}
+                               onChange={getOnFieldChange(user === undefined ? setPassword : setNewPassword)}
+                               type="password" fullWidth={true} required/>
+                    <TextField label={passwordLabels.confirmation} className={classes.def} type="password"
+                               onChange={getOnFieldChange(setPasswordConfirm)} fullWidth={true} required/>
 
-                <CssBaseline/>
-                <ErrorMessage message='*Пароль и подтверждение не совпадают' condition={!passwordConfirmed}/>
-                <ErrorMessage message='*Не все обязательные поля заполнены корректно'
-                              condition={!(passwordConfirmed && allFilledAndValid)}/>
-                <ErrorMessage message='*Логин и пароль должны содержать не меньше 6 символов'
-                              condition={!(username.length >= 6 && password.length >= 6)}/>
-                <ErrorMessage message='*Некорректный емайл'
-                              condition={!(email?.match(emailPattern))}/>
+                    <CssBaseline/>
+                    <ErrorMessage message='*Пароль и подтверждение не совпадают' condition={!passwordConfirmed}/>
+                    <ErrorMessage message='*Не все обязательные поля заполнены корректно'
+                                  condition={!(passwordConfirmed && allFilledAndValid)}/>
+                    <ErrorMessage message='*Логин и пароль должны содержать не меньше 6 символов'
+                                  condition={!(username.length >= 6 && password.length >= 6)}/>
+                    <ErrorMessage message='*Некорректный емайл'
+                                  condition={!(email?.match(emailPattern))}/>
 
-                <Aligned endAlign={true}>
-                    <Button disabled={!(passwordConfirmed && allFilledAndValid)}
-                            className={classes.def} onClick={user ? onUpdate : onRegister}>
-                        {user ? "Подтвердить изменения" : "Зарегистрироваться"}
-                    </Button>
-                </Aligned>
-            </Card>
+                    <Aligned endAlign={true}>
+                        <Button disabled={!(passwordConfirmed && allFilledAndValid)}
+                                className={classes.def} onClick={user ? onUpdate : onRegister}>
+                            {user ? "Подтвердить изменения" : "Зарегистрироваться"}
+                        </Button>
+                    </Aligned>
+                </Card>
+            </Fade>
         </Centered>);
 }

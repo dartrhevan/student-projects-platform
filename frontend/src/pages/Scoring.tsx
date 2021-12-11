@@ -18,7 +18,7 @@ export default function () {
     const [sprintNumber, setSprintNumber] = useState(0);
     const data = () => new Promise<QueryResult<Score>>(res => getEvaluateTable(workspaceId, sprintNumber)
         .then(r => {
-            if (sprintNumber == 0) setSprintNumber(parseInt(r.data.currentSprintNumber) + 1);
+            if (sprintNumber === 0) setSprintNumber(parseInt(r.data.currentSprintNumber) + 1);
             res({data: r.data.scores, page: 0, totalCount: 1})
         }));
 

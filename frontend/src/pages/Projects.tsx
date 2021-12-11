@@ -12,7 +12,7 @@ import CheckBoxInfo from "../model/CheckBoxInfo";
 import {Button, makeStyles} from "@material-ui/core";
 import Centered from "../components/util/Centered";
 import SettingsIcon from '@mui/icons-material/Settings';
-import {Dialog, DialogActions, DialogContent, DialogTitle, IconButton, TextField, Tooltip} from "@mui/material";
+import {Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Slide, TextField, Tooltip} from "@mui/material";
 import WorkspaceSettings from "../components/elements/WorkspaceSettings";
 import {openDialog} from "../store/actions/dialog/dialog";
 import Invite from "../model/dto/Invite";
@@ -28,6 +28,7 @@ import MenuBookIcon from '@mui/icons-material/MenuBook';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ConfirmationDialog from "../components/util/ConfirmationDialog";
 import {getAllProjectsUsers} from "../api/users";
+import SlideTransition from "../components/util/SlideTransition";
 
 
 interface ProjectsParams {//TODO: remove
@@ -133,7 +134,8 @@ export default function Projects() {
                                {role === WorkspaceAssociation.ORGANIZER &&
                                <>
                                    <WorkspaceSettings workspaceId={workspaceId}/>
-                                   <Dialog open={openInvite} onClose={closeInvite}>
+                                   <Dialog open={openInvite} onClose={closeInvite}
+                                           TransitionComponent={SlideTransition}>
                                        <DialogTitle>Добавить в рабочее пространство</DialogTitle>
                                        <DialogContent dividers>
                                            <Centered>

@@ -3,7 +3,7 @@ import {Card, CardActionArea, CardContent, makeStyles} from "@material-ui/core";
 import ListItemProps, {IBadge} from "../../props.common/ListItemProps";
 import Centered from "../util/Centered";
 import {useDispatch, useSelector} from "react-redux";
-import {Typography} from "@mui/material";
+import {Fade, Typography} from "@mui/material";
 import Dot from "../util/Dot";
 import clsx from 'clsx';
 import {getTagsReferenceMap} from "../../hooks/getTagsRef";
@@ -44,7 +44,16 @@ interface ProjectBadgeProp extends ListItemProps, IBadge {
     squared?: boolean,
 }
 
-export default function DefaultBadge({id, title, href, description, tags = [], label, labelColor, squared = true}: ProjectBadgeProp) {
+export default function DefaultBadge({
+                                         id,
+                                         title,
+                                         href,
+                                         description,
+                                         tags = [],
+                                         label,
+                                         labelColor,
+                                         squared = true
+                                     }: ProjectBadgeProp) {
     const classes = useStyles();
     const dispatch = useDispatch();
     // const onClick = () => {
@@ -53,26 +62,29 @@ export default function DefaultBadge({id, title, href, description, tags = [], l
     const tagsReference = useSelector(getTagsReferenceMap);
     const tagsR = tags.map(t => tagsReference[t.toString()]).filter(t => t !== undefined);
     return (
-        <Card className={clsx({[classes.root]: true, [classes.squared]: squared, [classes.rectangle]: !squared})}>
-            <CardActionArea className={classes.area} href={href as string}>
-                <CardContent className={classes.card}>
-                    <Centered className={classes.description}>
-                        <Typography variant='h6'>{title}</Typography>
-                        <br/>
-                        <Typography className={classes.description} variant='subtitle2'>{description}</Typography>
-                        <br/>
-                    </Centered>
-                    <div hidden={tags.length <= 0} style={{color: ElementsStyle.color, marginBottom: '5px', marginLeft: '10px'}}>
-                        Тэги:
-                    </div>
-                    <div style={{
-                        display: 'flex',
-                        flexDirection: 'row'
-                    }}>
-                        {tagsR?.map(t => <Dot key={t.name} color={t.backgroundColor}/>)}
-                    </div>
-                    <Typography sx={{color: labelColor}} variant='subtitle2' align='right'>{label}</Typography>
-                </CardContent>
-            </CardActionArea>
-        </Card>);
+        <Fade in={true}>
+            <Card className={clsx({[classes.root]: true, [classes.squared]: squared, [classes.rectangle]: !squared})}>
+                <CardActionArea className={classes.area} href={href as string}>
+                    <CardContent className={classes.card}>
+                        <Centered className={classes.description}>
+                            <Typography variant='h6'>{title}</Typography>
+                            <br/>
+                            <Typography className={classes.description} variant='subtitle2'>{description}</Typography>
+                            <br/>
+                        </Centered>
+                        <div hidden={tags.length <= 0}
+                             style={{color: ElementsStyle.color, marginBottom: '5px', marginLeft: '10px'}}>
+                            Тэги:
+                        </div>
+                        <div style={{
+                            display: 'flex',
+                            flexDirection: 'row'
+                        }}>
+                            {tagsR?.map(t => <Dot key={t.name} color={t.backgroundColor}/>)}
+                        </div>
+                        <Typography sx={{color: labelColor}} variant='subtitle2' align='right'>{label}</Typography>
+                    </CardContent>
+                </CardActionArea>
+            </Card>
+        </Fade>);
 }

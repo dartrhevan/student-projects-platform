@@ -8,10 +8,11 @@ import GroupAddIcon from '@mui/icons-material/GroupAdd';
 import getPaging from "../hooks/getPaging";
 import Workspace from "../model/Workspace";
 import {attachToWorkspace, getUsersWorkspaces} from "../api/workspaces";
-import {Dialog, DialogActions, DialogContent, DialogTitle, TextField, Typography} from "@mui/material";
+import {Dialog, DialogActions, DialogContent, DialogTitle, Slide, TextField, Typography} from "@mui/material";
 import {Button, IconButton, makeStyles, Tooltip} from "@material-ui/core";
 import {allNotEmpty, getOnFieldChange} from "../utils/utils";
 import {useError} from "../hooks/logging";
+import SlideTransition from "../components/util/SlideTransition";
 
 
 const useStyles = makeStyles(theme => ({
@@ -84,19 +85,22 @@ export default function Workspaces() {
         badgeData={data}
         additionalButtons={(
             <>
-                <Dialog open={openAttachDialog} onClose={() => setOpenAttachDialog(false)}>
-                    <DialogTitle>
-                        <Typography>
-                            Введите код рабочего пространства
-                        </Typography>
-                    </DialogTitle>
-                    <DialogContent dividers>
-                        <TextField value={workspaceCode} onChange={getOnFieldChange(setWorkspaceCode)}/>
-                    </DialogContent>
-                    <DialogActions>
-                        <Button disabled={!allNotEmpty(workspaceCode)} onClick={onDialogClose}>Присоединиться</Button>
-                    </DialogActions>
-                </Dialog>
+                {/*<Slide direction="up" in={openAttachDialog} mountOnEnter unmountOnExit>*/}
+                    <Dialog TransitionComponent={SlideTransition} open={openAttachDialog} onClose={() => setOpenAttachDialog(false)}>
+                        <DialogTitle>
+                            <Typography>
+                                Введите код рабочего пространства
+                            </Typography>
+                        </DialogTitle>
+                        <DialogContent dividers>
+                            <TextField value={workspaceCode} onChange={getOnFieldChange(setWorkspaceCode)}/>
+                        </DialogContent>
+                        <DialogActions>
+                            <Button disabled={!allNotEmpty(workspaceCode)}
+                                    onClick={onDialogClose}>Присоединиться</Button>
+                        </DialogActions>
+                    </Dialog>
+                {/*</Slide>*/}
                 <Tooltip title='Присоединиться к рабочему пространству'>
                     <IconButton className={classes.button} onClick={() => setOpenAttachDialog(true)}>
                         <GroupAddIcon/>
