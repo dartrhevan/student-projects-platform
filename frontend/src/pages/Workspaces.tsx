@@ -85,22 +85,21 @@ export default function Workspaces() {
         badgeData={data}
         additionalButtons={(
             <>
-                {/*<Slide direction="up" in={openAttachDialog} mountOnEnter unmountOnExit>*/}
-                    <Dialog TransitionComponent={SlideTransition} open={openAttachDialog} onClose={() => setOpenAttachDialog(false)}>
-                        <DialogTitle>
-                            <Typography>
-                                Введите код рабочего пространства
-                            </Typography>
-                        </DialogTitle>
-                        <DialogContent dividers>
-                            <TextField value={workspaceCode} onChange={getOnFieldChange(setWorkspaceCode)}/>
-                        </DialogContent>
-                        <DialogActions>
-                            <Button disabled={!allNotEmpty(workspaceCode)}
-                                    onClick={onDialogClose}>Присоединиться</Button>
-                        </DialogActions>
-                    </Dialog>
-                {/*</Slide>*/}
+                <Dialog TransitionComponent={SlideTransition} open={openAttachDialog}
+                        onClose={() => setOpenAttachDialog(false)}>
+                    <DialogTitle>
+                        <Typography>
+                            Введите код рабочего пространства
+                        </Typography>
+                    </DialogTitle>
+                    <DialogContent dividers>
+                        <TextField value={workspaceCode} onChange={getOnFieldChange(setWorkspaceCode)}/>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button disabled={!allNotEmpty(workspaceCode)}
+                                onClick={onDialogClose}>Присоединиться</Button>
+                    </DialogActions>
+                </Dialog>
                 <Tooltip title='Присоединиться к рабочему пространству'>
                     <IconButton className={classes.button} onClick={() => setOpenAttachDialog(true)}>
                         <GroupAddIcon/>
@@ -108,5 +107,13 @@ export default function Workspaces() {
                 </Tooltip>
             </>)}
         href={s => `/projects/${(s as Workspace).id}/${(s as Workspace).title}`}
-        defaultMessage={"\nСоздайте свое собственное рабочее пространство или присоединитесь к уже существующему рабочему пространству"}/>);
+        defaultMessage={(
+            <div>На данной странице вы можете организовать рабочее для группы связанных проектов, например проектного
+                практикума магистратуры Сбера.
+                <br />
+                Здесь будут отображаться доступные вам рабочие пространства.
+                <br />
+                Для начала работы создайте свое собственное рабочее пространство или присоединитесь к уже
+                существующему.
+            </div>)}/>);
 }

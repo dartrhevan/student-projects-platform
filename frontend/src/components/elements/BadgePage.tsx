@@ -27,7 +27,7 @@ const useStyles = makeStyles(theme => ({
 
 interface BadgePageProps<T extends IBadge> {
     badgeData: T[]
-    defaultMessage?: string
+    defaultMessage?: React.ReactNode
     onBadgeClick?: ((badge: T) => void)
     href?: ((id: IBadge) => string)
     title: string
@@ -66,7 +66,7 @@ export default function BadgePage<T extends IBadge>(
                                                                              tags={s.tags} id={s.id} title={s.title}
                                                                              label={s.label} labelColor={s.labelColor}
                                                                              href={href ? href(s) : undefined}/>)
-                        : defaultMessage}
+                        : <Typography paragraph style={{margin: '20px'}}>{defaultMessage}</Typography>}
                 </Centered>
             </Container>
             <PagingPanel/>
