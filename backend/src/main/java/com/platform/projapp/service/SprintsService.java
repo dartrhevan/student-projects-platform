@@ -8,6 +8,7 @@ import com.platform.projapp.model.Presentation;
 import com.platform.projapp.model.Sprint;
 import com.platform.projapp.model.User;
 import com.platform.projapp.model.Workspace;
+import com.platform.projapp.repository.PresentationRepository;
 import com.platform.projapp.repository.ProjectRepository;
 import com.platform.projapp.repository.SprintsRepository;
 import lombok.RequiredArgsConstructor;
@@ -25,12 +26,13 @@ import java.util.stream.Collectors;
 public class SprintsService {
     private final SprintsRepository sprintsRepository;
     private final ProjectRepository projectRepository;
+    private final PresentationRepository presentationRepository;
 
-    public Sprint findById(Long id){
+    public Sprint findById(Long id) {
         return sprintsRepository.findById(id).orElse(null);
     }
 
-    public Integer getCurrentSprintOrderNumberByWorkspaceAndDate(Workspace workspace, LocalDate date){
+    public Integer getCurrentSprintOrderNumberByWorkspaceAndDate(Workspace workspace, LocalDate date) {
         List<Sprint> sprints = new ArrayList<>(findAllByWorkspaceAndDate(workspace, date));
         if (sprints.size() > 0)
             return sprints.get(0).getOrderNumber();
@@ -68,15 +70,12 @@ public class SprintsService {
         sprint.setEndDate(addOrUpdateSprintRequest.getEndDate());
 //        if (addOrUpdateSprintRequest.getNumber() != null)
 //            sprint.setOrderNumber(addOrUpdateSprintRequest.getNumber());
-        if(addOrUpdateSprintRequest.getPresentation()!=null) {
-            Base64.Decoder decoder = Base64.getDecoder();
-            String pptx = String.valueOf(addOrUpdateSprintRequest.getPresentation());
-            byte[] bytes = decoder.decode(pptx);
-            Byte[] Bytes = ArrayUtils.toObject(bytes);
-            Presentation presentation = new Presentation(Bytes);
-            sprint.setPresentationId(presentation.getId());
+        if (addOrUpdateSprintRequest.getPresentation() != null) {
+            byte[] bytes = Base64.getDecoder().decode(addOrUpdateSprintRequest.getPresentation());
+            Presentation presentation = new Presentation(bytes);
+            presentationRepository.save(presentation);
+            sprint.setPresentation(presentation);
         }
-
         sprintsRepository.save(sprint);
     }
 

@@ -26,9 +26,10 @@ public class ScoreResponseBody implements ResponseBody {
     public static ScoreResponseBody fromSprint(Sprint sprint, User user) {
         Project project = sprint.getProject();
         Score score = sprint.getScores().stream().filter(s -> s.getUser().equals(user)).findFirst().orElse(null);
-        String presentation = sprint.getPresentationId() != null ?
-                String.format("/api/presentation/%d", sprint.getPresentationId()) :
+        String presentation = sprint.getPresentation().getId() != null ?
+                String.format("/api/presentation/%d", sprint.getPresentation().getId()) :
                 null;
+        //TODO:REWORK
         User mentor = project.getProjectMentor();
         return new ScoreResponseBody(sprint.getOrderNumber(),
                 sprint.getId(),

@@ -13,6 +13,9 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
+import java.util.Base64;
 
 @RestController
 @RequiredArgsConstructor
@@ -23,12 +26,13 @@ public class PresentationController {
     @GetMapping("/{presentationId}")
     public ResponseEntity<?> getPresentation(@PathVariable("presentationId") Long presentationId) throws IOException {
         Presentation presentation = presentationRepository.getById(presentationId);
-        Byte[] pptx = presentation.getPresentation();
-        byte[] pp = ArrayUtils.toPrimitive(pptx);
-        String FILEPATH = "";
-        File file = new File(FILEPATH);
-        OutputStream os = new FileOutputStream(file);
-        os.write(pp);
-        return ResponseEntity.ok(os);
+        //1 способ
+        FileOutputStream fos = new FileOutputStream(String.format("Презентация %d.pptx",presentation.getId()));
+        fos.write(presentation.getPresentation());
+        //2 способ
+        InputStream inputStream = new ByteArrayInputStream(presentation.getPresentation());
+        File file = new File(String.format("Презентация %d.pptx",presentation.getId()));
+        Files.copy(inputStream, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        return ResponseEntity.ok(fos);
     }
 }
