@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import ArrowForwardIosSharpIcon from '@mui/icons-material/ArrowForwardIosSharp';
 import {Button, makeStyles, Typography} from "@material-ui/core";
 import Sprint, {ProjectPlan} from "../model/Sprint";
-import {addSprint, getProjectPlan, removeSprint, updateSprint} from "../api/projectPlan";
+import {addSprint, getPresentation, getProjectPlan, removeSprint, updateSprint} from "../api/projectPlan";
 import AddIcon from '@mui/icons-material/Add';
 import ListItemProps from "../props.common/ListItemProps";
 import FileUploadIcon from '@mui/icons-material/FileUpload';
@@ -18,10 +18,10 @@ import {
     DialogActions,
     DialogTitle, Fade,
     Link,
-    Paper, Slide,
+    Paper,
     TextField
 } from "@mui/material";
-import {getOnFieldChange} from "../utils/utils";
+import {allNotEmpty, getOnFieldChange} from "../utils/utils";
 import {ProjectRole} from "../model/Project";
 import {ElementsStyle} from "../theme";
 import {useError, useSuccess} from "../hooks/logging";
@@ -60,6 +60,7 @@ const useStyles = makeStyles(theme => ({
     },
     dropzone: {
         height: '60px',
+        margin: '10px',
         width: '100%'
     },
     criterion: {
@@ -79,9 +80,10 @@ interface SprintProps extends ListItemProps {
     role: ProjectRole
     onSprintUpdate: (s: Sprint, pr?: File) => void
     onSprintRemove: (s: Sprint) => void
+    projectTitle: string
 }
 
-const SprintComponent = ({sprint, number, role, onSprintUpdate, onSprintRemove}: SprintProps) => {
+const SprintComponent = ({sprint, number, role, onSprintUpdate, onSprintRemove, projectTitle}: SprintProps) => {
     const classes = useStyles();
     const editable = role === ProjectRole.OWNER || role === ProjectRole.MENTOR_PARTICIPANT;
 
@@ -103,6 +105,8 @@ const SprintComponent = ({sprint, number, role, onSprintUpdate, onSprintRemove}:
         onSprintRemove(sprint);
     }
 
+    const hasPresentation = allNotEmpty(sprint.presentation);
+
     return (<>
         <Dialog open={showConfirmDialog} TransitionComponent={SlideTransition}
                 onClose={() => setShowConfirmDialog(false)}>
@@ -115,14 +119,6 @@ const SprintComponent = ({sprint, number, role, onSprintUpdate, onSprintRemove}:
             </DialogActions>
         </Dialog>
         <Accordion elevation={8} sx={ElementsStyle}>
-            {/*<div style={{*/}
-            {/*    display: 'flex',*/}
-            {/*    justifyContent: 'end',*/}
-            {/*    flexDirection: 'row',*/}
-            {/*    marginTop: '15px'*/}
-            {/*}}>*/}
-            {/*    <Button color='inherit' variant='outlined'>Сбросить график</Button>*/}
-            {/*</div>*/}
             <AccordionSummary
                 expandIcon={<ArrowForwardIosSharpIcon sx={{fontSize: '0.9rem', transform: 'rotate(90deg)'}}/>}>
                 <Typography>Спринт {number}</Typography>
@@ -146,8 +142,9 @@ const SprintComponent = ({sprint, number, role, onSprintUpdate, onSprintRemove}:
                                onChange={getOnFieldChange(setEndDate)}/>
                 </div>
                 <div style={{margin: '15px 5px 0 5px'}}>
-                    <Link href={sprint.presentationUrl} className={classes.label} variant='body1'
-                          sx={{margin: '10px', fontSize: '18px'}}>
+                    <Link
+                        onClick={() => getPresentation(`${projectTitle}_sprint_${sprint.orderNumber + 1}.pptx`, sprint.presentation)}
+                        className={classes.label} hidden={!hasPresentation} sx={{cursor: 'pointer', fontSize: '18px'}}>
                         Презентация
                     </Link>
                     {editable ? (<>
@@ -158,7 +155,8 @@ const SprintComponent = ({sprint, number, role, onSprintUpdate, onSprintRemove}:
                                     <section {...getRootProps()} style={{width: '100%'}}>
                                         <input {...getInputProps()} />
                                         <FileUploadIcon fontSize='large'/>
-                                        Для загрузки нажмите и перетащите сюда
+                                        Для загрузки презентации нажмите на данную область, либо просто перетащите файл
+                                        сюда
                                         <FileUploadIcon fontSize='large'/>
                                     </section>
                                 )}
@@ -215,18 +213,20 @@ export default function ProjectPlanComponent() {
 
     function addNewSprint() {
         const sprint = new Sprint();
-        addSprint(projectId, projectPlan?.plan.length.toString() as string, sprint)
+        sprint.orderNumber = projectPlan?.plan.length as number;
+        addSprint(projectId, sprint)
             .then((r: GenericResponse<string>) => {
                 sprint.id = r.data;
                 projectPlan?.plan.push(sprint);
                 setProjectPlan(new ProjectPlan(projectPlan?.plan as Sprint[], projectPlan?.projectTitle as string));//TODO: rewrite for null-safe
-                success("Изменения успешно применены");
-            }).catch(error);
+                success("Спринт успешно добавлен");
+            })
+            .catch(error);
     }
 
     function onSprintRemove(s: Sprint) {
         removeSprint(s.id).then(r => {
-            success("Изменения успешно применены");
+            success("Спринт успешно удалён");
             setProjectPlan(new ProjectPlan(projectPlan?.plan.filter(sp => sp.id !== s.id) as Sprint[], projectPlan?.projectTitle as string));//TODO: rewrite for null-safe
         }).catch(error);
     }
@@ -235,7 +235,11 @@ export default function ProjectPlanComponent() {
         updateSprint(s, pr).then(() => {
             (projectPlan as ProjectPlan).plan = projectPlan?.plan.map(sp => s.id === sp.id ? s : sp) as Sprint[];
             setProjectPlan(projectPlan);
-        }).then(r => success("Изменения успешно применены")).catch(error);
+        }).then(r => {
+            success("Спринт успешно изменён");
+            return getProjectPlan(projectId);
+        }).then(r => setProjectPlan(r.data))
+            .catch(error);
     }
 
     return (
@@ -245,7 +249,8 @@ export default function ProjectPlanComponent() {
                 <br/>
                 {projectPlan?.plan.map((s, i) =>
                     <SprintComponent role={projectPlan.role} sprint={s} number={i + 1} onSprintRemove={onSprintRemove}
-                                     key={s.id} onSprintUpdate={onSprintUpdate}/>)}
+                                     key={s.id} onSprintUpdate={onSprintUpdate}
+                                     projectTitle={projectPlan?.projectTitle || 'project'}/>)}
                 {projectPlan?.role === ProjectRole.OWNER || projectPlan?.role === ProjectRole.MENTOR_PARTICIPANT ?
                     (<Card sx={{margin: '30px 0', ...ElementsStyle}} onClick={addNewSprint} elevation={8}>
                         <CardActionArea>

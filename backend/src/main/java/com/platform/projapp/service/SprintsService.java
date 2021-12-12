@@ -71,10 +71,14 @@ public class SprintsService {
 //        if (addOrUpdateSprintRequest.getNumber() != null)
 //            sprint.setOrderNumber(addOrUpdateSprintRequest.getNumber());
         if (addOrUpdateSprintRequest.getPresentation() != null) {
+            var oldPresentation = sprint.getPresentation();
             byte[] bytes = Base64.getDecoder().decode(addOrUpdateSprintRequest.getPresentation());
             Presentation presentation = new Presentation(bytes);
             presentationRepository.save(presentation);
             sprint.setPresentation(presentation);
+            if (oldPresentation != null) {
+                presentationRepository.delete(oldPresentation);
+            }
         }
         sprintsRepository.save(sprint);
     }

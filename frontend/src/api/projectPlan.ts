@@ -31,7 +31,7 @@ export function removeSprint(sprintId: string) {
  * @param sprint
  * @return created sprint id
  */
-export function addSprint(projectId: string, orderNum: string, sprint: Sprint) {
+export function addSprint(projectId: string, sprint: Sprint) {
 
     return fetch(`/api/sprints`, {
         method: 'POST',
@@ -40,7 +40,7 @@ export function addSprint(projectId: string, orderNum: string, sprint: Sprint) {
             ...getTokenHeader()
         },
         body: JSON.stringify({
-            ['number']: orderNum,
+            ['number']: sprint.orderNumber.toString(),
             startDate: sprint.startDate,
             endDate: sprint.endDate,
             goals: sprint.goals,
@@ -73,6 +73,31 @@ export function updateSprint(sprint: Sprint, presentation?: File) {
 
         }).then(getDefaultUploadHandler());
     }
+
     if (presentation) return toBase64(presentation).catch(console.log).then(pr => sendUpdate(pr as string));
     return sendUpdate();
+}
+
+
+export function getPresentation(fileName: string, url: string) {
+    return fetch(url, {
+        headers: getTokenHeader()
+    }).then(resp => {
+        if (resp.ok)
+            return resp.blob();
+        else
+            throw new Error('Ошибка при загрузке файла');
+    })
+        .then(blob => {
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            // the filename you want
+            a.download = fileName;//'sprint-1.pptx';
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            a.remove();
+        })
 }
