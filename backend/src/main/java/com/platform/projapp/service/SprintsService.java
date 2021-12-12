@@ -4,20 +4,20 @@ import com.platform.projapp.dto.request.AddOrUpdateSprintRequest;
 import com.platform.projapp.dto.response.body.ProjectPlan;
 import com.platform.projapp.dto.response.body.SprintDTO;
 import com.platform.projapp.error.NotFoundException;
+import com.platform.projapp.model.Presentation;
 import com.platform.projapp.model.Sprint;
 import com.platform.projapp.model.User;
 import com.platform.projapp.model.Workspace;
+import com.platform.projapp.repository.PresentationRepository;
 import com.platform.projapp.repository.ProjectRepository;
 import com.platform.projapp.repository.SprintsRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -26,12 +26,13 @@ import java.util.stream.Collectors;
 public class SprintsService {
     private final SprintsRepository sprintsRepository;
     private final ProjectRepository projectRepository;
+    private final PresentationRepository presentationRepository;
 
-    public Sprint findById(Long id){
+    public Sprint findById(Long id) {
         return sprintsRepository.findById(id).orElse(null);
     }
 
-    public Integer getCurrentSprintOrderNumberByWorkspaceAndDate(Workspace workspace, LocalDate date){
+    public Integer getCurrentSprintOrderNumberByWorkspaceAndDate(Workspace workspace, LocalDate date) {
         List<Sprint> sprints = new ArrayList<>(findAllByWorkspaceAndDate(workspace, date));
         if (sprints.size() > 0)
             return sprints.get(0).getOrderNumber();
@@ -69,8 +70,12 @@ public class SprintsService {
         sprint.setEndDate(addOrUpdateSprintRequest.getEndDate());
 //        if (addOrUpdateSprintRequest.getNumber() != null)
 //            sprint.setOrderNumber(addOrUpdateSprintRequest.getNumber());
-        //TODO: set presentation
-
+        if (addOrUpdateSprintRequest.getPresentation() != null) {
+            byte[] bytes = Base64.getDecoder().decode(addOrUpdateSprintRequest.getPresentation());
+            Presentation presentation = new Presentation(bytes);
+            presentationRepository.save(presentation);
+            sprint.setPresentation(presentation);
+        }
         sprintsRepository.save(sprint);
     }
 

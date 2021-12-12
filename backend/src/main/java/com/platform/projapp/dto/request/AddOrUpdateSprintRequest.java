@@ -15,5 +15,5 @@ public class AddOrUpdateSprintRequest {
     private LocalDate startDate;
 //    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd.MM.yyyy")
     private LocalDate endDate;
-    //TODO: add presentation
+    private String presentation;
 }

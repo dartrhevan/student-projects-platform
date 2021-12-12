@@ -36,11 +36,13 @@ public class Sprint {
     private String goals;
     private LocalDate startDate;
     private LocalDate endDate;
-    private Long presentationId;
+    //private Long presentationId;
     @ManyToOne
     private Project project;
     @OneToMany(mappedBy = "sprint", cascade = ALL, orphanRemoval = true)
     private Set<Score> scores;
+    @OneToOne
+    private Presentation presentation;
 
     public boolean isTomorrow() {
         return endDate.minusDays(1L).equals(LocalDate.now());
