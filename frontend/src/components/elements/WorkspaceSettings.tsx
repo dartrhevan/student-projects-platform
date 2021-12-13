@@ -11,7 +11,7 @@ import {useDispatch, useSelector} from "react-redux";
 import isOpenDialog from "../../hooks/isOpenDialog";
 import {DialogActions, DialogContent, DialogTitle, Divider} from "@mui/material";
 import {addNewWorkspace, getWorkspaceById, updateWorkspace} from "../../api/workspaces";
-import {allNotEmpty, getOnFieldChange, toDateString} from "../../utils/utils";
+import {allNotEmpty, getOnFieldChange, isValid, toDateString} from "../../utils/utils";
 import ErrorMessage from "./ErrorMessage";
 import {useError, useSuccess, useWarn} from "../../hooks/logging";
 import SlideTransition from "../util/SlideTransition";
@@ -47,8 +47,6 @@ interface WorkspaceProps {
 }
 
 const today = new Date().getDate();
-
-const workspacePattern = /^[\w\s\-а-яёА-ЯЁ]*$/;
 
 export default function WorkspaceSettings({workspaceId = ''}: WorkspaceProps) {
     const classes = useStyles();
@@ -98,7 +96,7 @@ export default function WorkspaceSettings({workspaceId = ''}: WorkspaceProps) {
     const endDate = new Date();
     endDate.setDate(startDate.getDate() + sprintsCount * 7 * sprintsLength);
 
-    const titleCorrect = workspacePattern.test(title); //.exec(title) !== null && ;
+    const titleCorrect = isValid(title);
 
     // @ts-ignore
     return (
