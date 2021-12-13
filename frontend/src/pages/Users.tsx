@@ -1,17 +1,17 @@
 import React, {useEffect, useState} from 'react';
-import {Button, DialogContent} from "@material-ui/core";
+import {Button, Dialog, DialogContent} from "@material-ui/core";
 import {Action, Query} from 'material-table';
 import {Person, PersonAdd,} from "@material-ui/icons";
 import Table from "../components/util/Table";
 import queryString from "query-string";
 import {allNotEmpty} from "../utils/utils";
 import ViewableText from "../components/elements/ViewableText";
-import {Dialog, DialogActions, DialogTitle, Slide} from "@mui/material";
+import {DialogActions, DialogTitle} from "@mui/material";
 import {getUsers, inviteToProject} from "../api/users";
 import UserRow, {UserType} from "../model/UserRow";
 import RoleInput from "../components/elements/RoleInput";
 import {useSuccess} from "../hooks/logging";
-import {addRoleToReference, getRolesReference} from "../api/reference";
+import {getRolesReference} from "../api/reference";
 import SlideTransition from "../components/util/SlideTransition";
 
 
@@ -146,7 +146,7 @@ export default function Users() {
                 <Button disabled={!inviteRole || inviteRole === ''} onClick={onInvite}>Подтвердить</Button>
             </DialogActions>
         </Dialog>
-        <Table title='Поиск учасников' data={data} tableColumns={tableColumns} tableActions={tableActions}/>
+        <Table title='Поиск участников' data={data} tableColumns={tableColumns} tableActions={tableActions}/>
     </>);
 
 }

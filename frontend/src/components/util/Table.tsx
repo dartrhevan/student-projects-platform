@@ -1,6 +1,5 @@
 import React, {forwardRef} from 'react';
 
-import {makeStyles} from "@material-ui/core";
 import MaterialTable, {Action, Column, Icons, Query, QueryResult} from "material-table";
 import {
     ArrowDownward,
@@ -11,18 +10,9 @@ import {
     LastPage,
     Search
 } from "@material-ui/icons";
-import THEME, {ElementsStyle} from '../../theme';
-import {Fade, Typography} from "@mui/material";
-import isMobile from "../../hooks/isMobile";
-
-const useStyles = makeStyles(theme => ({
-    main: {
-        // margin: "50px 0"
-    },
-    title: {
-        margin: '45px 0 10px 0'
-    }
-}));
+import {ElementsStyle} from '../../theme';
+import {Typography} from "@mui/material";
+import {Fade} from "@material-ui/core";
 
 interface ITableProps<T extends object> {
     title: string
@@ -50,8 +40,6 @@ export default function Table<T extends object>(
         emptyDataSourceMessage = 'Нет данных',
         buttons
     }: ITableProps<T>) {
-    // const classes = useStyles();
-    // const mobile = isMobile();
 
     const icons: Icons = {
         FirstPage: forwardRef((props, ref) => <FirstPage ref={ref}/>),

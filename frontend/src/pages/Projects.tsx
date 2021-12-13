@@ -222,6 +222,9 @@ export default function Projects() {
                                </>}
                            </>)}
                        title={workspaceTitle ? `Проекты из "${workspaceTitle}"` : `Проекты пользователя "${user?.user.surname} ${user?.user.name}"`}
+
+                       subTitle={workspaceTitle ? `На данной странице доступны все проекты рабочего пространства "${workspaceTitle}"`
+                           : "На данной странице вы можете просмотреть проекты, к которым у вас есть доступ"}
                        badgeData={data} squared={false}
                        href={i => `/project?projectId=${i.id}&workspaceId=${workspaceId}`}
                        addTitle='Создать проект' onSetTags={tagsUpdate}

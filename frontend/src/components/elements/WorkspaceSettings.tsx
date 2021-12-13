@@ -22,7 +22,7 @@ const useStyles = makeStyles(theme => ({
         margin: '10px',
         display: 'flex',
         flexDirection: 'column',
-        minWidth: '30vw'
+        minWidth: '20vw'
     },
     but: {
         margin: '15px'

@@ -42,13 +42,14 @@ interface BadgePageProps<T extends IBadge> {
     additionalButtons?: JSX.Element
     onSetTags?: (t: Tag[]) => void
     titleAlign?: PropTypes.Alignment
+    subTitle?: string
 }
 
 export default function BadgePage<T extends IBadge>(
     {
         checkBoxes, badgeData, title, href, addTitle, additionalButtons, onSetTags,
         addOnClick, squared = true, showDialog = false, showTags = true, addButton = true,
-        titleAlign = 'center', defaultMessage
+        titleAlign = 'center', defaultMessage, subTitle
     }: BadgePageProps<T>) {
     const classes = useStyles();
 
@@ -57,9 +58,9 @@ export default function BadgePage<T extends IBadge>(
             <Container>
                 <Centered row={true} additionalClasses={[classes.main]}>
                     <Typography className={classes.title} align={titleAlign} variant='h3'>{title}</Typography>
+                    <Typography className={classes.title} align={titleAlign} variant='h6'>{subTitle}</Typography>
                     <QueryPanel buttonTitle={addTitle} buttonOnClick={addOnClick} additionalButtons={additionalButtons}
-                                showTags={showTags} showDialog={showDialog} onSetTags={onSetTags}
-                                addButton={addButton}/>
+                                showTags={showTags} showDialog={showDialog} onSetTags={onSetTags} addButton={addButton}/>
                     {checkBoxes ? <CheckBoxGroup checkBoxes={checkBoxes}/> : <></>}
                     {badgeData.length > 0 ? badgeData.map(s => <DefaultBadge key={s.id} description={s.description}
                                                                              squared={squared}
@@ -68,7 +69,7 @@ export default function BadgePage<T extends IBadge>(
                                                                              href={href ? href(s) : undefined}/>)
                         : <Typography paragraph style={{margin: '20px'}}>{defaultMessage}</Typography>}
                 </Centered>
+                <PagingPanel/>
             </Container>
-            <PagingPanel/>
         </>);
 }

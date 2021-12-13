@@ -1,16 +1,14 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import Table from "../components/util/Table";
 import ViewableText from "../components/elements/ViewableText";
 import Score from "../model/Score";
 import MaterialTable, {QueryResult} from "material-table";
 import {getEvaluateTable, uploadScores} from "../api/scoring";
-import {TextField, Link, FormControlLabel, Typography} from "@mui/material";
+import {TextField, Link, Typography} from "@mui/material";
 import {useParams} from "react-router-dom";
 import {correctNumericInput} from "../utils/utils";
 import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
 import {useError, useSuccess} from "../hooks/logging";
-import {ProjectRole} from "../model/Project";
-import Notification from "../model/Notification";
 
 
 export default function () {

@@ -8,7 +8,7 @@ import GroupAddIcon from '@mui/icons-material/GroupAdd';
 import getPaging from "../hooks/getPaging";
 import Workspace from "../model/Workspace";
 import {attachToWorkspace, getUsersWorkspaces} from "../api/workspaces";
-import {Dialog, DialogActions, DialogContent, DialogTitle, Slide, TextField, Typography} from "@mui/material";
+import {Dialog, DialogActions, DialogContent, DialogTitle, TextField, Typography} from "@mui/material";
 import {Button, IconButton, makeStyles, Tooltip} from "@material-ui/core";
 import {allNotEmpty, getOnFieldChange} from "../utils/utils";
 import {useError} from "../hooks/logging";
@@ -37,18 +37,11 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-interface WorkspacesParams {
-    workspaceId: string,
-    workspaceTitle: string
-}
-
 export default function Workspaces() {
     const classes = useStyles();
-    // const {workspaceId, workspaceTitle} = useParams<WorkspacesParams>();
     const {totalCount, pageSize, pageNumber} = useSelector(getPaging, shallowEqual);
 
     const [data, setData] = useState([] as Workspace[]);
-    // console.log("render Projects")
 
     const dispatch = useDispatch();
 
@@ -59,7 +52,6 @@ export default function Workspaces() {
         getUsersWorkspaces(new Pageable(pageNumber, pageSize)).then(r => {
             if (r.message) {
                 alert(r.message);
-                // setData([]);
             } else {
                 setData(r.data.workspaces)
                 dispatch(initPaging(r.data.totalCount, pageSize, pageNumber))
@@ -82,6 +74,8 @@ export default function Workspaces() {
         addTitle='Создать рабочее пространство'
         addOnClick={() => dispatch(openDialog())}
         title='Рабочие пространства'
+        subTitle='На данной странице вы можете организовать обособленное пространство для взаимодействия участников
+        определённой проектной деятельности, либо подключиться к существующему.'
         badgeData={data}
         additionalButtons={(
             <>
@@ -96,8 +90,8 @@ export default function Workspaces() {
                         <TextField value={workspaceCode} onChange={getOnFieldChange(setWorkspaceCode)}/>
                     </DialogContent>
                     <DialogActions>
-                        <Button disabled={!allNotEmpty(workspaceCode)}
-                                onClick={onDialogClose}>Присоединиться</Button>
+                        <Button disabled={!allNotEmpty(workspaceCode)} onClick={onDialogClose}>Присоединиться</Button>
+                        <Button onClick={() => setOpenAttachDialog(false)}>Отмена</Button>
                     </DialogActions>
                 </Dialog>
                 <Tooltip title='Присоединиться к рабочему пространству'>

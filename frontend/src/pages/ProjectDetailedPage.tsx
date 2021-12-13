@@ -16,7 +16,7 @@ import {
     DialogTitle,
     Divider,
     Fade,
-    IconButton, InputLabel, Link,
+    IconButton, Link,
     List,
     ListItemButton,
     ListItemText,
@@ -30,7 +30,7 @@ import ErrorMessage from "../components/elements/ErrorMessage";
 import {Clear} from "@material-ui/icons";
 import {useError, useSuccess, useWarn} from "../hooks/logging";
 import {useSelector} from "react-redux";
-import getTagsRef, {getTagsReferenceMap} from "../hooks/getTagsRef";
+import {getTagsReferenceMap} from "../hooks/getTagsRef";
 import ConfirmationDialog from "../components/util/ConfirmationDialog";
 import THEME, {ElementsStyle} from "../theme";
 import RoleInput from "../components/elements/RoleInput";
@@ -43,9 +43,6 @@ const useStyles = makeStyles(theme => ({
         width: '70%',
         minHeight: '70vh',
         marginTop: '70px',
-        // '&:only-child': {
-        //     width: '100%'
-        // }
         ...ElementsStyle
     },
     inner: {
@@ -64,12 +61,6 @@ const useStyles = makeStyles(theme => ({
         width: '100%',
     }
 }));
-
-// interface ProjectParams {
-//     workspaceId: string
-//     projectId?: string
-//     isNew?: string
-// }
 
 const RoleSpecificButton = ({project, onSubmit, enabled, isNew}:
                                 { isNew: boolean, enabled?: boolean, project?: DetailedProject, onSubmit: () => void }) => {
@@ -197,7 +188,6 @@ interface EditableFieldProps {
     label: string
     isNew?: boolean
     onChange: (s: string) => void
-    // inputComponent?: (props: EditableFieldProps) => JSX.Element
 }
 
 const EditableField = ({
@@ -220,7 +210,6 @@ const EditableField = ({
         : <Typography {...props}>{prefix + field(project)}</Typography>;
 
 export default function ProjectDetailedPage() {
-    // const params = useLocation<ProjectParams>().state;
     const params = queryString.parse(window.location.search);
     const workspaceId = params?.workspaceId;
     const classes = useStyles();
@@ -245,7 +234,7 @@ export default function ProjectDetailedPage() {
         [projectId, isNew, tagsReference]);
 
 
-    const allFilled = !isNew || project?.isNewFilled;//allNotEmpty(username, password);
+    const allFilled = !isNew || project?.isNewFilled;
 
     const success = useSuccess();
     const warn = useWarn();
@@ -276,6 +265,8 @@ export default function ProjectDetailedPage() {
         }).catch(error);
     }
 
+
+
     return (
         <Fade in={true}>
             <Paper className={classes.paper}>
@@ -283,7 +274,6 @@ export default function ProjectDetailedPage() {
                                     onClose={() => setRemoveParticipantDialog({open: false, participant: ""})}
                                     label="исключить участника"
                                     onSubmit={() => onRemoveParticipant(removeParticipantDialog.participant)}/>
-
                 <Centered additionalClasses={[classes.inner]}>
                     <EditableField isNew={isNew} label='(название)' props={{variant: 'h4'}} project={project}
                                    prefix={'Проект '} field={p => p?.title} inputProps={{required: true}}
@@ -318,7 +308,6 @@ export default function ProjectDetailedPage() {
                                            }
                                        }}
                                        onChange={t => setProject((project as DetailedProject).withTrackerUrl(t))}/> : <></>}
-
                     {
                         !isNew && <List
                             sx={{width: '100%'}}
@@ -356,7 +345,6 @@ export default function ProjectDetailedPage() {
                                    }}
                                    value={maxParticipantsCount}/>
                     </div>
-
                     {!isNew ? (<div className={classes.butGr} style={{justifyContent: 'start'}}>
                         <Typography sx={{margin: '10px'}}>Статус проекта</Typography>
                         <Select

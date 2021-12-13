@@ -56,7 +56,6 @@ function App() {
     }
 
     useEffect(() => {
-        // setTags(values);
         getTagsReference()
             .then(r => {
                 setTagsReference(r);
@@ -98,8 +97,6 @@ function App() {
                         {
                             login &&
                             <>
-                                <Route component={Login} path='/authentication'/>
-                                <Route component={Register} path='/registration'/>
                                 <Route component={Projects} path='/projects/:workspaceId/:workspaceTitle'/>
                                 <Route component={Projects} exact path='/projects'/>
                                 <Route component={Users} path='/users'/>
@@ -112,7 +109,7 @@ function App() {
                                 <Route component={Scoring} path='/scoring/:workspaceId'/>
                                 <Route component={Workspaces} path='/workspaces'/>
                             </>
-                            || <Redirect to={"/authentication"}/>
+                            || <Redirect to="/authentication"/>
                         }
                     </Switch>
                 </BrowserRouter>
