@@ -42,6 +42,12 @@ export function getDefaultDownloadHandler(template = 'Ошибка получе�
     }
 }
 
+const pattern = /^[\w\s\-а-яёА-ЯЁ]*$/;
+
+export function isValid(text: string) {
+    return pattern.test(text);
+}
+
 export function getDefaultUploadHandler(template = 'Ошибка отправки данных') {
     return (r: Response) => {
         if (r.ok) {

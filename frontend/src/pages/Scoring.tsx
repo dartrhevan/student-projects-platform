@@ -47,12 +47,16 @@ export default function () {
     }
 
     function onChangePresScore(e: React.FormEvent<HTMLDivElement>, row: Score) {
-        getScore(row).presentationScore = correctNumericInput(e);
+        const input = correctNumericInput(e);
+        getScore(row).presentationScore = input;
+        row.presentationScore = input;
         setScores([...scores]);
     }
 
     function onChangeTracerScore(e: React.FormEvent<HTMLDivElement>, row: Score) {
-        getScore(row).trackerScore = correctNumericInput(e);
+        const input = correctNumericInput(e);
+        getScore(row).trackerScore = input;
+        row.trackerScore = input;
         setScores([...scores]);
     }
 
@@ -83,7 +87,7 @@ export default function () {
             sorting: false,
             render: (row: Score) => <TextField type='number' sx={{padding: '2px', maxWidth: '25px'}}
                                                onInput={e => onChangePresScore(e, row)}
-                                               variant='standard' defaultValue={row.presentationScore}/>
+                                               variant='standard' value={row.presentationScore}/>
         },
         {
             title: 'Доска',
@@ -97,7 +101,7 @@ export default function () {
             filtering: false,
             render: (row: Score) => <TextField type='number' sx={{padding: '2px', maxWidth: '25px'}}
                                                onInput={e => onChangeTracerScore(e, row)}
-                                               defaultValue={row.trackerScore} variant='standard'/>
+                                               value={row.trackerScore} variant='standard'/>
         },
         {
             title: 'Итог',
@@ -109,7 +113,7 @@ export default function () {
             field: "comment",
             sorting: false,
             render: (row: Score) => <ViewableText submit={s => onChangeComment(s, row)} editable label='Комментарий'
-                                                  maxWidth={200}>{row.comment}</ViewableText>
+                                                  maxWidth={200} multiline>{row.comment || ''}</ViewableText>
         }
     ];
 

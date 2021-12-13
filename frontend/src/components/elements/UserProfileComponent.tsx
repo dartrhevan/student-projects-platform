@@ -8,7 +8,7 @@ import {
 } from "@material-ui/core";
 import {register, update} from "../../api/auth";
 import Centered from "../../components/util/Centered";
-import {allNotEmpty, getOnFieldChange} from "../../utils/utils";
+import {allNotEmpty, getOnFieldChange, isValid} from "../../utils/utils";
 import Aligned from "../../components/util/Aligned";
 import ErrorMessage from "../../components/elements/ErrorMessage";
 import UserProfile from "../../model/UserProfile";
@@ -114,6 +114,7 @@ export default function UserProfileComponent({user, title}: UserProfileProps) {
         required.push();
     }
 
+    const isValidLogin = isValid(username);
     const registerFilled = allNotEmpty(username, name, surname, password, passwordConfirm);
     const editFilled = allNotEmpty(username, name, surname, password);
 
@@ -184,6 +185,7 @@ export default function UserProfileComponent({user, title}: UserProfileProps) {
                                   condition={!(username.length >= 6 && password.length >= 6)}/>
                     <ErrorMessage message='*Некорректный емайл'
                                   condition={!(email?.match(emailPattern))}/>
+                    <ErrorMessage message="*Логин может содержать только цифры, буквы, пробел и '-'" condition={!isValidLogin}/>
 
                     <Aligned endAlign={true}>
                         <Button disabled={!(passwordConfirmed && allFilledAndValid)}
