@@ -225,7 +225,8 @@ export default function ProjectDetailedPage() {
                 getProjectInfo(projectId as string)
                     .then(r => {
                         const proj: DetailedProject = DetailedProject.fromObject(r.data);
-                        proj.tags = r.data.tags.map(t => tagsReference[t.toString()]).filter(t => t !== undefined);
+                        proj.tags = project.tags.length !== 0 ? [...project.tags]
+                            : r.data.tags.map(t => tagsReference[t.toString()]).filter(t => t !== undefined);
                         setMaxParticipantsCount(proj.maxParticipantsCount);
                         setProject(proj);
                     }).catch(console.log)
@@ -264,7 +265,6 @@ export default function ProjectDetailedPage() {
             success(`Участник ${participantUsername} исключен!`);
         }).catch(error);
     }
-
 
 
     return (

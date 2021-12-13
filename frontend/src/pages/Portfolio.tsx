@@ -1,11 +1,12 @@
 import React from 'react';
 import {useParams} from 'react-router-dom';
 import Table from "../components/util/Table";
-import {Query, QueryResult} from "material-table";
+import MaterialTable, {Query, QueryResult} from "material-table";
 import ProjectParticipation from "../model/ProjectParticipation";
 import {getPortfolio} from "../api/users";
 import {Link} from "@mui/material";
 import {labelColors} from "../model/Project";
+import Notification from "../model/Notification";
 
 interface LoginParam {
     login: string
@@ -42,15 +43,12 @@ const tableColumns = [
 ];
 
 export default function () {
+    const tableRef = React.createRef<MaterialTable<ProjectParticipation>>();
+
     const {login} = useParams<LoginParam>();
 
-    const data = (query: Query<ProjectParticipation>) => new Promise<QueryResult<ProjectParticipation>>((res, rej) =>
-        getPortfolio(login).then(d =>
-            res({
-                data: d.data.projects, page: 0, totalCount: 1
-            })));
+    const data = (query: Query<ProjectParticipation>) => getPortfolio(login);
 
-//TODO: лучше выводить ФИ пользователя
     return (
         <Table title={`Портфолио пользователя ${login}`} filtering={false} data={data} tableColumns={tableColumns}
                paging={false} emptyDataSourceMessage='На данной странице будут отображаться завершённые проеты с вашим участием'/>);

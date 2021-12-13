@@ -6,11 +6,15 @@ import {getDefaultUploadHandler, getDefaultDownloadHandler} from "../utils/utils
 import {Query} from "material-table";
 import ProjectQuery from "../model/dto/ProjectQuery";
 import {getTokenHeader} from "../store/state/LoginState";
+import Notification from "../model/Notification";
+import ProjectParticipation from "../model/ProjectParticipation";
 
 export function getPortfolio(login: string) {
     return fetch(`/api/users/portfolio?username=${login}`, {
         headers: getTokenHeader()
-    }).then(getDefaultDownloadHandler());
+    }).then(getDefaultDownloadHandler()).then(res => {
+        return new PagedResponse<ProjectParticipation>(res.data.projects, 0, 1);
+    });
 }
 
 export function getAllProjectsUsers(query: ProjectQuery) {
