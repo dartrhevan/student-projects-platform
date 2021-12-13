@@ -3,7 +3,7 @@ import {Card, CardActionArea, CardContent, makeStyles} from "@material-ui/core";
 import ListItemProps, {IBadge} from "../../props.common/ListItemProps";
 import Centered from "../util/Centered";
 import {useDispatch, useSelector} from "react-redux";
-import {Fade, Typography} from "@mui/material";
+import {Fade, Tooltip, Typography} from "@mui/material";
 import Dot from "../util/Dot";
 import clsx from 'clsx';
 import {getTagsReferenceMap} from "../../hooks/getTagsRef";
@@ -61,6 +61,7 @@ export default function DefaultBadge({
     // };
     const tagsReference = useSelector(getTagsReferenceMap);
     const tagsR = tags.map(t => tagsReference[t.toString()]).filter(t => t !== undefined);
+    const tagsTip = 'Тэги: ' + tagsR.map(t => t.name).join(', ');
     return (
         <Fade in={true}>
             <Card className={clsx({[classes.root]: true, [classes.squared]: squared, [classes.rectangle]: !squared})}>
@@ -72,16 +73,20 @@ export default function DefaultBadge({
                             <Typography className={classes.description} variant='subtitle2'>{description}</Typography>
                             <br/>
                         </Centered>
-                        <div hidden={tags.length <= 0}
-                             style={{color: ElementsStyle.color, marginBottom: '5px', marginLeft: '10px'}}>
-                            Тэги:
-                        </div>
-                        <div style={{
-                            display: 'flex',
-                            flexDirection: 'row'
-                        }}>
-                            {tagsR?.map(t => <Dot key={t.name} color={t.backgroundColor}/>)}
-                        </div>
+                        <Tooltip title={tagsTip} leaveDelay={500}>
+                            <div>
+                                <div hidden={tags.length <= 0}
+                                     style={{color: ElementsStyle.color, marginBottom: '5px', marginLeft: '10px'}}>
+                                    Тэги:
+                                </div>
+                                <div style={{
+                                    display: 'flex',
+                                    flexDirection: 'row'
+                                }}>
+                                    {tagsR?.map(t => <Dot key={t.name} color={t.backgroundColor}/>)}
+                                </div>
+                            </div>
+                        </Tooltip>
                         <Typography sx={{color: labelColor}} variant='subtitle2' align='right'>{label}</Typography>
                     </CardContent>
                 </CardActionArea>
