@@ -9,6 +9,8 @@ import {getTokenHeader} from "../store/state/LoginState";
 
 
 export function addProject(project: DetailedProject): Promise<CommonResponse> {
+    const trackerLink = project.trackerLink.startsWith("https://") || project.trackerLink.startsWith("http://") ?
+        project.trackerLink : `http://${project.trackerLink}`;
     return fetch(`/api/projects?workspaceId=${project.workspaceId}`, {
         method: 'POST',
         headers: {
@@ -19,7 +21,7 @@ export function addProject(project: DetailedProject): Promise<CommonResponse> {
             name: project.title,
             shortDescription: project.shortDescription,
             fullDescription: project.fullDescription,
-            trackerLink: project.trackerLink,
+            trackerLink: trackerLink,
             tags: project.tags.map(t => t.id),
             maxParticipantsCount: project.maxParticipantsCount
         })
@@ -35,6 +37,8 @@ export function addProject(project: DetailedProject): Promise<CommonResponse> {
 }
 
 export function editProject(project: DetailedProject): Promise<CommonResponse> {
+    const trackerLink = project.trackerLink.startsWith("https://") || project.trackerLink.startsWith("http://") ?
+        project.trackerLink : `http://${project.trackerLink}`;
     return fetch(`/api/projects/${project.id}`, {
         method: 'PUT',
         headers: {
@@ -45,7 +49,7 @@ export function editProject(project: DetailedProject): Promise<CommonResponse> {
             name: project.title,
             shortDescription: project.shortDescription,
             fullDescription: project.fullDescription,
-            trackerLink: project.trackerLink,
+            trackerLink: trackerLink,
             tags: project.tags.map(t => t.id),
             maxParticipantsCount: project.maxParticipantsCount,
             status: project.status
