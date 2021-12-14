@@ -9,8 +9,9 @@ import {getTokenHeader} from "../store/state/LoginState";
 
 
 export function addProject(project: DetailedProject): Promise<CommonResponse> {
-    const trackerLink = project.trackerLink.startsWith("https://") || project.trackerLink.startsWith("http://") ?
-        project.trackerLink : `http://${project.trackerLink}`;
+    const trackerLink = project.trackerLink.startsWith("https://") || project.trackerLink.startsWith("http://")
+        ? project.trackerLink
+        : project.trackerLink && `http://${project.trackerLink}`;
     return fetch(`/api/projects?workspaceId=${project.workspaceId}`, {
         method: 'POST',
         headers: {
