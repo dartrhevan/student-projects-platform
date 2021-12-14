@@ -131,9 +131,9 @@ export default function UserProfileComponent({user, title}: UserProfileProps) {
     const allFilled = allNotEmpty(messenger, username, surname, name, tags, group, comment, roles, email);
 
     return (
-        <Centered additionalClasses={[classes.container]}>
+        <Centered additionalClasses={[classes.container]} autoComplete="off">
             <Fade in={true}>
-                <Card className={clsx(classes.card, classes.skills)}>
+                <Card className={clsx(classes.card, classes.skills)} >
                     <Typography variant="h5">
                         {title}
                     </Typography>
@@ -173,7 +173,7 @@ export default function UserProfileComponent({user, title}: UserProfileProps) {
                                    type="password" fullWidth={true} required/> : <></>}
                     <TextField label={passwordLabels.input} className={classes.def}
                                onChange={getOnFieldChange(user === undefined ? setPassword : setNewPassword)}
-                               type="password" fullWidth={true} required/>
+                               type="password" fullWidth={true} required autoComplete="new-password"/>
                     <TextField label={passwordLabels.confirmation} className={classes.def} type="password"
                                onChange={getOnFieldChange(setPasswordConfirm)} fullWidth={true} required/>
 
