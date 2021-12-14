@@ -37,8 +37,9 @@ export function addProject(project: DetailedProject): Promise<CommonResponse> {
 }
 
 export function editProject(project: DetailedProject): Promise<CommonResponse> {
-    const trackerLink = project.trackerLink.startsWith("https://") || project.trackerLink.startsWith("http://") ?
-        project.trackerLink : `http://${project.trackerLink}`;
+    const trackerLink = project.trackerLink.startsWith("https://") || project.trackerLink.startsWith("http://")
+        ? project.trackerLink
+        : project.trackerLink && `http://${project.trackerLink}`;
     return fetch(`/api/projects/${project.id}`, {
         method: 'PUT',
         headers: {
