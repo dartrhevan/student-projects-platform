@@ -7,6 +7,8 @@ import {getPortfolio} from "../api/users";
 import {Link} from "@mui/material";
 import {labelColors} from "../model/Project";
 import Notification from "../model/Notification";
+import {useSelector} from "react-redux";
+import getUsername from "../hooks/getUsername";
 
 interface LoginParam {
     login: string
@@ -43,7 +45,7 @@ const tableColumns = [
 ];
 
 export default function () {
-    const tableRef = React.createRef<MaterialTable<ProjectParticipation>>();
+    const currentUserLogin = useSelector(getUsername);
 
     const {login} = useParams<LoginParam>();
 
@@ -51,5 +53,8 @@ export default function () {
 
     return (
         <Table title={`Портфолио пользователя ${login}`} filtering={false} data={data} tableColumns={tableColumns}
-               paging={false} emptyDataSourceMessage='На данной странице будут отображаться завершенные проекты с вашим участием'/>);
+               paging={false}
+               emptyDataSourceMessage={login === currentUserLogin?.user.username
+                   ? 'На данной странице будут отображаться завершенные проекты с вашим участием'
+                   : "У пользователя пока нет ни одного заверненного проекта"}/>);
 }
