@@ -10,12 +10,14 @@ import com.platform.projapp.model.User;
 import com.platform.projapp.model.Workspace;
 import com.platform.projapp.repository.PresentationRepository;
 import com.platform.projapp.repository.ProjectRepository;
+import com.platform.projapp.repository.ScoreRepository;
 import com.platform.projapp.repository.SprintsRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -24,6 +26,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class SprintsService {
+    private final ScoreRepository scoresRepository;
     private final SprintsRepository sprintsRepository;
     private final ProjectRepository projectRepository;
     private final PresentationRepository presentationRepository;
@@ -68,8 +71,6 @@ public class SprintsService {
         sprint.setGoals(addOrUpdateSprintRequest.getGoals());
         sprint.setStartDate(addOrUpdateSprintRequest.getStartDate());
         sprint.setEndDate(addOrUpdateSprintRequest.getEndDate());
-//        if (addOrUpdateSprintRequest.getNumber() != null)
-//            sprint.setOrderNumber(addOrUpdateSprintRequest.getNumber());
         if (addOrUpdateSprintRequest.getPresentation() != null) {
             var oldPresentation = sprint.getPresentation();
             byte[] bytes = Base64.getDecoder().decode(addOrUpdateSprintRequest.getPresentation());
@@ -83,7 +84,11 @@ public class SprintsService {
         sprintsRepository.save(sprint);
     }
 
+    @Transactional
     public void removeSprint(long springId) {
-        sprintsRepository.deleteById(springId);
+        scoresRepository.deleteAllBySprintId(springId);
+        sprintsRepository.findById(springId).ifPresent(sprint ->
+                sprintsRepository.shiftSprints(sprint.getOrderNumber()));
+        sprintsRepository.deleteById(springId);;
     }
 }

@@ -35,7 +35,7 @@ import ConfirmationDialog from "../components/util/ConfirmationDialog";
 import THEME, {ElementsStyle} from "../theme";
 import RoleInput from "../components/elements/RoleInput";
 import {addRoleToReference, getRolesReference} from "../api/reference";
-import {correctNumericInput} from "../utils/utils";
+import {allNotEmpty, correctNumericInput} from "../utils/utils";
 
 const useStyles = makeStyles(theme => ({
     paper: {
@@ -303,8 +303,10 @@ export default function ProjectDetailedPage() {
                                        props={{
                                            sx: {width: '100%', padding: '10px 5px'},
                                            component(p: { children: string, className: string }) {
-                                               return <Link className={p.className} href={p.children}>Ссылка на
-                                                   трекер</Link>;
+                                               return allNotEmpty(p.children) &&
+                                                   (<Link target="_blank" className={p.className} href={p.children}>
+                                                       Ссылка на трекер
+                                                   </Link>);
                                            }
                                        }}
                                        onChange={t => setProject((project as DetailedProject).withTrackerUrl(t))}/> : <></>}
