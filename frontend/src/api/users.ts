@@ -44,6 +44,7 @@ export function getUsers(workspaceId: string, query: Query<UserRow>, projectId: 
     }).then(getDefaultDownloadHandler()).then(res => {
         return new PagedResponse<UserRow>(res.data.participants.map((p: any) => {
             p.roles = p.roles.join(" ");
+            p.skills = p.skills.join(" ");
             return p;
         }), query.page, res.data.totalCount);
     });

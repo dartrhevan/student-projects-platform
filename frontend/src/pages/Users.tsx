@@ -37,7 +37,7 @@ const tableColumns = [
         sorting: false,
     },
     {
-        title: 'Месенджр',
+        title: 'Мессенджер',
         field: "messenger",
         sorting: false,
         filtering: false

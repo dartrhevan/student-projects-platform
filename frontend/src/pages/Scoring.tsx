@@ -6,7 +6,7 @@ import MaterialTable, {QueryResult} from "material-table";
 import {getEvaluateTable, uploadScores} from "../api/scoring";
 import {TextField, Link, Typography} from "@mui/material";
 import {useParams} from "react-router-dom";
-import {correctNumericInput} from "../utils/utils";
+import {correctNumericInput, correctScoreInput} from "../utils/utils";
 import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
 import {useError, useSuccess} from "../hooks/logging";
 
@@ -47,14 +47,14 @@ export default function () {
     }
 
     function onChangePresScore(e: React.FormEvent<HTMLDivElement>, row: Score) {
-        const input = correctNumericInput(e);
+        const input = correctScoreInput(e);
         getScore(row).presentationScore = input;
         row.presentationScore = input;
         setScores([...scores]);
     }
 
     function onChangeTracerScore(e: React.FormEvent<HTMLDivElement>, row: Score) {
-        const input = correctNumericInput(e);
+        const input = correctScoreInput(e);
         getScore(row).trackerScore = input;
         row.trackerScore = input;
         setScores([...scores]);

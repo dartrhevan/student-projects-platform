@@ -11,7 +11,7 @@ import {useDispatch, useSelector} from "react-redux";
 import isOpenDialog from "../../hooks/isOpenDialog";
 import {DialogActions, DialogContent, DialogTitle, Divider} from "@mui/material";
 import {addNewWorkspace, getWorkspaceById, updateWorkspace} from "../../api/workspaces";
-import {allNotEmpty, getOnFieldChange, isValid, toDateString} from "../../utils/utils";
+import {allNotEmpty, correctNumericInput, getOnFieldChange, isValid, toDateString} from "../../utils/utils";
 import ErrorMessage from "./ErrorMessage";
 import {useError, useSuccess, useWarn} from "../../hooks/logging";
 import SlideTransition from "../util/SlideTransition";
@@ -120,10 +120,12 @@ export default function WorkspaceSettings({workspaceId = ''}: WorkspaceProps) {
                 <br/>
                 <Typography>Колличество спринтов</Typography>
                 <TextField defaultValue={sprintsCount} className={classes.but} type='number' required
+                           onInput={correctNumericInput}
                            onChange={getOnFieldChange(s => setSprintsCount(Number.parseInt(s)))}/>
                 <br/>
                 <Typography>Длительность спринта (в неделях)</Typography>
                 <TextField defaultValue={sprintsLength} className={classes.but} type='number' required
+                           onInput={correctNumericInput}
                            onChange={getOnFieldChange(s => setSprintsLength(Number.parseInt(s)))}/>
                 <ErrorMessage message='*Не все обязательные поля заполнены' condition={!allFilled}/>
                 <ErrorMessage message="*Название может содержать только цифры, буквы, пробел и '-'" condition={!titleCorrect}/>

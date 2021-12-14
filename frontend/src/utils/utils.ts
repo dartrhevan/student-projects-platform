@@ -80,3 +80,17 @@ export function correctNumericInput(e: React.FormEvent<HTMLDivElement>) {
     }
     return val;
 }
+
+export function correctScoreInput(e: React.FormEvent<HTMLDivElement>) {
+    const target = (e.target as HTMLInputElement);
+    const val = parseInt(target.value);
+    if (val < 0) {
+        target.value = '0';
+        return 0;
+    }
+    if (val > 5) {
+        target.value = '5';
+        return 5;
+    }
+    return val;
+}

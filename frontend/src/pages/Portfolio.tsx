@@ -51,5 +51,5 @@ export default function () {
 
     return (
         <Table title={`Портфолио пользователя ${login}`} filtering={false} data={data} tableColumns={tableColumns}
-               paging={false} emptyDataSourceMessage='На данной странице будут отображаться завершённые проеты с вашим участием'/>);
+               paging={false} emptyDataSourceMessage='На данной странице будут отображаться завершенные проекты с вашим участием'/>);
 }
