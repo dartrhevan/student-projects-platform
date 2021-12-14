@@ -14,6 +14,6 @@ import java.util.Set;
 @Controller
 public interface ScoreRepository extends JpaRepository<Score, Long> {
     Set<Score> findAllBySprint(Sprint sprint);
-
+    void deleteAllBySprintId(long springId);
     Score findBySprintAndUser(Sprint sprint, User user);
 }

@@ -34,8 +34,6 @@ public class SprintsController {
         try {
             sprintsService.removeSprint(Long.parseLong(sprintId));
             return ResponseEntity.ok().build();
-//        } catch (NotFoundException e) {
-//            return ResponseEntity.status(404).body(new GeneralResponse<>().withError("Спринт не найден"));
         } catch (NumberFormatException e) {
             return ResponseEntity.status(400).body(new GeneralResponse<>().withError("Некорректный идентификатор спринта"));
         }

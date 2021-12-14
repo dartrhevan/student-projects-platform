@@ -46,9 +46,6 @@ const useStyles = makeStyles(theme => ({
         width: '70vw',
         minHeight: '70vh',
         marginTop: '70px',
-        // '&:only-child': {
-        //     width: '100%'
-        // },
     },
     label: {
         margin: '10px',
