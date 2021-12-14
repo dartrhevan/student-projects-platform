@@ -83,7 +83,8 @@ export default function () {
             render: (row: Score) => <>
                 {
                     allNotEmpty(row.presentation) &&
-                    <Link target="_blank"
+                    <Link target="_self"
+                          href={"#!"}
                           onClick={() => getPresentation(`${row.projectTitle}_sprint_${sprintNumber}.pptx`,
                               row.presentation)}>Презентация</Link>
                     || <>Презентация не добавлена</>
