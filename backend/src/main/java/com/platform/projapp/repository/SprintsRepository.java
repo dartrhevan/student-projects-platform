@@ -22,6 +22,6 @@ public interface SprintsRepository extends JpaRepository<Sprint, Long> {
     Set<Sprint> findAllByWorkspaceAndOrderNumber(@Param("workspace") Workspace workspace, @Param("orderNumber") int orderNumber);
 
     @Modifying
-    @Query(value = "UPDATE sprint SET order_number = order_number - 1 WHERE order_number > :orderNum", nativeQuery = true)
-    void shiftSprints(@Param("orderNum") int orderNum);
+    @Query(value = "UPDATE sprint SET order_number = order_number - 1 WHERE order_number > :orderNum and project_id = :projectId", nativeQuery = true)
+    void shiftSprints(@Param("orderNum") int orderNum, @Param("projectId") Long projectId);
 }

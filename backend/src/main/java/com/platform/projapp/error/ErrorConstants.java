@@ -7,10 +7,12 @@ package com.platform.projapp.error;
 public class ErrorConstants {
     public static ErrorInfo RT_NOT_IN_BD = ErrorInfo.of("RefreshTokenNotInBD", "Refresh token отсутствует в базе данных");
     public static ErrorInfo WORKSPACE_NOT_FOUND = ErrorInfo.of("WorkspaceNotFound", "Workspace не найден");
-    public static ErrorInfo ROLE_NOT_FOUND = ErrorInfo.of("RoleNotFound", "Роль не найден");
+    public static ErrorInfo ROLE_NOT_FOUND = ErrorInfo.of("RoleNotFound", "Роль не найдена");
     public static ErrorInfo PROJECT_NOT_FOUND = ErrorInfo.of("ProjectNotFound", "Проект не найден");
     public static ErrorInfo NOTIFICATION_NOT_FOUND = ErrorInfo.of("NotificationNotFound", "Уведомление не найдено");
     public static ErrorInfo NOTIFICATION_TYPE_NOT_VALID = ErrorInfo.of("NotificationTypeNotValid", "Тип уведомления не корректный");
+    public static ErrorInfo USER_ALREADY_SEND_YOU_REQ = ErrorInfo.of("UserAlreadySendYouReq", "Пользователь уже отправил вам запрос на присоединение в вашу команду");
+    public static ErrorInfo USER_ALREADY_SEND_YOU_INV = ErrorInfo.of("UserAlreadySendYouInv", "Вам уже отправили приглашение в команду");
     public static ErrorInfo USER_NOT_WORKSPACE_OWNER = ErrorInfo.of("UserNotWorkspaceOwner", "Пользователь не является владельцем workspace");
     public static ErrorInfo USER_NOT_WORKSPACE_MENTOR_OR_OWNER = ErrorInfo.of("UserNotWorkspaceMentorOrOwner", "Пользователь не является ментором или организатором");
     public static ErrorInfo USER_NOT_WORKSPACE_PARTICIPANT = ErrorInfo.of("UserNotWorkspaceParticipant", "Пользователь не является участником workspace");

@@ -10,7 +10,7 @@ import {DialogActions, DialogTitle} from "@mui/material";
 import {getUsers, inviteToProject} from "../api/users";
 import UserRow, {UserType} from "../model/UserRow";
 import RoleInput from "../components/elements/RoleInput";
-import {useSuccess} from "../hooks/logging";
+import {useError, useInfo, useSuccess} from "../hooks/logging";
 import {getRolesReference} from "../api/reference";
 import SlideTransition from "../components/util/SlideTransition";
 
@@ -112,6 +112,8 @@ export default function Users() {
         });
 
     const success = useSuccess();
+    const error = useError();
+    const info = useInfo();
 
     const [rolesReference, setRolesReference] = useState([] as string[]);
 
@@ -122,7 +124,13 @@ export default function Users() {
     function onInvite() {
         inviteToProject(openInviteUsername, projectId, inviteRole).then(() => {
             success('Invitation has been sent');
-            setOpenInviteDialog(false)
+            setOpenInviteDialog(false);
+        }).catch(r => {
+            if (r.message.indexOf("уже отправил") != -1) {
+                info(r.message.replace("Ошибка отправки данных: ", ""));
+            } else {
+                error(r.message);
+            }
         })
     }
 

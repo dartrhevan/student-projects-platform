@@ -88,7 +88,7 @@ public class SprintsService {
     public void removeSprint(long springId) {
         scoresRepository.deleteAllBySprintId(springId);
         sprintsRepository.findById(springId).ifPresent(sprint ->
-                sprintsRepository.shiftSprints(sprint.getOrderNumber()));
+                sprintsRepository.shiftSprints(sprint.getOrderNumber(), sprint.getProject().getId()));
         sprintsRepository.deleteById(springId);;
     }
 }

@@ -6,9 +6,10 @@ import MaterialTable, {QueryResult} from "material-table";
 import {getEvaluateTable, uploadScores} from "../api/scoring";
 import {TextField, Link, Typography} from "@mui/material";
 import {useParams} from "react-router-dom";
-import {correctNumericInput, correctScoreInput} from "../utils/utils";
+import {allNotEmpty, correctNumericInput, correctScoreInput} from "../utils/utils";
 import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
 import {useError, useSuccess} from "../hooks/logging";
+import {getPresentation} from "../api/projectPlan";
 
 
 export default function () {
@@ -28,7 +29,7 @@ export default function () {
 
     const actions = [
         {
-            icon: () => <AssignmentTurnedInIcon fontSize='large' />,
+            icon: () => <AssignmentTurnedInIcon fontSize='large'/>,
             onClick: () => {
                 uploadScores(scores).then(r => success("Данные успешно отправлены")).catch(error);
             },
@@ -79,7 +80,16 @@ export default function () {
         {
             title: 'Презентация',
             sorting: false,
-            render: (row: Score) => <Link target="_blank" href={row.presentation}>Презентация</Link>
+            render: (row: Score) => <>
+                {
+                    allNotEmpty(row.presentation) &&
+                    <Link target="_self"
+                          href={"#!"}
+                          onClick={() => getPresentation(`${row.projectTitle}_sprint_${sprintNumber}.pptx`,
+                              row.presentation)}>Презентация</Link>
+                    || <>Презентация не добавлена</>
+                }
+            </>
         },
         {
             title: 'Оценка',
@@ -92,7 +102,13 @@ export default function () {
         {
             title: 'Доска',
             sorting: false,
-            render: (row: Score) => <Link target="_blank" href={row.trackerLink}>Доска</Link>
+            render: (row: Score) => <>
+                {
+                    allNotEmpty(row.trackerLink) &&
+                    <Link target="_blank" href={row.trackerLink}>Доска</Link>
+                    || <>Ссылка на доску не добавлена</>
+                }
+            </>
         },
         {
             title: 'Оценка',
