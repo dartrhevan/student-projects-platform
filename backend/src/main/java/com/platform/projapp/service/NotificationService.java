@@ -41,6 +41,10 @@ public class NotificationService {
         return notificationRepository.findAllByRecipient(recipient, pageable);
     }
 
+    public boolean notificationExists(User recipient, User sender, Project project, NotificationType type) {
+        return notificationRepository.existsByRecipientAndSenderAndProjectAndType(recipient, sender, project, type);
+    }
+
     public boolean hasNew(User recipient) {
         return notificationRepository.existsByRecipientAndIsNew(recipient, true);
     }
@@ -49,9 +53,8 @@ public class NotificationService {
         User recipient = userService.findByUserName(request.getUsername());
         Project project = projectService.findById(request.getProjectId());
         ProjectRole role = projectRoleService.createProjectRole(request.getRole());
-//        ResponseEntity<?> notFoundErrors = ErrorUtils.getNotFoundErrorResponseEntity(List.of(recipient, project, role));
-//        if (notFoundErrors != null) return notFoundErrors;
-//        if (role == null) role = projectRoleService.createProjectRole(request.getRole());
+        if (notificationExists(sender, recipient, project, NotificationType.REQUEST))
+            return ResponseEntity.badRequest().body(new GeneralResponse<>().withError(ErrorConstants.USER_ALREADY_SEND_YOU_REQ));
         Notification notification = new Notification(recipient, sender, notificationType, project, role);
         notificationRepository.save(notification);
         return new ResponseEntity<>(HttpStatus.OK);
@@ -60,9 +63,10 @@ public class NotificationService {
     public ResponseEntity<?> sendReqNotification(User sender, NotificationReqRequest request, NotificationType notificationType) {
         Project project = projectService.findById(request.getProjectId());
         ProjectRole role = projectRoleService.createProjectRole(request.getRole());
-//        ResponseEntity<?> notFoundErrors = ErrorUtils.getNotFoundErrorResponseEntity(List.of(project, role));
-        //if (role == null) role = projectRoleService.createProjectRole(request.getRole());
-        Notification notification = new Notification(project.getOwner(), sender, notificationType, project, role);
+        User recipient = project.getOwner();
+        if (notificationExists(sender, recipient, project, NotificationType.INVITE))
+            return ResponseEntity.badRequest().body(new GeneralResponse<>().withError(ErrorConstants.USER_ALREADY_SEND_YOU_INV));
+        Notification notification = new Notification(recipient, sender, notificationType, project, role);
         notificationRepository.save(notification);
         return new ResponseEntity<>(HttpStatus.OK);
     }
