@@ -11,6 +11,8 @@ public class ErrorConstants {
     public static ErrorInfo PROJECT_NOT_FOUND = ErrorInfo.of("ProjectNotFound", "Проект не найден");
     public static ErrorInfo NOTIFICATION_NOT_FOUND = ErrorInfo.of("NotificationNotFound", "Уведомление не найдено");
     public static ErrorInfo NOTIFICATION_TYPE_NOT_VALID = ErrorInfo.of("NotificationTypeNotValid", "Тип уведомления не корректный");
+    public static ErrorInfo USER_ALREADY_SEND_YOU_REQ = ErrorInfo.of("UserAlreadySendYouReq", "Пользователь уже отправил вам запрос");
+    public static ErrorInfo USER_ALREADY_SEND_YOU_INV = ErrorInfo.of("UserAlreadySendYouInv", "Пользователь уже отправил вам приглашение");
     public static ErrorInfo USER_NOT_WORKSPACE_OWNER = ErrorInfo.of("UserNotWorkspaceOwner", "Пользователь не является владельцем workspace");
     public static ErrorInfo USER_NOT_WORKSPACE_MENTOR_OR_OWNER = ErrorInfo.of("UserNotWorkspaceMentorOrOwner", "Пользователь не является ментором или организатором");
     public static ErrorInfo USER_NOT_WORKSPACE_PARTICIPANT = ErrorInfo.of("UserNotWorkspaceParticipant", "Пользователь не является участником workspace");
