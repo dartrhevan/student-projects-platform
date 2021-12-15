@@ -15,11 +15,10 @@ import PersonTwoToneIcon from '@mui/icons-material/PersonTwoTone';
 import {useSelector} from "react-redux";
 import AutoAwesomeMosaicIcon from '@mui/icons-material/AutoAwesomeMosaic';
 import FormatAlignJustifyIcon from '@mui/icons-material/FormatAlignJustify';
-import Apps from '@material-ui/icons/Apps';
 import EmailIcon from '@mui/icons-material/Email';
-import {Person} from "@material-ui/icons";
 import getUsername from "../hooks/getUsername";
-
+import AppsIcon from '@mui/icons-material/Apps';
+import PersonIcon from '@mui/icons-material/Person';
 
 export default function StartPage() {
     const login = useSelector(getUsername);
@@ -44,14 +43,14 @@ export default function StartPage() {
                                                           icon={<AutoAwesomeMosaicIcon color='primary'/>}>
                                     Доступные рабочие пространства
                                 </ActiveDescriptionElement>
-                                <ActiveDescriptionElement href='/projects' small icon={<Apps color='primary'/>}>
+                                <ActiveDescriptionElement href='/projects' small icon={<AppsIcon color='primary'/>}>
                                     Ваши проекты
                                 </ActiveDescriptionElement>
                                 <ActiveDescriptionElement href='/portfolio' small
                                                           icon={<FormatAlignJustifyIcon color='primary'/>}>
                                     Ваше портфолио
                                 </ActiveDescriptionElement>
-                                <ActiveDescriptionElement href='/profile' small icon={<Person color='primary'/>}>
+                                <ActiveDescriptionElement href='/profile' small icon={<PersonIcon color='primary'/>}>
                                     Ваш профиль
                                 </ActiveDescriptionElement>
                                 <ActiveDescriptionElement href='/notifications' small
