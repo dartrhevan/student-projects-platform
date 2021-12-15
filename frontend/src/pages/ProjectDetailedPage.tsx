@@ -28,7 +28,7 @@ import TagsPanel from "../components/util/TagsPanel";
 import Centered from "../components/util/Centered";
 import ErrorMessage from "../components/elements/ErrorMessage";
 import {Clear} from "@material-ui/icons";
-import {useError, useSuccess, useWarn} from "../hooks/logging";
+import {useError, useInfo, useSuccess, useWarn} from "../hooks/logging";
 import {useSelector} from "react-redux";
 import {getTagsReferenceMap} from "../hooks/getTagsRef";
 import ConfirmationDialog from "../components/util/ConfirmationDialog";
@@ -70,6 +70,7 @@ const RoleSpecificButton = ({project, onSubmit, enabled, isNew}:
     const [attachRole, setAttachRole] = useState('');
     const success = useSuccess();
     const error = useError();
+    const info = useInfo();
 
     function onDelete() {
         deleteProject(project?.id as string)
@@ -88,7 +89,14 @@ const RoleSpecificButton = ({project, onSubmit, enabled, isNew}:
                 setOpenAttachDialog(false);
                 success("Запрос на присоединение отправлен");
             })
-            .catch(error);
+            .catch(r => {
+                debugger
+                if (r.message.indexOf("уже отправил") != -1) {
+                    info(r.message.replace("Ошибка отправки данных: ", ""));
+                } else {
+                    error(r.message);
+                }
+            });
     }
 
     function onMentorAttach() {
