@@ -20,7 +20,7 @@ import java.util.Set;
 public interface NotificationRepository extends PagingAndSortingRepository<Notification, Long> {
     Page<Notification> findAllByRecipient(User recipient, Pageable pageable);
 
-    boolean existsByRecipientAndSenderAndProjectAndType(User recipient, User sender, Project project, NotificationType type);
+    boolean existsByRecipientAndSenderAndProjectAndTypeAndAnswerNull(User recipient, User sender, Project project, NotificationType type);
 
     boolean existsByRecipientAndIsNew(User recipient, boolean isNew);
 

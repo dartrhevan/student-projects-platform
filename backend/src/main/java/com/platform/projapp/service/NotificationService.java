@@ -42,7 +42,7 @@ public class NotificationService {
     }
 
     public boolean notificationExists(User recipient, User sender, Project project, NotificationType type) {
-        return notificationRepository.existsByRecipientAndSenderAndProjectAndType(recipient, sender, project, type);
+        return notificationRepository.existsByRecipientAndSenderAndProjectAndTypeAndAnswerNull(recipient, sender, project, type);
     }
 
     public boolean hasNew(User recipient) {
